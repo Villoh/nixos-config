@@ -5,3 +5,5 @@ result-*
 
 # Machine-local backup, not part of the host configuration
 hardware-configuration.nix.bak
+# Local Pi runtime state
+.atl/

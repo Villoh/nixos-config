@@ -7,6 +7,7 @@
     kdePackages.okular
     onlyoffice-desktopeditors
     fastfetch
+    nerd-fonts.jetbrains-mono
     gpu-screen-recorder
     wf-recorder
     ffmpeg

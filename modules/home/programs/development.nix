@@ -6,6 +6,8 @@
     git
     gh
     chezmoi
+    gum
+    rtk
     ripgrep
     fd
     fzf

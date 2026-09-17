@@ -25,6 +25,8 @@
       settings = {
         # DMS generates this theme dynamically through matugen.
         theme = "dankcolors";
+        "font-family" = "JetBrainsMono Nerd Font";
+        "font-size" = 12;
       };
     };
     programs.kitty = {
@@ -32,6 +34,8 @@
       settings = {
         # Use Zsh even when Kitty is launched from an existing Bash session.
         shell = "${pkgs.zsh}/bin/zsh";
+        font_family = "JetBrainsMono Nerd Font";
+        font_size = 12;
       };
       extraConfig = ''
         # DMS generates these files dynamically with Matugen.
@@ -73,6 +77,8 @@
         hl.bind("SUPER + E", hl.dsp.exec_cmd("xdg-open ~"))
         -- Open the default browser on a blank page.
         hl.bind("SUPER + B", hl.dsp.exec_cmd("xdg-open about:blank"))
+        -- Open the editor selected by the user's environment.
+        hl.bind("SUPER + C", hl.dsp.exec_cmd("sh -lc 'exec \"$EDITOR\"'"))
 
         -- Toggle Handy on press and release so Ctrl+Space behaves as
         -- push-to-talk. The CLI works reliably with the running instance.

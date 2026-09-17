@@ -6,6 +6,20 @@
     git
     gh
     chezmoi
+    ripgrep
+    fd
+    fzf
+    zoxide
+    eza
+    bat
+    jq
+    yq
+    sd
+    dust
+    procs
+    btop
+    tree
+    tealdeer
     rustup
     nodejs_24
     deno

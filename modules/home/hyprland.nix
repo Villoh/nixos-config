@@ -29,6 +29,10 @@
     };
     programs.kitty = {
       enable = true;
+      settings = {
+        # Use Zsh even when Kitty is launched from an existing Bash session.
+        shell = "${pkgs.zsh}/bin/zsh";
+      };
       extraConfig = ''
         # DMS generates these files dynamically with Matugen.
         include dank-tabs.conf
@@ -53,9 +57,6 @@
         hl.env("HYPRCURSOR_SIZE", "24")
         hl.env("XCURSOR_SIZE", "24")
 
-        -- Let DMS/Matugen provide the Qt theme to Dolphin and other Qt apps.
-        hl.env("QT_QPA_PLATFORMTHEME", "qtengine")
-
         hl.config({
           cursor = {
             no_hardware_cursors = 1,
@@ -68,10 +69,18 @@
 
         require("dms.binds")
 
+        -- Open the default graphical file manager for the home directory.
+        hl.bind("SUPER + E", hl.dsp.exec_cmd("xdg-open ~"))
+        -- Open the default browser on a blank page.
+        hl.bind("SUPER + B", hl.dsp.exec_cmd("xdg-open about:blank"))
+
         -- Toggle Handy on press and release so Ctrl+Space behaves as
         -- push-to-talk. The CLI works reliably with the running instance.
         hl.bind("CTRL + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
         hl.bind("CTRL + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"), { release = true })
+
+        -- Capture and annotate a selected region with Quick Capture.
+        hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms ipc call quickCapture screenshot region edit"))
 
         require("dms.windowrules")
 

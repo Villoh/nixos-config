@@ -6,8 +6,14 @@
     kdePackages.ark
     kdePackages.okular
     onlyoffice-desktopeditors
-    qtengine
     fastfetch
+    gpu-screen-recorder
+    wf-recorder
+    ffmpeg
+    imagemagick
+    img2pdf
+    tesseract
+    zbar
     yazi
     superfile
   ];

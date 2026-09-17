@@ -27,7 +27,14 @@
         theme = "dankcolors";
       };
     };
-    programs.kitty.enable = true;
+    programs.kitty = {
+      enable = true;
+      extraConfig = ''
+        # DMS generates these files dynamically with Matugen.
+        include dank-tabs.conf
+        include dank-theme.conf
+      '';
+    };
 
     wayland.windowManager.hyprland = {
       enable = true;
@@ -45,6 +52,10 @@
         hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
         hl.env("HYPRCURSOR_SIZE", "24")
         hl.env("XCURSOR_SIZE", "24")
+
+        -- Let DMS/Matugen provide the Qt theme to Dolphin and other Qt apps.
+        hl.env("QT_QPA_PLATFORMTHEME", "qtengine")
+
         hl.config({
           cursor = {
             no_hardware_cursors = 1,

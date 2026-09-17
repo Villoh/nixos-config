@@ -16,6 +16,8 @@
   ];
 
   home-manager = {
+    # Preserve pre-existing user files when Home Manager first takes ownership.
+    backupFileExtension = "bak";
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };

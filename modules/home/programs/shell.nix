@@ -6,6 +6,12 @@
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
 
+    interactiveShellInit = ''
+      if [[ $- == *i* ]] && command -v fastfetch >/dev/null 2>&1; then
+        fastfetch
+      fi
+    '';
+
     ohMyZsh = {
       enable = true;
       # Starship owns the prompt; Oh My Zsh only provides the plugins.

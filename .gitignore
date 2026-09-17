@@ -1,0 +1,7 @@
+# Local Nix and development artifacts
+.direnv/
+result
+result-*
+
+# Machine-local backup, not part of the host configuration
+hardware-configuration.nix.bak

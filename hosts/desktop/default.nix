@@ -4,14 +4,10 @@
   imports = [
     ./hardware-configuration.nix
     ./display.nix
-    ../../modules/nixos/common.nix
-    ../../modules/nixos/browsers.nix
-    ../../modules/nixos/desktop/dms-greeter.nix
-    ../../modules/nixos/desktop/dms.nix
-    ../../modules/nixos/desktop/hyprland.nix
-    ../../modules/nixos/zram.nix
-    ../../modules/nixos/gaming.nix
-    ../../modules/home
+    ../../modules/nixos/core
+    ../../profiles/desktop.nix
+    ../../profiles/gaming.nix
+    ../../users/mikel
     inputs.home-manager.nixosModules.home-manager
   ];
 

@@ -1,10 +1,14 @@
 # NixOS + Hyprland + DMS
 
-Reproducible NixOS configuration for the `desktop` host. Hyprland, DMS, and
-DankGreeter provide the graphical session. This machine's hardware
-configuration lives in
-`hosts/desktop/hardware-configuration.nix` and must not be reused on another
-machine.
+Reproducible NixOS configuration for the `desktop` and `zenbook` hosts.
+Hyprland, DMS, and DankGreeter provide the graphical session. Each machine has
+its own generated hardware configuration; never reuse one host's hardware file
+on another machine.
+
+## Installation guides
+
+- [Desktop](docs/installation-desktop.md)
+- [Zenbook laptop](docs/installation-laptop.md)
 
 ## Development shell
 
@@ -27,14 +31,20 @@ sudo nixos-rebuild test --flake .#desktop
 `test` activates the generation temporarily and does not change the boot
 configuration. Verify that DankGreeter offers the Hyprland session, DMS starts
 inside Hyprland, and networking, audio, Bluetooth, notifications, locking, and Wayland
-portals work. Check zram with:
+portals work. Swap policy is host-specific: desktop uses compressed zram swap
+with no disk-backed swap; Zenbook uses zswap with persistent swap declared by
+its generated hardware configuration.
+
+Check desktop zram with:
 
 ```bash
 zramctl
 swapon --show
 ```
 
-zram should be present, with no disk or file-backed swap.
+zram should be present, with no disk or file-backed swap. zswap requires a
+persistent swap device to cache into; hibernation additionally needs real
+persistent swap and matching resume configuration.
 
 ## Apply and update
 

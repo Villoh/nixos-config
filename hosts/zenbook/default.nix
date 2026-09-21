@@ -5,13 +5,9 @@
   # adding this host to flake.nix. Do not reuse desktop hardware settings.
   imports = [
     ./hardware-configuration.nix
-    ../../modules/nixos/common.nix
-    ../../modules/nixos/browsers.nix
-    ../../modules/nixos/desktop/dms-greeter.nix
-    ../../modules/nixos/desktop/dms.nix
-    ../../modules/nixos/desktop/hyprland.nix
-    ../../modules/nixos/zram.nix
-    ../../modules/home
+    ../../modules/nixos/core
+    ../../profiles/laptop.nix
+    ../../users/mikel
     inputs.home-manager.nixosModules.home-manager
     ./keyboard.nix
   ];

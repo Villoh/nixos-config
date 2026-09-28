@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ config, inputs, pkgs, ... }:
 
 {
   # Provides the AT-SPI2 accessibility bus required by Pi computer-use.
@@ -32,6 +32,10 @@
       };
     };
   };
+
+  # Native DMS System Updates widget uses TERMINAL to launch update commands.
+  systemd.user.services.dms.environment.TERMINAL =
+    config.home-manager.users.mikel.home.sessionVariables.TERMINAL;
 
   environment.systemPackages = [
     pkgs.dgop

@@ -9,7 +9,7 @@
     deno
     mise
     jdk
-    dotnet-sdk
+    dotnet-sdk_10
     python3
     uv
     pnpm

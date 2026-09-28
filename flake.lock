@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "base46": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784785285,
+        "narHash": "sha256-kwDMC6rYzJYECmGnwn8JiAbffUq7hAXcUH6gPSkk2uI=",
+        "owner": "AvengeMedia",
+        "repo": "base46",
+        "rev": "83522e02c6c3b4ea901c4bffd9e0a5e0371c1fe6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AvengeMedia",
+        "repo": "base46",
+        "type": "github"
+      }
+    },
     "codex-desktop-linux": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -161,6 +177,7 @@
     },
     "root": {
       "inputs": {
+        "base46": "base46",
         "codex-desktop-linux": "codex-desktop-linux",
         "dankcalendar": "dankcalendar",
         "home-manager": "home-manager",

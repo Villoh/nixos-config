@@ -14,11 +14,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    dank-greeter = {
-      url = "github:AvengeMedia/dank-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     zen-browser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -30,6 +25,8 @@
     };
 
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
+
+    nix-monitor.url = "github:antonjah/nix-monitor";
   };
 
   outputs =

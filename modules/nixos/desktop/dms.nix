@@ -36,6 +36,8 @@
   environment.systemPackages = [
     pkgs.dgop
     pkgs.dsearch
+    pkgs.qt6Packages.qt6ct
+    pkgs.adw-gtk3
     inputs.dankcalendar.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

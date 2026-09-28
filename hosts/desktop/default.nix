@@ -11,6 +11,11 @@
     inputs.home-manager.nixosModules.home-manager
   ];
 
+  # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.
+  services.udev.extraRules = ''
+    KERNEL=="hidraw*", ATTRS{idVendor}=="4d4b", ATTRS{idProduct}=="304e", TAG+="uaccess", MODE="0660"
+  '';
+
   home-manager = {
     # Preserve pre-existing user files when Home Manager first takes ownership.
     backupFileExtension = "bak";

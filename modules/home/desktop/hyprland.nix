@@ -43,10 +43,10 @@
         -- Open the editor selected by the user's environment.
         hl.bind("SUPER + C", hl.dsp.exec_cmd("sh -lc 'exec \"$EDITOR\"'"))
 
-        -- Toggle Handy on press and release so Ctrl+Space behaves as
+        -- Toggle Handy on press and release so Ctrl+Shift+Space behaves as
         -- push-to-talk. The CLI works reliably with the running instance.
-        hl.bind("CTRL + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
-        hl.bind("CTRL + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"), { release = true })
+        hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
+        hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"), { release = true })
 
         -- Capture and annotate a selected region with Quick Capture.
         hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms ipc call quickCapture screenshot region edit"))

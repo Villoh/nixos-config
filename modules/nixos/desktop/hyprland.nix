@@ -3,8 +3,9 @@
 {
   programs.hyprland = {
     enable = true;
-    # DankGreeter launches Hyprland directly; UWSM is not used by this greeter.
-    withUWSM = false;
+    # UWSM manages the logged-in Hyprland session; DankGreeter remains a
+    # separate temporary compositor for the login screen.
+    withUWSM = true;
     xwayland.enable = true;
   };
 }

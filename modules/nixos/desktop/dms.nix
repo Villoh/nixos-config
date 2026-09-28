@@ -8,7 +8,8 @@
     enable = true;
     systemd = {
       enable = true;
-      target = "hyprland-session.target";
+      # UWSM starts graphical-session.target for the logged-in compositor.
+      target = "graphical-session.target";
     };
     plugins = {
       pkgUpdate.src = pkgs.fetchFromGitHub {

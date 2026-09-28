@@ -11,6 +11,14 @@
     inputs.home-manager.nixosModules.home-manager
   ];
 
+  services.displayManager = {
+    autoLogin = {
+      enable = true;
+      user = "mikel";
+    };
+    defaultSession = "hyprland";
+  };
+
   # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.
   services.udev.extraRules = ''
     KERNEL=="hidraw*", ATTRS{idVendor}=="4d4b", ATTRS{idProduct}=="304e", TAG+="uaccess", GROUP="al68", MODE="0660"

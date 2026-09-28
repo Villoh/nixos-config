@@ -36,7 +36,6 @@
 
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
-    nix-monitor.url = "github:antonjah/nix-monitor";
   };
 
   outputs =

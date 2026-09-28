@@ -9,13 +9,15 @@
     compositor = {
       name = "hyprland";
       customConfig = ''
-        env = XCURSOR_THEME,Bibata-Modern-Classic
-        env = XCURSOR_SIZE,24
-        env = HYPRCURSOR_THEME,Bibata-Modern-Classic
-        env = HYPRCURSOR_SIZE,24
-        cursor {
-          no_hardware_cursors = 1
-        }
+        hl.env("DMS_RUN_GREETER", "1")
+        hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
+        hl.env("XCURSOR_SIZE", "24")
+        hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
+        hl.env("HYPRCURSOR_SIZE", "24")
+        hl.config({
+          misc = { disable_hyprland_logo = true },
+          cursor = { no_hardware_cursors = 1 },
+        })
       '';
     };
     configHome = "/home/mikel";

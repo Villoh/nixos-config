@@ -1,8 +1,20 @@
-{ ... }:
+{ pkgs, ... }:
 
+let
+  ghostty = pkgs.symlinkJoin {
+    name = "ghostty-with-simple-im";
+    meta.mainProgram = "ghostty";
+    paths = [ pkgs.ghostty ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram "$out/bin/ghostty" --set GTK_IM_MODULE simple
+    '';
+  };
+in
 {
   home-manager.users.mikel.programs.ghostty = {
     enable = true;
+    package = ghostty;
     settings = {
       # DMS generates this theme dynamically through matugen.
       theme = "dankcolors";

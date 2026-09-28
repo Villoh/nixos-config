@@ -36,15 +36,5 @@ in
     home.stateVersion = "26.05";
 
     home.file.".config/DankMaterialShell/plugins/NixMonitor".source = nixMonitorPlugin;
-
-    home.pointerCursor = {
-      enable = true;
-      package = pkgs.bibata-cursors;
-      name = "Bibata-Modern-Classic";
-      size = 24;
-      gtk.enable = true;
-      # Keep the existing chezmoi-managed ~/.Xresources untouched.
-      x11.enable = false;
-    };
   };
 }

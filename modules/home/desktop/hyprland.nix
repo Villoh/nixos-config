@@ -1,11 +1,7 @@
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   home-manager.users.mikel = {
-    imports = [
-      "${inputs.home-manager}/modules/services/window-managers/hyprland"
-    ];
-
     wayland.windowManager.hyprland = {
       enable = true;
       # UWSM owns Hyprland's systemd session integration.
@@ -17,24 +13,15 @@
         require("dms.layout")
         require("dms.outputs")
         require("dms.cursor")
-
-        -- Use an installed cursor theme and avoid hardware-cursor flicker.
-        hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
-        hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
-        hl.env("HYPRCURSOR_SIZE", "24")
-        hl.env("XCURSOR_SIZE", "24")
+        require("dms.windowrules")
+        require("dms.binds")
 
         hl.config({
-          cursor = {
-            no_hardware_cursors = 1,
-          },
           input = {
             kb_layout = "us",
             kb_variant = "altgr-intl",
           },
         })
-
-        require("dms.binds")
 
         -- Open the default graphical file manager for the home directory.
         hl.bind("SUPER + E", hl.dsp.exec_cmd("xdg-open ~"))
@@ -48,12 +35,13 @@
         hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
         hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"), { release = true })
 
+        -- Toggle microphone and speaker mute, independent of hardware media keys.
+        hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
+        hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
+
         -- Capture and annotate a selected region with Quick Capture.
-        hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms ipc call quickCapture screenshot region edit"))
+        hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms screenshot"))
 
-        require("dms.windowrules")
-
-        hl.layer_rule({ match = { namespace = "dms" }, no_anim = true })
 
       '';
     };

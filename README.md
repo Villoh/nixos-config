@@ -9,6 +9,7 @@ on another machine.
 
 - [Desktop](docs/installation-desktop.md)
 - [Zenbook laptop](docs/installation-laptop.md)
+- [Maintenance and updates](docs/maintenance.md)
 
 ## Development shell
 
@@ -46,24 +47,6 @@ zram should be present, with no disk or file-backed swap. zswap requires a
 persistent swap device to cache into; hibernation additionally needs real
 persistent swap and matching resume configuration.
 
-## Apply and update
-
-Always review changes first:
-
-```bash
-git diff --stat
-git diff
-sudo nixos-rebuild switch --flake .#desktop
-git add .
-git commit -m "feat: add reproducible Hyprland and DMS setup"
-```
-
-Update flake inputs with:
-
-```bash
-nix flake update
-```
-
 ## DMS compositor setup
 
 The DMS module installs the shell and its dependencies, but compositor-specific
@@ -79,35 +62,18 @@ colors`, `dms setup layout`, `dms setup outputs`, `dms setup windowrules`, and
 `dms setup cursor`. These files live under `~/.config/hypr/dms/`. Do not manage
 the same files with chezmoi or Home Manager.
 
-DMS is bound to Home Manager's `hyprland-session.target` in
-`home/dms.nix`, so it is started only in Hyprland. DankGreeter launches
-Hyprland directly, so UWSM is intentionally disabled for this display-manager
-path. We deliberately do not also run `dms run` from `hyprland.lua`, because DMS
-documents that using both startup methods can launch two instances.
+DMS is bound to UWSM's `graphical-session.target` in
+`modules/nixos/desktop/dms.nix`, so it starts with the logged-in Hyprland
+session. DankGreeter runs a separate temporary compositor for the login screen;
+the selected `Hyprland (uwsm-managed)` session launches the desktop through
+UWSM. We deliberately do not also run `dms run` from `hyprland.lua`, because
+DMS documents that using both startup methods can launch two instances.
 
 References:
 
 - [DMS Hyprland compositor setup](https://danklinux.com/docs/dankmaterialshell/compositors/)
 - [DMS Hyprland systemd integration](https://danklinux.com/docs/dankmaterialshell/installation/#hyprland)
 - [DMS setup CLI](https://danklinux.com/docs/dankmaterialshell/cli-setup/)
-
-## Recovery
-
-If Hyprland or DankGreeter fails, select an earlier generation from the boot
-menu. A previous SDDM/Plasma generation can also be selected if it is still
-available. From a TTY, fix the repository and run `sudo nixos-rebuild test --flake .#desktop` before using
-`switch` again.
-
-## Generations and cleanup
-
-Systemd-boot keeps at most 5 entries through
-`boot.loader.systemd-boot.configurationLimit`. Old Nix store data can still be
-removed manually after verifying that rollback generations are no longer
-needed:
-
-```bash
-sudo nix-collect-garbage --delete-older-than 30d
-```
 
 ## Gaming
 

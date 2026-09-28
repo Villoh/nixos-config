@@ -43,7 +43,9 @@ dms setup headless --compositor hyprland --skip-existing
 
 Optional per-area setup commands are `dms setup binds`, `colors`, `layout`, `outputs`, `windowrules`, and `cursor`. DMS files are written under `~/.config/hypr/dms/`; do not manage those same files with chezmoi or Home Manager.
 
-DMS starts through Home Manager's `hyprland-session.target`. Do not also add `dms run` to Hyprland startup: that can launch two DMS instances.
+DMS starts through UWSM's `graphical-session.target`. Select
+`Hyprland (uwsm-managed)` in DankGreeter. Do not also add `dms run` to
+Hyprland startup: that can launch two DMS instances.
 
 ## Recovery
 

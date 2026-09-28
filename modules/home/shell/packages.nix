@@ -3,6 +3,7 @@
 {
   home-manager.users.mikel.home.packages = with pkgs; [
     git
+    git-lfs
     gh
     chezmoi
     gum

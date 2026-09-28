@@ -39,6 +39,10 @@
         hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
         hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
 
+        -- Forward Discord's native mute/deafen shortcuts to Vesktop only.
+        hl.bind("SUPER + SHIFT + ALT + M", hl.dsp.send_shortcut({ mods = "CTRL SHIFT", key = "M", window = "class:vesktop" }))
+        hl.bind("SUPER + SHIFT + ALT + D", hl.dsp.send_shortcut({ mods = "CTRL SHIFT", key = "D", window = "class:vesktop" }))
+
         -- Capture and annotate a selected region with Quick Capture.
         hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms screenshot"))
 

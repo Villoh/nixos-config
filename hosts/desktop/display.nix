@@ -1,24 +1,23 @@
-{ ... }:
+{ lib, ... }:
 
 {
-  # DMS may retain positions for disconnected outputs. Keep this host's
-  # DisplayPort monitor left and HDMI monitor right.
-  home-manager.users.mikel.wayland.windowManager.hyprland.extraConfig = ''
+  # DMS owns generated output rules; pin this host's modes/layout after them.
+  # Other DMS settings remain active.
+  home-manager.users.mikel.wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
     hl.monitor({
       output = "DP-1",
-      mode = "preferred",
+      mode = "1920x1080@239.760",
       position = "0x0",
       scale = 1,
     })
     hl.monitor({
       output = "HDMI-A-1",
-      mode = "1920x1080@60.000",
-      position = "1920x0",
-      scale = 1,
+      mode = "3840x2160@59.997",
+      position = "1920x-360",
+      scale = 1.5,
     })
 
-    -- Keep workspaces 1-5 on the primary DisplayPort monitor and use 6 as the
-    -- default workspace on the secondary HDMI monitor.
+    -- Keep workspaces 1-5 on DP-1 and use 6 as the default workspace on HDMI-A-1.
     hl.workspace_rule({
       workspace = "1",
       monitor = "DP-1",

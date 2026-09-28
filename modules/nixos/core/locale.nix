@@ -17,7 +17,7 @@
 
   services.xserver.xkb = {
     layout = "us";
-    variant = "altgr-intl";
+    variant = "intl";
   };
   console.keyMap = "us-acentos";
 }

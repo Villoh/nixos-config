@@ -1,6 +1,8 @@
 { ... }:
 
 {
+  environment.sessionVariables.XDG_MENU_PREFIX = "plasma-";
+
   imports = [
     ./packages.nix
     ./dms-greeter.nix

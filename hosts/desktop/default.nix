@@ -13,7 +13,7 @@
 
   # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.
   services.udev.extraRules = ''
-    KERNEL=="hidraw*", ATTRS{idVendor}=="4d4b", ATTRS{idProduct}=="304e", TAG+="uaccess", MODE="0660"
+    KERNEL=="hidraw*", ATTRS{idVendor}=="4d4b", ATTRS{idProduct}=="304e", TAG+="uaccess", GROUP="al68", MODE="0660"
   '';
 
   home-manager = {

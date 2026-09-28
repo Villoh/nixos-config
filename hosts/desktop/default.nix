@@ -12,11 +12,12 @@
   ];
 
   services.displayManager = {
-    autoLogin = {
-      enable = true;
-      user = "mikel";
-    };
-    defaultSession = "hyprland";
+    # Temporarily disabled while diagnosing the UWSM session startup.
+    # autoLogin = {
+    #   enable = true;
+    #   user = "mikel";
+    # };
+    defaultSession = "hyprland-uwsm";
   };
 
   # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.

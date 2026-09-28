@@ -35,7 +35,7 @@
         "type": "github"
       }
     },
-    "dank-qml-common_2": {
+    "dank-qml-common": {
       "flake": false,
       "locked": {
         "lastModified": 1789851922,
@@ -53,7 +53,7 @@
     },
     "dankcalendar": {
       "inputs": {
-        "dank-qml-common": "dank-qml-common_2",
+        "dank-qml-common": "dank-qml-common",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -69,6 +69,26 @@
       "original": {
         "owner": "AvengeMedia",
         "repo": "dankcalendar",
+        "type": "github"
+      }
+    },
+    "dms-plugin-registry": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790563210,
+        "narHash": "sha256-iYXRvNBf1sOA7hDwGM3mB1sk2FaX0RlnlUUOW7kbc1U=",
+        "owner": "AvengeMedia",
+        "repo": "dms-plugin-registry",
+        "rev": "90ddfd245f2554aab70c4dcdb69209c714e6ac7b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AvengeMedia",
+        "repo": "dms-plugin-registry",
         "type": "github"
       }
     },
@@ -180,6 +200,7 @@
         "base46": "base46",
         "codex-desktop-linux": "codex-desktop-linux",
         "dankcalendar": "dankcalendar",
+        "dms-plugin-registry": "dms-plugin-registry",
         "home-manager": "home-manager",
         "nix-monitor": "nix-monitor",
         "nixpkgs": "nixpkgs_2",

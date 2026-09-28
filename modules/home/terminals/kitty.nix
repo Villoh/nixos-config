@@ -10,6 +10,9 @@
       font_size = 10;
     };
     extraConfig = ''
+      symbol_map U+E1A0-U+E1B6 Herdr Agent Icons Max
+      symbol_map U+E1C0-U+E1C5 Herdr Agent Icons Max
+
       # DMS generates these files dynamically with Matugen.
       include dank-tabs.conf
       include dank-theme.conf

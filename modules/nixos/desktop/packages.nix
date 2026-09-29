@@ -15,6 +15,7 @@ in
 {
   environment.systemPackages = [
     pkgs.brave
+    pkgs.nix-index
     zen-browser
   ];
 }

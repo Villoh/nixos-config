@@ -6,6 +6,7 @@
       zed-editor
       mysql84.client
       usql
+      acli
       herdr
       rustup
       nodejs_24

@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # Optional Microsoft font bundle; upstream warns about its Windows EULA.
+    # nix-ttf-ms-win11-auto.url = "github:kugland/nix-ttf-ms-win11-auto";
 
     home-manager = {
       url = "github:nix-community/home-manager";

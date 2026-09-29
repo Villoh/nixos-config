@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./fonts.nix
     ./boot.nix
     ./gnupg.nix
     ./locale.nix

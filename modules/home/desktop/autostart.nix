@@ -23,6 +23,15 @@
       Terminal=false
       Icon=vesktop
     '';
+    "autostart/filen-desktop.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Filen Desktop
+      Comment=Start Filen Desktop at login
+      Exec=${pkgs.filen-desktop}/bin/filen-desktop
+      StartupNotify=false
+      Terminal=false
+    '';
     # Reuse the launcher's FHS wrapper, which provides ICU for Tunnel Agent.
     "autostart/tunnelagent.desktop".text = ''
       [Desktop Entry]

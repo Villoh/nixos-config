@@ -9,6 +9,8 @@ on another machine.
 
 - [Desktop](docs/installation-desktop.md)
 - [Zenbook laptop](docs/installation-laptop.md)
+- [Windows dual boot](docs/dual-boot-windows.md)
+- [Secure Boot](docs/secure-boot.md)
 - [Maintenance and updates](docs/maintenance.md)
 
 ## Development shell

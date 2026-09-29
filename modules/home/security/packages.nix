@@ -3,7 +3,7 @@
 {
   home-manager.users.mikel.home.packages = with pkgs; [
     bitwarden-cli
-    wl-clipboard
+    seahorse
     gnupg
     nssTools
     pinentry-qt

@@ -5,6 +5,7 @@
     ./home.nix
     ../../modules/home/core
     ../../modules/home/cloud
+    ../../modules/home/communication
     ../../modules/home/desktop
     ../../modules/home/development
     ../../modules/home/media

@@ -7,7 +7,6 @@
     kdePackages.ark
     kdePackages.okular
     onlyoffice-desktopeditors
-    vesktop
     handy
     wtype
   ];

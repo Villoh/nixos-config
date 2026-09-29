@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   home-manager.users.mikel = {
@@ -23,12 +23,12 @@
           },
         })
 
-        -- Open the default graphical file manager for the home directory.
-        hl.bind("SUPER + E", hl.dsp.exec_cmd("xdg-open ~"))
+        -- Open the configured Discord client.
+        hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("${config.home-manager.users.mikel.home.sessionVariables.DISCORD}"))
         -- Open the default browser on a blank page.
         hl.bind("SUPER + B", hl.dsp.exec_cmd("xdg-open about:blank"))
         -- Open the editor selected by the user's environment.
-        hl.bind("SUPER + C", hl.dsp.exec_cmd("sh -lc 'exec \"$EDITOR\"'"))
+        hl.bind("SUPER + C", hl.dsp.exec_cmd("${config.home-manager.users.mikel.home.sessionVariables.EDITOR}"))
 
         -- Toggle Handy on press and release so Ctrl+Shift+Space behaves as
         -- push-to-talk. The CLI works reliably with the running instance.

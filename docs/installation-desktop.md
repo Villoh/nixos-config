@@ -59,8 +59,6 @@ If Hyprland or DankGreeter fails:
 sudo nixos-rebuild test --flake .#desktop
 ```
 
-Systemd-boot keeps up to five entries. Clean old store data only after confirming rollback generations are no longer needed:
-
-```bash
-sudo nix-collect-garbage --delete-older-than 30d
-```
+Systemd-boot keeps up to five entries. See [Maintenance: recovery](maintenance/recovery.md)
+for generation rollback, and [Maintenance: cleanup](maintenance/cleanup.md) before
+removing old generations or collecting the Nix store.

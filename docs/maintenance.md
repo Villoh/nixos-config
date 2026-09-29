@@ -1,102 +1,28 @@
 # Maintenance
 
-Procedures for updating, validating, and recovering the NixOS system.
+Guías prácticas para actualizar, validar, desplegar, recuperar y limpiar este
+sistema NixOS. Cada guía cubre un flujo por separado:
 
-## Update the system and declarative apps
+- [Actualizar sistema y aplicaciones](maintenance/updates.md): actualizar inputs
+  del flake, apps declarativas, Tunnel Agent, perfiles manuales y Flatpak.
+- [`nh`: construir y desplegar](maintenance/nh.md): qué hace `nh` y cómo usarlo
+  en este repositorio.
+- [Recuperación y generaciones](maintenance/recovery.md): probar cambios,
+  arrancar generaciones anteriores y volver atrás.
+- [Limpieza](maintenance/cleanup.md): revisar y limpiar generaciones, raíces
+  del store y paquetes Flatpak sin perder opciones de rollback.
 
-Apps listed in NixOS/Home Manager update when flake inputs are updated and the
-system is rebuilt:
+## Reglas generales
 
-```bash
-cd /home/mikel/src/nixos-config
-nix flake update
-nix flake check
-sudo nixos-rebuild test --flake .#desktop
-```
+1. Revisar cambios antes de aplicarlos (`git diff`).
+2. Ejecutar `nix flake check` tras cambios de configuración o inputs.
+3. Probar cambios del sistema antes de hacerlos permanentes.
+4. Mantener generaciones antiguas hasta confirmar que sistema funciona.
+5. No ejecutar `nixos-rebuild switch` ni limpieza destructiva automáticamente.
 
-`test` activates a temporary generation. Verify the graphical session, network,
-audio, Bluetooth, and Wayland portals. If everything works, apply the generation:
+## Instalación de hosts
 
-```bash
-sudo nixos-rebuild switch --flake .#desktop
-```
-
-Review changes before applying them:
-
-```bash
-git diff --stat
-git diff -- flake.lock
-```
-
-Update only `nixpkgs`:
-
-```bash
-nix flake lock --update-input nixpkgs
-```
-
-## Apps installed with `nix profile`
-
-`nix profile` manages manual installations outside `flake.nix` and Home
-Manager. List installed packages:
-
-```bash
-nix profile list
-```
-
-Upgrade all packages:
-
-```bash
-nix profile upgrade --all
-```
-
-Preview an upgrade without changing anything:
-
-```bash
-nix profile upgrade --all --dry-run
-```
-
-Install an app manually:
-
-```bash
-nix profile install nixpkgs#hello
-```
-
-If `nix profile list` shows no entries, no apps are installed through this
-method. For this repository, use the declarative flake update instead.
-
-## Flatpak
-
-Flatpaks update separately:
-
-```bash
-flatpak update
-```
-
-## Generations and rollback
-
-List system generations:
-
-```bash
-sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
-```
-
-If an update fails, boot an earlier generation from the systemd-boot menu. From
-a TTY, fix the configuration and test again:
-
-```bash
-sudo nixos-rebuild test --flake .#desktop
-```
-
-Do not use `switch` until the test generation works.
-
-## Store cleanup
-
-Delete old generation data only after confirming that rollback generations are
-no longer needed:
-
-```bash
-sudo nix-collect-garbage --delete-older-than 30d
-```
-
-systemd-boot keeps at most five entries through
-`boot.loader.systemd-boot.configurationLimit`.
+- [Desktop installation](installation-desktop.md): host existente `desktop`.
+- [Laptop installation](installation-laptop.md): guía para añadir `zenbook`.
+  Requiere generar hardware propio y registrar host en `flake.nix` antes de
+  poder construir o mantenerlo con comandos como `nh os`.

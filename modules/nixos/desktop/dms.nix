@@ -43,6 +43,8 @@ in
       dankKDEConnect.enable = true;
       quickCapture.enable = true;
       wallpaperCarousel.enable = true;
+      commandRunner.enable = true;
+      nixPackageRunner.enable = true;
     };
   };
 

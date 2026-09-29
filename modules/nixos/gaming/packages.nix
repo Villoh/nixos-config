@@ -3,6 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     heroic
+    hydralauncher
     lutris
     protonup-qt
     protonplus

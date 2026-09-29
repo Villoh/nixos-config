@@ -42,20 +42,6 @@ sudo nixos-rebuild switch --flake .#desktop
 No uses `switch` para saltarte validación o prueba. Revisa el diff antes de
 aplicar cambios; no descartes cambios locales que no sean tuyos.
 
-## Actualizar Tunnel Agent
-
-El script local consulta la última versión publicada, descarga el AppImage x64
-para calcular su hash y cambia solo versión, URL y hash fijados en el módulo.
-Revisa el diff y valida antes de desplegar:
-
-```bash
-python3 scripts/update-tunnel-agent.py
-git diff -- modules/home/development/tunnel-agent.nix
-nix flake check
-```
-
-El script no actualiza ni activa el sistema.
-
 ## Perfiles manuales de Nix
 
 `nix profile` instala paquetes fuera de NixOS y Home Manager. Úsalo solo para

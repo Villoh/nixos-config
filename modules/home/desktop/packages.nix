@@ -6,6 +6,7 @@
     kdePackages.plasma-workspace
     kdePackages.ark
     kdePackages.okular
+    dbeaver-bin
     onlyoffice-desktopeditors
     handy
     wtype

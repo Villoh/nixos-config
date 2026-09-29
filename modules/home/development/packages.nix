@@ -4,6 +4,8 @@
   home-manager.users.mikel = {
     home.packages = with pkgs; [
       zed-editor
+      mysql84.client
+      usql
       herdr
       rustup
       nodejs_24

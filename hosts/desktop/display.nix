@@ -3,9 +3,14 @@
 {
   # DankGreeter runs in separate Hyprland; keep its output/focus host-specific.
   services.displayManager.dms-greeter.compositor.customConfig = lib.mkAfter ''
-    -- Wayland has no primary-output setting; focus DP-1 for the greeter.
+    -- Start on DP-1; Wayland has no primary-output setting.
+    hl.workspace_rule({
+      workspace = "1",
+      monitor = "DP-1",
+      default = true,
+    })
     hl.on("hyprland.start", function()
-      hl.exec_cmd("hyprctl dispatch focusmonitor DP-1")
+      hl.exec_cmd("hyprctl dispatch workspace 1")
     end)
 
     hl.monitor({
@@ -38,9 +43,9 @@
       scale = 1.5,
     })
 
-    -- Wayland has no primary-output setting; focus DP-1 for the desktop.
+    -- Start on workspace 1, pinned to DP-1; Wayland has no primary-output setting.
     hl.on("hyprland.start", function()
-      hl.exec_cmd("hyprctl dispatch focusmonitor DP-1")
+      hl.exec_cmd("hyprctl dispatch workspace 1")
     end)
 
     -- Keep workspaces 1-5 on DP-1 and use 6 as the default workspace on HDMI-A-1.

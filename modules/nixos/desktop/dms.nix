@@ -1,5 +1,28 @@
-{ config, inputs, pkgs, ... }:
+{
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
 
+let
+  dms-shell = pkgs.dms-shell.overrideAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      chmod -R u+w ../quickshell
+      template=../quickshell/matugen/templates/dank-zed.json
+      sed -i \
+        -e '/"keyword": {/,/"font_style"/s/dank16.color5.dark.hex/colors.secondary.dark.hex/' \
+        -e '/"keyword": {/,/"font_style"/s/dank16.color5.light.hex/colors.secondary.light.hex/' \
+        -e '/"comment": {/,/"font_style"/s/dank16.color8.dark.hex/colors.on_surface_variant.dark.hex/' \
+        -e '/"comment": {/,/"font_style"/s/dank16.color8.light.hex/colors.on_surface_variant.light.hex/' \
+        -e '/"comment.doc": {/,/"font_style"/s/dank16.color8.dark.hex/colors.on_surface_variant.dark.hex/' \
+        -e '/"comment.doc": {/,/"font_style"/s/dank16.color8.light.hex/colors.on_surface_variant.light.hex/' \
+        -e '/"type": {/,/"font_style"/s/dank16.color3.dark.hex/colors.primary.dark.hex/' \
+        -e '/"type": {/,/"font_style"/s/dank16.color3.light.hex/colors.primary.light.hex/' \
+        "$template"
+    '';
+  });
+in
 {
   imports = [ inputs.dms-plugin-registry.nixosModules.default ];
 
@@ -8,6 +31,7 @@
 
   programs.dms-shell = {
     enable = true;
+    package = dms-shell;
     systemd = {
       enable = true;
       # UWSM starts graphical-session.target for the logged-in compositor.

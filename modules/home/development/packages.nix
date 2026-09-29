@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   home-manager.users.mikel = {
@@ -7,6 +7,9 @@
       mysql84.client
       usql
       acli
+      claude-code
+      codex
+      nchat
       devin-cli
       herdr
       rustup
@@ -19,6 +22,7 @@
       python3
       uv
       pnpm
+      inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
     ];
   };
 }

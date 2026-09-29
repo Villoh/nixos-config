@@ -229,7 +229,29 @@
         "mac-style-plymouth": "mac-style-plymouth",
         "nixpkgs": "nixpkgs_2",
         "ytm-player": "ytm-player",
+        "zapfast": "zapfast",
         "zen-browser": "zen-browser"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "zapfast",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789977098,
+        "narHash": "sha256-fKY4BedarKx4aR0+UOHk65hhDW8pxFytFkaUi0VYDYk=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "2776e42828203ec89511699c8dcdedec69ab98e1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "systems": {
@@ -295,6 +317,27 @@
       "original": {
         "owner": "peternaame-boop",
         "repo": "ytm-player",
+        "type": "github"
+      }
+    },
+    "zapfast": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1790700859,
+        "narHash": "sha256-4BWTOf6RplqdnXV54xCqyJjlRXRw0Qt/PHmp/jbP3rY=",
+        "owner": "crmne",
+        "repo": "zapfast",
+        "rev": "99adc7e06f1a2f4a0790dd2fe2fd4b136a6edb77",
+        "type": "github"
+      },
+      "original": {
+        "owner": "crmne",
+        "repo": "zapfast",
         "type": "github"
       }
     },

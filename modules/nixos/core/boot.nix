@@ -1,11 +1,13 @@
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   boot.plymouth = {
     enable = true;
-    theme = "mac-style";
+    theme = "owl";
     themePackages = [
-      inputs.mac-style-plymouth.packages.${pkgs.stdenv.hostPlatform.system}.default
+      (pkgs.adi1090x-plymouth-themes.override {
+        selected_themes = [ "owl" ];
+      })
     ];
   };
 

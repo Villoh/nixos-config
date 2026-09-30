@@ -22,7 +22,6 @@
       python3
       uv
       pnpm
-      inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
     ];
   };
 }

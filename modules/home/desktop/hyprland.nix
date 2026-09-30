@@ -29,7 +29,7 @@
         })
 
         -- Open the configured Discord client.
-        hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("${config.home-manager.users.mikel.home.sessionVariables.DISCORD}"))
+        hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("ghostty -e ${config.home-manager.users.mikel.home.sessionVariables.DISCORD}"))
         -- Open the default browser on a blank page.
         hl.bind("SUPER + B", hl.dsp.exec_cmd("xdg-open about:blank"))
         -- Open the editor selected by the user's environment.
@@ -44,9 +44,9 @@
         hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
         hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
 
-        -- Forward Discord's native mute/deafen shortcuts to Vesktop only.
-        hl.bind("SUPER + SHIFT + ALT + M", hl.dsp.send_shortcut({ mods = "CTRL SHIFT", key = "M", window = "class:vesktop" }))
-        hl.bind("SUPER + SHIFT + ALT + D", hl.dsp.send_shortcut({ mods = "CTRL SHIFT", key = "D", window = "class:vesktop" }))
+        -- Forward unused Alt-letter shortcuts to Concord's dedicated Ghostty window.
+        hl.bind("SUPER + ALT + M", hl.dsp.send_shortcut({ mods = "ALT", key = "m", window = "title:^(concord)$" }))
+        hl.bind("SUPER + ALT + D", hl.dsp.send_shortcut({ mods = "ALT", key = "d", window = "title:^(concord)$" }))
 
         -- Capture and annotate a selected region with Quick Capture.
         hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms screenshot"))

@@ -9,7 +9,7 @@ let
     EXPLORER = "dolphin";
     PAGER = "less";
     FILE_MANAGER = "dolphin";
-    DISCORD = "vesktop";
+    DISCORD = "concord";
     # Ask Nix-packaged Electron apps to use native Wayland.
     NIXOS_OZONE_WL = "1";
   };

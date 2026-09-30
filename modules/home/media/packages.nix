@@ -2,7 +2,7 @@
 
 {
   home-manager.users.mikel.home.packages = [
-    inputs.ytm-player.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.ytm-player.packages.${pkgs.stdenv.hostPlatform.system}.ytm-player-full
     pkgs.imv
     pkgs.mpv
     pkgs.obs-studio

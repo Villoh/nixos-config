@@ -19,7 +19,7 @@
       Version=1.0
       Name=ZapFast
       Comment=Start ZapFast at login
-      Exec=${inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast}/bin/zapfast
+      Exec=${inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast}/bin/zapfast --start-hidden
       StartupNotify=false
       Terminal=false
     '';

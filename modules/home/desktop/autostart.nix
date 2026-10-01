@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, inputs, pkgs, ... }:
 
 {
   # App-generated autostarts bypass Nix wrappers and lose their runtime environment.
@@ -10,6 +10,16 @@
       Name=Handy
       Comment=Handystartup script
       Exec=${pkgs.handy}/bin/handy
+      StartupNotify=false
+      Terminal=false
+    '';
+    "autostart/zapfast.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Version=1.0
+      Name=ZapFast
+      Comment=Start ZapFast at login
+      Exec=${inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast}/bin/zapfast
       StartupNotify=false
       Terminal=false
     '';

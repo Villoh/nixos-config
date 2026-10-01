@@ -34,6 +34,8 @@
         hl.bind("SUPER + B", hl.dsp.exec_cmd("xdg-open about:blank"))
         -- Open the editor selected by the user's environment.
         hl.bind("SUPER + C", hl.dsp.exec_cmd("${config.home-manager.users.mikel.home.sessionVariables.EDITOR}"))
+        -- Open WhatsApp in ZapFast.
+        hl.bind("SUPER + SHIFT + Z", hl.dsp.exec_cmd("zapfast"))
 
         -- Toggle Handy on press and release so Ctrl+Shift+Space behaves as
         -- push-to-talk. The CLI works reliably with the running instance.

@@ -6,10 +6,17 @@
     # Optional Microsoft font bundle; upstream warns about its Windows EULA.
     # nix-ttf-ms-win11-auto.url = "github:kugland/nix-ttf-ms-win11-auto";
 
+    acid-boot = {
+      url = "github:kurisu-agent/nix-acid-boot";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
     dms-plugin-registry = {
       url = "github:AvengeMedia/dms-plugin-registry";

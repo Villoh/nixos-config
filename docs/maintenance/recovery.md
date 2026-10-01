@@ -1,32 +1,31 @@
-# Recuperación y generaciones
+# Recovery and generations
 
-NixOS conserva generaciones del sistema para poder arrancar una versión
-anterior. Este host usa systemd-boot y conserva como máximo cinco entradas,
-según `boot.loader.systemd-boot.configurationLimit` en
-`modules/nixos/core/boot.nix`. La limpieza del store puede eliminar
-configuraciones antiguas: no la ejecutes mientras dependas de una generación
-para recuperar el sistema.
+NixOS keeps system generations so you can boot a previous version. This host
+uses systemd-boot and keeps at most five entries, per
+`boot.loader.systemd-boot.configurationLimit` in
+`modules/nixos/core/boot.nix`. Store cleanup can remove old configurations:
+do not run it while you depend on a generation to recover the system.
 
-## Antes de activar un cambio
+## Before activating a change
 
-Valida flake y activa temporalmente, sin convertir todavía la configuración en
-defecto de arranque:
+Validate the flake and activate temporarily, without making the configuration
+the boot default yet:
 
 ```bash
 nix flake check
 nh os test . -H desktop
 ```
 
-Comprueba al menos login gráfico, red, audio, Bluetooth y portales Wayland.
-`test` ayuda a detectar fallos de activación; reiniciar permite volver a la
-generación previa. Cuando pruebas pasan, `nh os switch . -H desktop` activa el
-cambio y establece nueva generación de arranque. Más detalle en [guía de nh](nh.md).
+Check at least graphical login, network, audio, Bluetooth, and Wayland portals.
+`test` helps detect activation failures; rebooting returns to the previous
+generation. When tests pass, `nh os switch . -H desktop` activates the change
+and sets the new boot generation. More detail in the [nh guide](nh.md).
 
-## El entorno gráfico no arranca
+## Graphical environment does not start
 
-1. En menú systemd-boot selecciona generación anterior.
-2. Si el sistema arranca, corrige la configuración en checkout.
-3. Ejecuta validación y prueba temporal desde TTY:
+1. In the systemd-boot menu, select a previous generation.
+2. If the system boots, fix the configuration in the checkout.
+3. Run validation and a temporary test from a TTY:
 
 ```bash
 cd /home/mikel/src/nixos-config
@@ -34,37 +33,38 @@ nix flake check
 nh os test . -H desktop
 ```
 
-4. Vuelve a probar sesión y servicios antes de aplicar cambio permanente.
+4. Test the session and services again before applying a permanent change.
 
-La generación anterior permite recuperar acceso, pero no corrige error fuente.
-No borres generaciones ni hagas `switch` hasta que configuración corregida
-pase pruebas.
+The previous generation restores access, but does not fix the source error. Do
+not delete generations or run `switch` until the corrected configuration passes
+tests.
 
-## Consultar o activar generación anterior
+## List or activate a previous generation
 
-Lista generaciones del sistema:
+List system generations:
 
 ```bash
 nh os info
 ```
 
-El menú de arranque es opción más conservadora: selecciona generación conocida
-sin cambiar configuración declarativa. Si el sistema está funcionando y
-necesitas revertir activo, `nh os rollback` activa generación anterior. Confirma
-que sea la generación deseada y luego corrige o revierte cambios del checkout;
-de lo contrario, siguiente despliegue puede volver a introducir el problema.
+The boot menu is the most conservative option: it selects a known generation
+without changing the declarative configuration. If the system is running and you
+need to revert the active one, `nh os rollback` activates the previous
+generation. Confirm it is the desired generation and then fix or revert the
+changes in the checkout; otherwise, the next deployment may reintroduce the
+problem.
 
-También puedes listar generaciones con Nix directamente:
+You can also list generations with Nix directly:
 
 ```bash
 sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
 ```
 
-## Recuperación desde TTY
+## Recovery from TTY
 
-Si el entorno gráfico falla pero sistema sigue arrancado, cambia a TTY, revisa
-servicios y configuración. Para probar una corrección sin marcarla como
-predeterminada:
+If the graphical environment fails but the system is still running, switch to a
+TTY and check services and configuration. To test a fix without marking it as
+the default:
 
 ```bash
 cd /home/mikel/src/nixos-config
@@ -72,5 +72,5 @@ nix flake check
 nh os test . -H desktop
 ```
 
-Si falla test, revisa error del build o activación antes de reintentar. No uses
-`switch` como método de diagnóstico.
+If the test fails, review the build or activation error before retrying. Do not
+use `switch` as a diagnostic method.

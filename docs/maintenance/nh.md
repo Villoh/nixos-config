@@ -1,32 +1,33 @@
-# `nh`: operaciones diarias
+# `nh`: daily operations
 
-`nh` es un CLI para tareas comunes de Nix, NixOS y Home Manager. En este
-repositorio está instalado como paquete de usuario en
-`modules/home/shell/packages.nix`. Es una interfaz para evaluar, construir y
-activar la configuración; no cambia cómo se declara ni sustituye al flake.
+`nh` is a CLI for common Nix, NixOS, and Home Manager tasks. In this
+repository it is installed as a user package in
+`modules/home/shell/packages.nix`. It is an interface for evaluating, building,
+and activating the configuration; it does not change how the configuration is
+declared or replace the flake.
 
-Al construir, `nh` muestra progreso del build y un diff de cambios, y puede
-pedir confirmación antes de activar. El build sigue usando configuración y
-paquetes declarados por el repositorio.
+When building, `nh` shows build progress and a diff of changes, and may ask for
+confirmation before activating. The build still uses the configuration and
+packages declared by the repository.
 
-## Seleccionar este flake y host
+## Select this flake and host
 
-El paquete está instalado, pero este repositorio no establece un flake por
-defecto para `nh`. Actualmente `flake.nix` declara solo `desktop`; Zenbook no
-es destino de build hasta generar su archivo de hardware y añadir host al flake.
-Ejecuta comandos desde la raíz del checkout y pasa ruta y host explícitamente:
+The package is installed, but this repository does not set a default flake for
+`nh`. Currently `flake.nix` declares only `desktop`; Zenbook is not a build
+target until its hardware file is generated and the host is added to the flake.
+Run commands from the checkout root and pass the path and host explicitly:
 
 ```bash
 cd /home/mikel/src/nixos-config
 nh os build . -H desktop
 ```
 
-`-H desktop` selecciona `nixosConfigurations.desktop`; `.` identifica el flake
-en el directorio actual. Revisa siempre que estás en checkout y host correctos.
+`-H desktop` selects `nixosConfigurations.desktop`; `.` identifies the flake in
+the current directory. Always check that you are in the right checkout and host.
 
-## Construir, probar y activar
+## Build, test, and activate
 
-Elige el comando según efecto deseado:
+Pick the command based on the desired effect:
 
 ```bash
 nh os build . -H desktop
@@ -34,36 +35,37 @@ nh os test . -H desktop
 nh os switch . -H desktop
 ```
 
-- `build`: construye sin activar.
-- `test`: activa configuración en ejecución, pero no la convierte en
-  predeterminada del próximo arranque. Útil para probar y revertir con reboot.
-- `switch`: activa configuración y la establece como predeterminada de
-  arranque. Requiere autorización administrativa.
-- `boot`: construye y establece como predeterminada del arranque sin activar
-  inmediatamente la sesión actual.
+- `build`: builds without activating.
+- `test`: activates the configuration in the running system, but does not make
+  it the default for the next boot. Useful for testing and reverting with a
+  reboot.
+- `switch`: activates the configuration and sets it as the boot default.
+  Requires administrative authorization.
+- `boot`: builds and sets it as the boot default without immediately activating
+  it in the current session.
 
-Después de `test`, revisa sesión gráfica, red, audio, Bluetooth y portales
-Wayland. Si algo falla, reinicia o sigue [Recuperación](recovery.md). Ejecuta
-`nix flake check` antes de construir cambios de configuración. No uses `switch`
-hasta validar y probar cambios.
+After `test`, check graphical session, network, audio, Bluetooth, and Wayland
+portals. If something fails, reboot or follow [Recovery](recovery.md). Run
+`nix flake check` before building configuration changes. Do not use `switch`
+until you have validated and tested changes.
 
-## Otras operaciones
+## Other operations
 
 ```bash
 nh os info
 nh os rollback
-nh search <nombre-paquete>
+nh search <package-name>
 nh clean all --dry
 ```
 
-`info` lista generaciones del perfil del sistema; `rollback` construye y activa
-configuración anterior. `search` consulta paquetes. `clean` se describe con
-advertencias y pasos de revisión en [Limpieza](cleanup.md). Puedes consultar
-opciones disponibles con `nh os --help` y `nh clean all --help`.
+`info` lists system profile generations; `rollback` builds and activates the
+previous configuration. `search` queries packages. `clean` is described with
+warnings and review steps in [Cleanup](cleanup.md). You can see available
+options with `nh os --help` and `nh clean all --help`.
 
-## Diferencia respecto a `nixos-rebuild`
+## Difference from `nixos-rebuild`
 
-`nh os` ofrece interfaz y presentación distintas, pero los conceptos siguen
-siendo generaciones NixOS. Usa `nixos-rebuild` si necesitas una opción que `nh`
-aún no exponga. Para flujos de este host, ambos deben apuntar al mismo flake y
-host; no mezcles una ruta o nombre de host incorrecto.
+`nh os` offers a different interface and presentation, but the concepts are
+still NixOS generations. Use `nixos-rebuild` if you need an option that `nh`
+does not yet expose. For this host's workflows, both must point to the same
+flake and host; do not mix a wrong path or host name.

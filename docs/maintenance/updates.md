@@ -1,13 +1,12 @@
-# Actualizar sistema y aplicaciones
+# Update system and applications
 
-Los paquetes declarados en NixOS o Home Manager cambian cuando se actualizan
-los inputs del flake y se reconstruye la configuración. No actualices esos
-paquetes manualmente: cambia su versión en la configuración cuando sea
-necesario.
+Packages declared in NixOS or Home Manager change when you update the flake
+inputs and rebuild the configuration. Do not update those packages manually:
+change their version in the configuration when needed.
 
-## Actualizar inputs del flake
+## Update flake inputs
 
-Desde la raíz del repositorio, revisa primero qué inputs cambiarán:
+From the repository root, first check which inputs will change:
 
 ```bash
 cd /home/mikel/src/nixos-config
@@ -17,63 +16,63 @@ git diff --stat
 git diff -- flake.lock
 ```
 
-`nix flake update` actualiza todos los inputs y guarda versiones nuevas en
-`flake.lock`. Para actualizar solo `nixpkgs`:
+`nix flake update` updates all inputs and saves the new versions in
+`flake.lock`. To update only `nixpkgs`:
 
 ```bash
 nix flake lock --update-input nixpkgs
 ```
 
-Después valida y activa temporalmente. Consulta [nh](nh.md) para equivalentes
-con su interfaz:
+Then validate and activate temporarily. See [nh](nh.md) for equivalents with
+its interface:
 
 ```bash
 nix flake check
 sudo nixos-rebuild test --flake .#desktop
 ```
 
-Verifica sesión gráfica, red, audio, Bluetooth y portales Wayland. Solo tras
-probar el resultado, aplícalo como generación predeterminada:
+Verify graphical session, network, audio, Bluetooth, and Wayland portals. Only
+after testing the result, apply it as the default generation:
 
 ```bash
 sudo nixos-rebuild switch --flake .#desktop
 ```
 
-No uses `switch` para saltarte validación o prueba. Revisa el diff antes de
-aplicar cambios; no descartes cambios locales que no sean tuyos.
+Do not use `switch` to skip validation or testing. Review the diff before
+applying changes; do not discard local changes that are not yours.
 
-## Perfiles manuales de Nix
+## Manual Nix profiles
 
-`nix profile` instala paquetes fuera de NixOS y Home Manager. Úsalo solo para
-apps que deliberadamente no estén declaradas en este repositorio. Primero mira
-qué perfiles contienen:
+`nix profile` installs packages outside NixOS and Home Manager. Use it only for
+apps that are deliberately not declared in this repository. First see what
+profiles contain:
 
 ```bash
 nix profile list
 ```
 
-Previsualiza actualización de paquetes del perfil actual antes de ejecutar:
+Preview the upgrade of the current profile's packages before running it:
 
 ```bash
 nix profile upgrade --all --dry-run
 nix profile upgrade --all
 ```
 
-Instala manualmente solo si declararlo no es lo apropiado:
+Install manually only if declaring it is not appropriate:
 
 ```bash
 nix profile install nixpkgs#hello
 ```
 
-Si `nix profile list` no muestra entradas, no hay apps instaladas por ese
-perfil. La actualización del perfil no actualiza configuración del sistema.
+If `nix profile list` shows no entries, no apps were installed through that
+profile. Upgrading the profile does not update the system configuration.
 
 ## Flatpak
 
-Flatpak se actualiza por separado del flake:
+Flatpak is updated separately from the flake:
 
 ```bash
 flatpak update
 ```
 
-Consulta [Limpieza](cleanup.md) para retirar runtimes Flatpak sin usar.
+See [Cleanup](cleanup.md) to remove unused Flatpak runtimes.

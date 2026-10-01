@@ -1,28 +1,28 @@
 # Maintenance
 
-Guías prácticas para actualizar, validar, desplegar, recuperar y limpiar este
-sistema NixOS. Cada guía cubre un flujo por separado:
+Practical guides for updating, validating, deploying, recovering, and cleaning
+this NixOS system. Each guide covers a separate workflow:
 
-- [Actualizar sistema y aplicaciones](maintenance/updates.md): actualizar inputs
-  del flake, apps declarativas, Tunnel Agent, perfiles manuales y Flatpak.
-- [`nh`: construir y desplegar](maintenance/nh.md): qué hace `nh` y cómo usarlo
-  en este repositorio.
-- [Recuperación y generaciones](maintenance/recovery.md): probar cambios,
-  arrancar generaciones anteriores y volver atrás.
-- [Limpieza](maintenance/cleanup.md): revisar y limpiar generaciones, raíces
-  del store y paquetes Flatpak sin perder opciones de rollback.
+- [Update system and applications](maintenance/updates.md): update flake
+  inputs, declarative apps, Tunnel Agent, manual profiles, and Flatpak.
+- [`nh`: build and deploy](maintenance/nh.md): what `nh` does and how to use it
+  in this repository.
+- [Recovery and generations](maintenance/recovery.md): test changes, boot
+  previous generations, and roll back.
+- [Cleanup](maintenance/cleanup.md): review and clean generations, store roots,
+  and Flatpak packages without losing rollback options.
 
-## Reglas generales
+## General rules
 
-1. Revisar cambios antes de aplicarlos (`git diff`).
-2. Ejecutar `nix flake check` tras cambios de configuración o inputs.
-3. Probar cambios del sistema antes de hacerlos permanentes.
-4. Mantener generaciones antiguas hasta confirmar que sistema funciona.
-5. No ejecutar `nixos-rebuild switch` ni limpieza destructiva automáticamente.
+1. Review changes before applying them (`git diff`).
+2. Run `nix flake check` after configuration or input changes.
+3. Test system changes before making them permanent.
+4. Keep old generations until you confirm the system works.
+5. Do not run `nixos-rebuild switch` or destructive cleanup automatically.
 
-## Instalación de hosts
+## Host installation
 
-- [Desktop installation](installation-desktop.md): host existente `desktop`.
-- [Laptop installation](installation-laptop.md): guía para añadir `zenbook`.
-  Requiere generar hardware propio y registrar host en `flake.nix` antes de
-  poder construir o mantenerlo con comandos como `nh os`.
+- [Desktop installation](installation-desktop.md): existing `desktop` host.
+- [Laptop installation](installation-laptop.md): guide to add `zenbook`.
+  Requires generating its own hardware file and registering the host in
+  `flake.nix` before it can be built or maintained with commands like `nh os`.

@@ -9,7 +9,13 @@
     ../../profiles/gaming.nix
     ../../users/mikel
     inputs.home-manager.nixosModules.home-manager
+    inputs.acid-boot.nixosModules.default
   ];
+
+  acidBoot = {
+    enable = true;
+    palette = "nix-blue";
+  };
 
   services.displayManager = {
     # Temporarily disabled while diagnosing the UWSM session startup.

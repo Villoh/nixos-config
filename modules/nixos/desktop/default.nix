@@ -1,7 +1,6 @@
 { ... }:
 
 {
-  environment.sessionVariables.XDG_MENU_PREFIX = "plasma-";
   programs.kdeconnect.enable = true;
 
   imports = [

@@ -6,6 +6,7 @@
 
     defaultApplications = {
       "inode/directory" = [ "org.kde.dolphin.desktop" ];
+      "x-scheme-handler/trash" = [ "org.kde.dolphin.desktop" ];
       "image/*" = [ "imv.desktop" ];
       "video/*" = [ "mpv.desktop" ];
       "audio/*" = [ "mpv.desktop" ];
@@ -13,6 +14,7 @@
       "x-scheme-handler/https" = [ "zen.desktop" ];
       "x-scheme-handler/chrome" = [ "zen.desktop" ];
       "text/html" = [ "zen.desktop" ];
+      "text/plain" = [ "dev.zed.Zed.desktop" ];
       "application/xhtml+xml" = [ "zen.desktop" ];
       "x-scheme-handler/codex" = [ "chatgpt.desktop" ];
       "x-scheme-handler/about" = [ "zen.desktop" ];

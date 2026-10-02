@@ -1,5 +1,22 @@
 { config, pkgs, ... }:
 
+let
+  # Per-client launch command, window match and mute/deafen modifiers.
+  # Pick the client with DISCORD in modules/home/core/defaults.nix.
+  discordClients = {
+    concord = {
+      launch = "ghostty -e concord";
+      window = "title:^(concord)$";
+      mods = "ALT";
+    };
+    vesktop = {
+      launch = "vesktop";
+      window = "class:^(vesktop)$";
+      mods = "CTRL_SHIFT";
+    };
+  };
+  discord = discordClients.${config.home-manager.users.mikel.home.sessionVariables.DISCORD};
+in
 {
   home-manager.users.mikel = {
     wayland.windowManager.hyprland = {
@@ -29,7 +46,7 @@
         })
 
         -- Open the configured Discord client.
-        hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("ghostty -e ${config.home-manager.users.mikel.home.sessionVariables.DISCORD}"))
+        hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("${discord.launch}"))
         -- Open the default browser on a blank page.
         hl.bind("SUPER + B", hl.dsp.exec_cmd("xdg-open about:blank"))
         -- Open the editor selected by the user's environment.
@@ -46,9 +63,9 @@
         hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
         hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
 
-        -- Forward unused Alt-letter shortcuts to Concord's dedicated Ghostty window.
-        hl.bind("SUPER + ALT + M", hl.dsp.send_shortcut({ mods = "ALT", key = "m", window = "title:^(concord)$" }))
-        hl.bind("SUPER + ALT + D", hl.dsp.send_shortcut({ mods = "ALT", key = "d", window = "title:^(concord)$" }))
+        -- Forward mute/deafen shortcuts to the selected Discord client.
+        hl.bind("SUPER + ALT + M", hl.dsp.send_shortcut({ mods = "${discord.mods}", key = "m", window = "${discord.window}" }))
+        hl.bind("SUPER + ALT + D", hl.dsp.send_shortcut({ mods = "${discord.mods}", key = "d", window = "${discord.window}" }))
 
         -- Capture and annotate a selected region with Quick Capture.
         hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms screenshot"))

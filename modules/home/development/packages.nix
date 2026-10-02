@@ -55,6 +55,7 @@
       rustup
       go
       gcc
+      gnumake
       nodejs_24
       deno
       jdk

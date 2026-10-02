@@ -48,7 +48,6 @@
       defuddle
       devcontainer
       filen-cli
-      harlequin
       wrangler
 
       # Languages + toolchains

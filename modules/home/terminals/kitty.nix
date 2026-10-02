@@ -8,6 +8,8 @@
       shell = "${pkgs.zsh}/bin/zsh";
       font_family = "JetBrainsMono Nerd Font";
       font_size = 10;
+      # Kitty restores last size/maximized state from ~/.cache/kitty/main.json.
+      remember_window_size = false;
     };
     extraConfig = ''
       symbol_map U+E1A0-U+E1B6 Herdr Agent Icons Max

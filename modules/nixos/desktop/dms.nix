@@ -13,6 +13,8 @@ let
       sed -i \
         -e '/"keyword": {/,/"font_style"/s/dank16.color5.dark.hex/colors.secondary.dark.hex/' \
         -e '/"keyword": {/,/"font_style"/s/dank16.color5.light.hex/colors.secondary.light.hex/' \
+        -e 's/\("ghost_element.selected": "{{colors.\)secondary_container\(\.\(dark\|light\)\.hex}}\)80"/\1primary\24D"/' \
+        -e 's/\("ghost_element.hover": "{{colors.\)surface_container\(\.\(dark\|light\)\.hex}}\)80"/\1primary\24D"/' \
         -e '/"comment": {/,/"font_style"/s/dank16.color8.dark.hex/colors.on_surface_variant.dark.hex/' \
         -e '/"comment": {/,/"font_style"/s/dank16.color8.light.hex/colors.on_surface_variant.light.hex/' \
         -e '/"comment.doc": {/,/"font_style"/s/dank16.color8.dark.hex/colors.on_surface_variant.dark.hex/' \

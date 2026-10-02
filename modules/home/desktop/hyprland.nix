@@ -1,18 +1,32 @@
 { config, pkgs, ... }:
 
 let
-  # Per-client launch command, window match and mute/deafen modifiers.
+  # Per-client launch command and mute/deafen Hyprland dispatchers (Lua).
   # Pick the client with DISCORD in modules/home/core/defaults.nix.
+  # Clients with a CLI act on the running instance, even hidden in the tray.
+  # Concord and Vesktop have no CLI, so they get the keybind forwarded to
+  # their window (Vesktop only works while its window is mapped, not in tray).
+  cli = cmd: ''hl.dsp.exec_cmd("${cmd}")'';
   discordClients = {
     concord = {
       launch = "ghostty -e concord";
-      window = "title:^(concord)$";
-      mods = "ALT";
+      mute = ''hl.dsp.send_shortcut({ mods = "ALT", key = "m", window = "title:^(concord)$" })'';
+      deafen = ''hl.dsp.send_shortcut({ mods = "ALT", key = "d", window = "title:^(concord)$" })'';
     };
     vesktop = {
       launch = "vesktop";
-      window = "class:^(vesktop)$";
-      mods = "CTRL_SHIFT";
+      mute = ''hl.dsp.send_shortcut({ mods = "CTRL_SHIFT", key = "m", window = "class:^(vesktop)$" })'';
+      deafen = ''hl.dsp.send_shortcut({ mods = "CTRL_SHIFT", key = "d", window = "class:^(vesktop)$" })'';
+    };
+    equibop = {
+      launch = "equibop";
+      mute = cli "equibop --toggle-mic";
+      deafen = cli "equibop --toggle-deafen";
+    };
+    legcord = {
+      launch = "legcord";
+      mute = cli "legcord --mute";
+      deafen = cli "legcord --deafen";
     };
   };
   discord = discordClients.${config.home-manager.users.mikel.home.sessionVariables.DISCORD};
@@ -63,9 +77,9 @@ in
         hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
         hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
 
-        -- Forward mute/deafen shortcuts to the selected Discord client.
-        hl.bind("SUPER + ALT + M", hl.dsp.send_shortcut({ mods = "${discord.mods}", key = "m", window = "${discord.window}" }))
-        hl.bind("SUPER + ALT + D", hl.dsp.send_shortcut({ mods = "${discord.mods}", key = "d", window = "${discord.window}" }))
+        -- Send mute/deafen to the selected Discord client.
+        hl.bind("SUPER + ALT + M", ${discord.mute})
+        hl.bind("SUPER + ALT + D", ${discord.deafen})
 
         -- Capture and annotate a selected region with Quick Capture.
         hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms screenshot"))

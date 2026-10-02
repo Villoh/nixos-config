@@ -23,15 +23,15 @@
       StartupNotify=false
       Terminal=false
     '';
-    "autostart/vesktop.desktop".text = ''
+    "autostart/equibop.desktop".text = ''
       [Desktop Entry]
       Type=Application
-      Name=Vesktop
-      Comment=Vesktop autostart script
-      Exec=${pkgs.vesktop}/bin/vesktop --start-minimized
+      Name=Equibop
+      Comment=Equibop autostart script
+      Exec=${pkgs.equibop}/bin/equibop --start-minimized
       StartupNotify=false
       Terminal=false
-      Icon=vesktop
+      Icon=equibop
     '';
     "autostart/filen-desktop.desktop".text = ''
       [Desktop Entry]

@@ -21,6 +21,8 @@
 
     home.packages = with pkgs; [
       vesktop
+      equibop
+      legcord
       inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
     ];
   };

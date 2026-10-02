@@ -11,7 +11,7 @@ let
     FILE_MANAGER = "dolphin";
     # Override UWSM's compositor-derived prefix after its defaults are loaded.
     XDG_MENU_PREFIX = "plasma-";
-    DISCORD = "vesktop";
+    DISCORD = "equibop";
     # Ask Nix-packaged Electron apps to use native Wayland.
     NIXOS_OZONE_WL = "1";
   };

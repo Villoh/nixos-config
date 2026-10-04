@@ -55,13 +55,15 @@ in
     };
   };
 
+  # Filesystem index for the DMS launcher Files tab; runs as a user service.
+  programs.dsearch.enable = true;
+
   # Native DMS System Updates widget uses TERMINAL to launch update commands.
   systemd.user.services.dms.environment.TERMINAL =
     config.home-manager.users.mikel.home.sessionVariables.TERMINAL;
 
   environment.systemPackages = [
     pkgs.dgop
-    pkgs.dsearch
     pkgs.pulseaudio # pactl: DMS audio port and profile switching (PipeWire remains enabled).
     pkgs.adw-gtk3
     inputs.dankcalendar.packages.${pkgs.stdenv.hostPlatform.system}.default

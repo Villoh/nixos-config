@@ -2,6 +2,7 @@
 
 {
   services.tailscale.enable = true;
+  services.power-profiles-daemon.enable = true;
 
   imports = [
     ./flatpak.nix

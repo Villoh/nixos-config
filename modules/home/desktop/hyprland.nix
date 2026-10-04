@@ -47,10 +47,11 @@ in
         require("dms.windowrules")
         require("dms.binds")
 
-        -- Optional: avoid pixelated XWayland apps on the 4K monitor.
-        -- Affects all XWayland apps; each must handle its own scaling.
-        -- ONLYOFFICE --force-scale=1.5 also stays at 150% on the 1080p monitor.
-        -- hl.config({ xwayland = { force_zero_scaling = true } })
+        -- Avoid blurry XWayland apps on the 4K monitor (Tunnel Agent is
+        -- Avalonia, X11 only). Affects all XWayland apps; each must handle its
+        -- own scaling. ONLYOFFICE --force-scale=1.5 also stays at 150% on the
+        -- 1080p monitor.
+        hl.config({ xwayland = { force_zero_scaling = true } })
 
         hl.config({
           input = {

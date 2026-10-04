@@ -18,7 +18,8 @@ in
     xdg.desktopEntries.tunnel-agent = {
       name = "Tunnel Agent";
       comment = "Desktop UI for local AI provider gateways";
-      exec = "${tunnel-agent}/bin/tunnel-agent";
+      # Avalonia is X11-only; with force_zero_scaling it needs per-output scale.
+      exec = "env \"AVALONIA_SCREEN_SCALE_FACTORS=DP-1=1;HDMI-A-1=1.5\" ${tunnel-agent}/bin/tunnel-agent";
       terminal = false;
       categories = [
         "Utility"

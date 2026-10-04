@@ -6,7 +6,6 @@
     seahorse
     gnupg
     nssTools
-    pinentry-qt
     veracrypt
   ];
 }

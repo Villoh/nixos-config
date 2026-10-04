@@ -1,7 +1,8 @@
-{ ... }:
+{ lib, ... }:
 
 {
-  programs.kdeconnect.enable = true;
+  # UWSM imports these defaults; each user's environment may override them.
+  environment.sessionVariables.TERMINAL = lib.mkDefault "ghostty";
 
   xdg.terminal-exec = {
     enable = true;

@@ -31,12 +31,15 @@ If Windows appears in the menu but does not boot, disable UEFI Fast Boot. This i
 
 ## GRUB with os-prober (alternative)
 
-GRUB can probe other disks and add Windows to its menu at rebuild time. This changes the bootloader from systemd-boot and should be tested with Secure Boot disabled first. Because the shared core module enables systemd-boot, force it off when enabling GRUB:
+GRUB can probe other disks and add Windows to its menu during bootloader
+installation. This replaces systemd-boot and must first be tested with Secure
+Boot disabled. Bootloader selection belongs to `hosts/desktop/default.nix`,
+not shared core. Edit its existing loader settings to disable systemd-boot
+when enabling GRUB:
 
 ```nix
-{ lib, ... }:
 {
-  boot.loader.systemd-boot.enable = lib.mkForce false;
+  boot.loader.systemd-boot.enable = false;
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "nodev"; # UEFI, not MBR
   boot.loader.grub.useOSProber = true;
@@ -44,7 +47,18 @@ GRUB can probe other disks and add Windows to its menu at rebuild time. This cha
 }
 ```
 
-Run `nix flake check`, then `sudo nixos-rebuild test --flake .#desktop`. Verify GRUB detects and boots Windows before using `sudo nixos-rebuild switch --flake .#desktop`. Re-run rebuild after Windows bootloader changes; os-prober results are generated during activation. Keep the firmware Windows Boot Manager entry as a fallback.
+Review `git diff`, run `nix flake check`, then use `nh os test . -H desktop`
+for runtime checks. **`test` does not install GRUB or change the boot menu**, so
+it cannot verify Windows detection or booting through GRUB.
+
+Before installing GRUB, back up the NixOS ESP and current boot configuration,
+keep recovery media and the firmware Windows Boot Manager fallback available,
+and obtain explicit approval for this permanent bootloader change. Only then
+run `nh os boot . -H desktop` to install the selected boot configuration and
+reboot with Secure Boot disabled. Check both NixOS and Windows from GRUB;
+use the recovery route if either fails. Reinstall the boot configuration after
+relevant Windows bootloader changes to refresh os-prober results. Never run
+this permanent step automatically.
 
 ## Secure Boot
 

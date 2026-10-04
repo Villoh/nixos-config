@@ -13,5 +13,5 @@ let
   });
 in
 {
-  home-manager.users.mikel.home.packages = [ cliproxyapi ];
+  home.packages = [ cliproxyapi ];
 }

@@ -7,6 +7,7 @@
   services.displayManager.dms-greeter = {
     enable = true;
     compositor.name = "hyprland";
-    configHome = "/home/mikel";
+    # Login appearance must not depend on a private home directory.
+    configHome = null;
   };
 }

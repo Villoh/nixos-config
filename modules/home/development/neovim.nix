@@ -1,7 +1,7 @@
 { inputs, pkgs, ... }:
 
 {
-  home-manager.users.mikel.programs.neovim = {
+  programs.neovim = {
     enable = true;
     plugins = [
       {

@@ -1,6 +1,8 @@
 # Laptop installation (`zenbook`)
 
-Install this repository on the Zenbook as machine-level host `zenbook`. Generate hardware data on that laptop; never copy `hosts/desktop/hardware-configuration.nix`.
+Prepare this repository for machine-level host `zenbook`. It has no generated
+hardware file or flake output yet, so it cannot currently be built. Generate
+hardware data on that laptop; never copy `hosts/desktop/hardware-configuration.nix`.
 
 ## Generate unique hardware configuration
 
@@ -40,11 +42,15 @@ nixosConfigurations.zenbook = nixpkgs.lib.nixosSystem {
 };
 ```
 
-Then validate and test the machine-level target:
+Review GPU drivers, bootloader, hostname, state version, and optional services
+for this machine using the [host checklist](architecture.md#new-host-checklist).
+NVIDIA and gaming are not inherited from desktop. Then validate and test the
+machine-level target:
 
 ```bash
 nix flake check
-sudo nixos-rebuild test --flake .#zenbook
+git diff
+nh os test . -H zenbook
 ```
 
 `test` is temporary and does not change the boot default. Confirm networking, audio, Bluetooth, Hyprland, DankGreeter, DMS, keyboard layout, locking, notifications, and Wayland portals before applying the generation.
@@ -56,7 +62,7 @@ Review the diff, especially the generated hardware file, before switching:
 ```bash
 git diff --stat
 git diff
-sudo nixos-rebuild switch --flake .#zenbook
+nh os switch . -H zenbook
 ```
 
-Do not copy desktop hardware or run `switch` before `nix flake check` and the temporary test succeed. The Zenbook profile uses a Spanish keyboard by default; `Alt+Shift` switches to US International for an external US keyboard.
+Do not copy desktop hardware or run `switch` before `nix flake check` and the temporary test succeed. Permanent activation requires explicit approval. The Zenbook profile uses a Spanish keyboard by default; `Alt+Shift` switches to US International for an external US keyboard.

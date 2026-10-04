@@ -8,6 +8,12 @@ This host boots in UEFI mode with systemd-boot and uses an encrypted root. Check
 bootctl status
 ```
 
+Bootloader changes belong in `hosts/desktop/default.nix`, not shared core.
+Before any permanent installation or key enrollment below, obtain explicit
+approval, back up the NixOS ESP and current boot configuration, and prepare
+recovery media. Do not execute these steps automatically. `nh os test` can
+check runtime activation, but cannot install or test a new bootloader.
+
 Keep Secure Boot disabled until selected bootloader is installed and its EFI binaries are signed. Firmware Setup Mode is vendor-specific: follow motherboard manual, preserve `dbx`, and keep firmware-builtin keys if hardware Option ROMs or vendor firmware updates need them. Keep Microsoft certificates enrolled for Windows. Store private keys from `/var/lib/sbctl` securely; never commit them.
 
 `sbctl` creates and enrolls keys, signs EFI files, and verifies signatures. If it is not installed yet, run it temporarily, for example:
@@ -29,7 +35,8 @@ lanzaboote = {
 };
 ```
 
-Import `inputs.lanzaboote.nixosModules.lanzaboote` in `hosts/desktop/default.nix`. Configure `modules/nixos/core/boot.nix`:
+Import `inputs.lanzaboote.nixosModules.lanzaboote` in `hosts/desktop/default.nix`.
+Update that host's existing boot settings (do not duplicate attributes):
 
 ```nix
 { lib, pkgs, ... }:
@@ -51,7 +58,7 @@ With Secure Boot still disabled, validate the flake, create keys before rebuildi
 nix flake lock
 nix flake check
 nix shell nixpkgs#sbctl -c sh -c 'sudo "$(command -v sbctl)" create-keys'
-sudo nixos-rebuild switch --flake .#desktop
+nh os switch . -H desktop
 sudo sbctl verify
 ```
 
@@ -69,7 +76,7 @@ This keeps `boot.loader.systemd-boot.enable = true`, with no Lanzaboote input. A
 
 ```bash
 nix flake check
-sudo nixos-rebuild switch --flake .#desktop
+nh os switch . -H desktop
 sudo sbctl create-keys
 sudo sbctl sign --save /boot/EFI/systemd/systemd-bootx64.efi
 sudo sbctl sign --save /boot/EFI/nixos/<current-kernel-efi-file>
@@ -104,7 +111,7 @@ Limine's Secure Boot integration is provided by NixOS and needs no external flak
 Run `nix flake check`, create keys with the temporary `nix shell` command above, then install Limine with Secure Boot off:
 
 ```bash
-sudo nixos-rebuild switch --flake .#desktop
+nh os switch . -H desktop
 ```
 
 Reboot and confirm Limine boots NixOS; keep a recovery route because this changes bootloader. Then follow the board-specific Setup Mode procedure, boot back into NixOS, and enroll keys. NixOS's Limine guide uses Microsoft and firmware-builtin certificates:
@@ -117,7 +124,7 @@ Set `boot.loader.limine.secureBoot.enable = true`, validate again, then activate
 
 ```bash
 nix flake check
-sudo nixos-rebuild switch --flake .#desktop
+nh os switch . -H desktop
 sudo sbctl verify
 ```
 

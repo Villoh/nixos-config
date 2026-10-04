@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  home-manager.users.mikel.xdg.mimeApps = {
+  xdg.mimeApps = {
     enable = true;
 
     defaultApplications = {

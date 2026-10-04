@@ -9,7 +9,7 @@ change their version in the configuration when needed.
 From the repository root, first check which inputs will change:
 
 ```bash
-cd /home/mikel/src/nixos-config
+cd /path/to/nixos-config
 git status --short
 nix flake update
 git diff --stat
@@ -23,19 +23,18 @@ git diff -- flake.lock
 nix flake lock --update-input nixpkgs
 ```
 
-Then validate and activate temporarily. See [nh](nh.md) for equivalents with
-its interface:
+Then validate and activate temporarily with [nh](nh.md):
 
 ```bash
 nix flake check
-sudo nixos-rebuild test --flake .#desktop
+nh os test . -H desktop
 ```
 
 Verify graphical session, network, audio, Bluetooth, and Wayland portals. Only
 after testing the result, apply it as the default generation:
 
 ```bash
-sudo nixos-rebuild switch --flake .#desktop
+nh os switch . -H desktop
 ```
 
 Do not use `switch` to skip validation or testing. Review the diff before

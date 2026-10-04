@@ -12,19 +12,17 @@ let
   };
 in
 {
-  home-manager.users.mikel = {
-    home.packages = [ tunnel-agent ];
+  home.packages = [ tunnel-agent ];
 
-    xdg.desktopEntries.tunnel-agent = {
-      name = "Tunnel Agent";
-      comment = "Desktop UI for local AI provider gateways";
-      # Avalonia is X11-only; with force_zero_scaling it needs per-output scale.
-      exec = "env \"AVALONIA_SCREEN_SCALE_FACTORS=DP-1=1;HDMI-A-1=1.5\" ${tunnel-agent}/bin/tunnel-agent";
-      terminal = false;
-      categories = [
-        "Utility"
-        "Development"
-      ];
-    };
+  xdg.desktopEntries.tunnel-agent = {
+    name = "Tunnel Agent";
+    comment = "Desktop UI for local AI provider gateways";
+    # Per-output Avalonia scaling belongs in the host's session environment.
+    exec = "${tunnel-agent}/bin/tunnel-agent";
+    terminal = false;
+    categories = [
+      "Utility"
+      "Development"
+    ];
   };
 }

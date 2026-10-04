@@ -3,6 +3,7 @@
 {
   imports = [
     ./packages.nix
-    ./gnupg.nix
+    ./padpoll.nix
+    ./steam.nix
   ];
 }

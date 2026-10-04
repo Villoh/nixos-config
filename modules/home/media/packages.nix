@@ -1,7 +1,7 @@
 { inputs, pkgs, ... }:
 
 {
-  home-manager.users.mikel.home.packages = [
+  home.packages = [
     inputs.ytm-player.packages.${pkgs.stdenv.hostPlatform.system}.ytm-player-full
     pkgs.imv
     pkgs.mpv

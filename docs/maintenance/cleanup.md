@@ -34,7 +34,7 @@ nh clean all --keep 5 --keep-since 30d --dry
 ```
 
 Review which profiles, generations, and roots it proposes to delete. If the
-list keeps the rollback you need, stop or adjust retention. To perform the
+list would delete a rollback you need, stop or adjust retention. To perform the
 cleanup, run the command again without `--dry`:
 
 ```bash

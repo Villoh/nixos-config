@@ -22,7 +22,4 @@
   #   https://github.com/krozzzis/plymouth-theme-material
   # - Acid Boot: add flake input + nixosModules.default; set acidBoot.enable = true (custom Plymouth/systemd integration).
   #   https://github.com/kurisu-agent/nix-acid-boot
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.systemd-boot.configurationLimit = 5;
-  boot.loader.efi.canTouchEfiVariables = true;
 }

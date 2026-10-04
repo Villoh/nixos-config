@@ -6,6 +6,8 @@
     "flakes"
   ];
 
+  programs.nh.enable = true;
+
   # Allow Pi's prebuilt Linux computer-use helper to run on NixOS.
   programs.nix-ld.enable = true;
   nixpkgs.config.allowUnfree = true;

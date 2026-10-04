@@ -1,6 +1,7 @@
 { pkgs, ... }:
 
 let
+  # Keep this per-user input-method fix; NixOS provides unwrapped Ghostty as a fallback.
   ghostty = pkgs.symlinkJoin {
     name = "ghostty-with-simple-im";
     meta.mainProgram = "ghostty";
@@ -12,7 +13,7 @@ let
   };
 in
 {
-  home-manager.users.mikel.programs.ghostty = {
+  programs.ghostty = {
     enable = true;
     package = ghostty;
     settings = {

@@ -19,18 +19,16 @@ let
     lib.concatStringsSep "\n" (
       lib.mapAttrsToList (
         name: value: "export ${name}=${lib.escapeShellArg (toString value)}"
-      ) config.home-manager.users.mikel.home.sessionVariables
+      ) config.home.sessionVariables
     )
     + "\n";
 in
 {
-  home-manager.users.mikel = {
-    home.sessionPath = [
-      "$HOME/.local/bin"
-      "$HOME/.local/share/pnpm/bin"
-    ];
+  home.sessionPath = [
+    "${config.home.homeDirectory}/.local/bin"
+    "${config.xdg.dataHome}/pnpm/bin"
+  ];
 
-    home.sessionVariables = sessionVariables;
-    xdg.configFile."uwsm/env".text = uwsmEnvironment;
-  };
+  home.sessionVariables = sessionVariables;
+  xdg.configFile."uwsm/env".text = uwsmEnvironment;
 }

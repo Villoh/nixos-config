@@ -19,5 +19,5 @@ let
   };
 in
 {
-  home-manager.users.mikel.home.packages = [ padpoll ];
+  home.packages = [ padpoll ];
 }

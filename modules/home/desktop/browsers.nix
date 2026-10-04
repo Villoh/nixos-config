@@ -1,0 +1,20 @@
+{ inputs, pkgs, ... }:
+
+let
+  zen-browser = pkgs.wrapFirefox (
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped.overrideAttrs
+      (old: {
+        passthru = (old.passthru or { }) // {
+          # wrapFirefox checks withFFmpeg; the flake's ffmpegSupport flag is ignored.
+          withFFmpeg = true;
+        };
+      })
+  ) { pname = "zen-browser"; };
+in
+{
+  home.packages = [
+    pkgs.brave
+    inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.helium
+    zen-browser
+  ];
+}

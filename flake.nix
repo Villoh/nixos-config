@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for the desktop";
+  description = "Multi-user NixOS + DMS configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -67,6 +67,11 @@
         inherit system;
         specialArgs = { inherit inputs; };
         modules = [ ./hosts/desktop ];
+      };
+
+      checks.${system} = import ./tests {
+        inherit inputs system;
+        desktop = inputs.self.nixosConfigurations.desktop;
       };
 
       devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {

@@ -1,12 +1,13 @@
 { pkgs, ... }:
 
 {
-  home-manager.users.mikel.home.packages = with pkgs; [
+  home.packages = with pkgs; [
     usbutils
     evtest
     wl-clipboard
     git
     git-lfs
+    nix-index
     gh
     chezmoi
     gum
@@ -14,7 +15,6 @@
     ripgrep
     fd
     fzf
-    zoxide
     eza
     bat
     jq
@@ -26,6 +26,5 @@
     tree
     tealdeer
     fastfetch
-    nh
   ];
 }

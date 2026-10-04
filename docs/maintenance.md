@@ -18,7 +18,7 @@ this NixOS system. Each guide covers a separate workflow:
 2. Run `nix flake check` after configuration or input changes.
 3. Test system changes before making them permanent.
 4. Keep old generations until you confirm the system works.
-5. Do not run `nixos-rebuild switch` or destructive cleanup automatically.
+5. Do not run `nh os switch`, `nh os boot`, or destructive cleanup automatically.
 
 ## Host installation
 

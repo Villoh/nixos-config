@@ -7,7 +7,8 @@ Install or update the existing `desktop` host from a checkout of this repository
 ```bash
 cd /path/to/nixos-config
 nix flake check
-sudo nixos-rebuild test --flake .#desktop
+git diff
+nh os test . -H desktop
 ```
 
 `test` activates the generation temporarily without changing the boot default. Verify:
@@ -28,20 +29,23 @@ Review repository changes before applying them. Home Manager is configured to pr
 ```bash
 git diff --stat
 git diff
-sudo nixos-rebuild switch --flake .#desktop
+nh os switch . -H desktop
 ```
 
 Do not delete `.bak` files or switch before the check and temporary test pass.
+`switch` is a permanent boot-default change; run it only with explicit approval.
 
 ## DMS first login
 
-After entering Hyprland for the first time, deploy DMS compositor defaults:
-
-```bash
-dms setup headless --compositor hyprland --skip-existing
-```
-
-Optional per-area setup commands are `dms setup binds`, `colors`, `layout`, `outputs`, `windowrules`, and `cursor`. DMS files are written under `~/.config/hypr/dms/`; do not manage those same files with chezmoi or Home Manager.
+No `dms setup` command is needed. Before Hyprland starts, UWSM runs
+`dms-hyprland-init` as the user. It creates missing writable DMS fragments under
+`$XDG_CONFIG_HOME/hypr/dms/` (default `~/.config/hypr/dms/`) from pinned defaults,
+and a personal Lua main only if absent. Existing HM/DMS/chezmoi files and
+symlinks remain untouched, including empty files and dangling links. A legacy
+`hyprland.conf` without a Lua main causes initialization to do nothing.
+There is no global `/etc/xdg/hypr/hyprland.lua` fallback. Outside UWSM, run
+`dms-hyprland-init` explicitly if needed. See
+[architecture and smoke checks](architecture.md#ownership-and-smoke-checks).
 
 DMS starts through UWSM's `graphical-session.target`. Select
 `Hyprland (uwsm-managed)` in DankGreeter. Do not also add `dms run` to
@@ -56,7 +60,7 @@ If Hyprland or DankGreeter fails:
 3. From a TTY, fix the checkout and test again before switching:
 
 ```bash
-sudo nixos-rebuild test --flake .#desktop
+nh os test . -H desktop
 ```
 
 Systemd-boot keeps up to five entries. See [Maintenance: recovery](maintenance/recovery.md)

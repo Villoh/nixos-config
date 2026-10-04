@@ -1,9 +1,4 @@
-{
-  config,
-  inputs,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 let
   dms-shell = pkgs.dms-shell.overrideAttrs (old: {
@@ -26,9 +21,7 @@ let
   });
 in
 {
-  imports = [ inputs.dms-plugin-registry.nixosModules.default ];
-
-  # Provides the AT-SPI2 accessibility bus required by Pi computer-use.
+  # Shared AT-SPI2 accessibility bus, available without a personal profile.
   services.gnome.at-spi2-core.enable = true;
   services.gnome.gnome-keyring.enable = true;
 
@@ -40,32 +33,17 @@ in
       # UWSM starts graphical-session.target for the logged-in compositor.
       target = "graphical-session.target";
     };
-    plugins = {
-      bitwarden.enable = true;
-      dankKDEConnect.enable = true;
-      quickCapture.enable = true;
-      wallpaperCarousel.enable = true;
-      dockerManager.enable = true;
-      dankscale.enable = true;
-      aiOverviewControl.enable = true;
-      dmsProfiles.enable = true;
-      cliproxyQuota.enable = true;
-      commandRunner.enable = true;
-      nixPackageRunner.enable = true;
-    };
   };
 
   # Filesystem index for the DMS launcher Files tab; runs as a user service.
-  programs.dsearch.enable = true;
-
-  # Native DMS System Updates widget uses TERMINAL to launch update commands.
-  systemd.user.services.dms.environment.TERMINAL =
-    config.home-manager.users.mikel.home.sessionVariables.TERMINAL;
+  programs.dsearch = {
+    enable = true;
+    systemd.target = "graphical-session.target";
+  };
 
   environment.systemPackages = [
     pkgs.dgop
     pkgs.pulseaudio # pactl: DMS audio port and profile switching (PipeWire remains enabled).
     pkgs.adw-gtk3
-    inputs.dankcalendar.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

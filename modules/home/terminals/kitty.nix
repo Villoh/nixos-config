@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  home-manager.users.mikel.programs.kitty = {
+  programs.kitty = {
     enable = true;
     settings = {
       # Use Zsh even when Kitty is launched from an existing Bash session.

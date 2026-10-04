@@ -1,16 +1,6 @@
 { ... }:
 
 {
-  imports = [
-    ./home.nix
-    ../../modules/home/core
-    ../../modules/home/cloud
-    ../../modules/home/communication
-    ../../modules/home/desktop
-    ../../modules/home/development
-    ../../modules/home/media
-    ../../modules/home/security
-    ../../modules/home/shell
-    ../../modules/home/terminals
-  ];
+  imports = [ ./account.nix ];
+  home-manager.users.mikel = import ./home.nix;
 }

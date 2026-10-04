@@ -1,8 +1,8 @@
 # `nh`: daily operations
 
 `nh` is a CLI for common Nix, NixOS, and Home Manager tasks. In this
-repository it is installed as a user package in
-`modules/home/shell/packages.nix`. It is an interface for evaluating, building,
+repository it is enabled system-wide by `programs.nh.enable` in
+`modules/nixos/core/nix.nix`, independent of Home Manager. It is an interface for evaluating, building,
 and activating the configuration; it does not change how the configuration is
 declared or replace the flake.
 
@@ -18,7 +18,7 @@ target until its hardware file is generated and the host is added to the flake.
 Run commands from the checkout root and pass the path and host explicitly:
 
 ```bash
-cd /home/mikel/src/nixos-config
+cd /path/to/nixos-config
 nh os build . -H desktop
 ```
 
@@ -44,8 +44,8 @@ nh os switch . -H desktop
 - `boot`: builds and sets it as the boot default without immediately activating
   it in the current session.
 
-After `test`, check graphical session, network, audio, Bluetooth, and Wayland
-portals. If something fails, reboot or follow [Recovery](recovery.md). Run
+Review `git diff` before activation. After `test`, check graphical session,
+network, audio, Bluetooth, and Wayland portals. If something fails, reboot or follow [Recovery](recovery.md). Run
 `nix flake check` before building configuration changes. Do not use `switch`
 until you have validated and tested changes.
 
@@ -66,6 +66,6 @@ options with `nh os --help` and `nh clean all --help`.
 ## Difference from `nixos-rebuild`
 
 `nh os` offers a different interface and presentation, but the concepts are
-still NixOS generations. Use `nixos-rebuild` if you need an option that `nh`
-does not yet expose. For this host's workflows, both must point to the same
-flake and host; do not mix a wrong path or host name.
+still NixOS generations. Use `nh` for system management; use raw Nix commands for operations without
+an `nh` equivalent, such as `nix flake check`. Always select the correct flake
+and host; `desktop` is the flake target even though its hostname is `nixos`.

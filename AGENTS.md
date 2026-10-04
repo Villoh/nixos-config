@@ -24,10 +24,13 @@ support.
 
 ## Safety rules
 
-- Do not run `nixos-rebuild switch` or `boot` automatically.
+- Use `nh` when suggesting or running NixOS management commands; use raw Nix
+  commands only for operations without an `nh` equivalent, such as `nix flake check`.
+- Do not run `nh os switch` or `nh os boot` (or their `nixos-rebuild`
+  equivalents) automatically.
 - Do not change partitions, LUKS settings, boot loader settings, or generated
   hardware configuration without explicitly calling out the impact first.
-- Use `nixos-rebuild test --flake .#desktop` for a temporary activation after
+- Use `nh os test .#desktop` for a temporary activation after
   validation. The user decides when to run `switch`.
 - Do not delete configuration files or backups as part of routine work.
 - Review `git diff` before applying a system generation.
@@ -44,7 +47,7 @@ When available, format only the changed Nix files and do not reformat generated
 hardware configuration. For system-level changes, recommend:
 
 ```bash
-sudo nixos-rebuild test --flake .#desktop
+nh os test .#desktop
 ```
 
 Do not claim that a system change was applied unless the command actually ran

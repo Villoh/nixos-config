@@ -12,7 +12,12 @@ in
   home-manager.users.mikel = {
     qt = {
       enable = true;
-      platformTheme.name = "kde";
+      # DMS manages ~/.config/qtengine/config.json for dynamic colors and icons.
+      platformTheme = {
+        name = "qtengine";
+        package = pkgs.qtengine;
+      };
+      # Keep Breeze for both Qt5 and Qt6 independently of the generated config.
       style.name = "breeze";
       kde.settings = {
         kdeglobals.Icons.Theme = "Colloid-Dark";

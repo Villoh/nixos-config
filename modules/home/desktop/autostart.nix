@@ -1,4 +1,9 @@
-{ config, inputs, pkgs, ... }:
+{
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
 
 {
   # App-generated autostarts bypass Nix wrappers and lose their runtime environment.
@@ -19,7 +24,10 @@
       Version=1.0
       Name=ZapFast
       Comment=Start ZapFast at login
-      Exec=${inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast}/bin/zapfast --start-hidden
+      # ZapFast only hides if the tray exists at launch; DMS registers it late.
+      Exec=${pkgs.runtimeShell} -c "sleep 5 && exec ${
+        inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
+      }/bin/zapfast --start-hidden"
       StartupNotify=false
       Terminal=false
     '';

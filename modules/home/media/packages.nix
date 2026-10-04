@@ -9,6 +9,7 @@
     pkgs.gpu-screen-recorder
     pkgs.wf-recorder
     pkgs.ffmpeg
+    pkgs.yt-dlp
     pkgs.imagemagick
     pkgs.img2pdf
     pkgs.tesseract

@@ -148,6 +148,26 @@
         "type": "github"
       }
     },
+    "helium-browser": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790867198,
+        "narHash": "sha256-rFhx3cPykTUPDRV5Fm8Ag9QnLSKXRLCCoVM6brCHx04=",
+        "owner": "oxcl",
+        "repo": "nix-flake-helium-browser",
+        "rev": "4b3125382e27115791d1f66537ed36b8648429dc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxcl",
+        "repo": "nix-flake-helium-browser",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -223,6 +243,7 @@
         "codex-desktop-linux": "codex-desktop-linux",
         "dankcalendar": "dankcalendar",
         "dms-plugin-registry": "dms-plugin-registry",
+        "helium-browser": "helium-browser",
         "home-manager": "home-manager",
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs_2",

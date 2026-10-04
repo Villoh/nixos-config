@@ -38,6 +38,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    helium-browser = {
+      url = "github:oxcl/nix-flake-helium-browser";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ytm-player = {
       url = "github:peternaame-boop/ytm-player";
       inputs.nixpkgs.follows = "nixpkgs";

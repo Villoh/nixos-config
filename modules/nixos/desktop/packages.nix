@@ -15,6 +15,7 @@ in
 {
   environment.systemPackages = [
     pkgs.brave
+    inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.helium
     pkgs.nix-index
     zen-browser
   ];

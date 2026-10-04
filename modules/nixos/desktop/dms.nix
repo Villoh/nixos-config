@@ -63,7 +63,6 @@ in
     pkgs.dgop
     pkgs.dsearch
     pkgs.pulseaudio # pactl: DMS audio port and profile switching (PipeWire remains enabled).
-    pkgs.qt6Packages.qt6ct
     pkgs.adw-gtk3
     inputs.dankcalendar.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];

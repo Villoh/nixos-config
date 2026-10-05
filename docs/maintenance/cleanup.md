@@ -6,7 +6,7 @@ reachable from profiles or GC roots; it does not delete active dependencies.
 Old generations are kept as roots for rollback, so you must first remove them
 from profiles and then collect the store.
 
-On this host, systemd-boot keeps up to five entries. `nh clean all` cleans
+On this host, systemd-boot keeps up to ten entries. `nh clean all` cleans
 system and user profiles, collects the store, and also checks GC roots. By
 default it may remove build-result and direnv roots. Read the preview before
 running it.
@@ -26,11 +26,11 @@ Boot the system and test pending changes before removing old configurations.
 
 ## Recommended cleanup
 
-First preview cleanup of all profiles, keeping at least five generations and
+First preview cleanup of all profiles, keeping at least ten generations and
 all generations/roots from the last 30 days:
 
 ```bash
-nh clean all --keep 5 --keep-since 30d --dry
+nh clean all --keep 10 --keep-since 30d --dry
 ```
 
 Review which profiles, generations, and roots it proposes to delete. If the
@@ -38,10 +38,10 @@ list would delete a rollback you need, stop or adjust retention. To perform the
 cleanup, run the command again without `--dry`:
 
 ```bash
-nh clean all --keep 5 --keep-since 30d
+nh clean all --keep 10 --keep-since 30d
 ```
 
-`--keep` is a minimum by count and `--keep-since` keeps by age; more than five
+`--keep` is a minimum by count and `--keep-since` keeps by age; more than ten
 generations may remain. The values are retention, not a target to delete
 everything older. Keep several generations and avoid cleaning while diagnosing
 a failure.
@@ -53,7 +53,7 @@ symlinks from builds and direnv project roots, so the store may be collected if
 no other reference remains. To keep direnv roots:
 
 ```bash
-nh clean all --keep 5 --keep-since 30d --no-direnv --dry
+nh clean all --keep 10 --keep-since 30d --no-direnv --dry
 ```
 
 `--no-gcroots` disables cleanup of all GC roots. Use that option if you want to
@@ -69,8 +69,8 @@ collection and can take a while. Check the cleanup plan first, then you can
 include optimisation:
 
 ```bash
-nh clean all --keep 5 --keep-since 30d --optimise --dry
-nh clean all --keep 5 --keep-since 30d --optimise
+nh clean all --keep 10 --keep-since 30d --optimise --dry
+nh clean all --keep 10 --keep-since 30d --optimise
 ```
 
 Do not use `--delete-current` as routine cleanup: it allows removing the

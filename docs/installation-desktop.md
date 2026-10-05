@@ -63,6 +63,6 @@ If Hyprland or DankGreeter fails:
 nh os test . -H desktop
 ```
 
-Systemd-boot keeps up to five entries. See [Maintenance: recovery](maintenance/recovery.md)
+Systemd-boot keeps up to ten entries. See [Maintenance: recovery](maintenance/recovery.md)
 for generation rollback, and [Maintenance: cleanup](maintenance/cleanup.md) before
 removing old generations or collecting the Nix store.

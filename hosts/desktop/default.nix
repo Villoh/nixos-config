@@ -27,7 +27,11 @@
 
   boot.loader = {
     systemd-boot.enable = true;
-    systemd-boot.configurationLimit = 5;
+    systemd-boot.configurationLimit = 10;
+    # Remember the last selected OS/generation instead of each new build.
+    systemd-boot.extraInstallCommands = ''
+      ${config.systemd.package}/bin/bootctl set-default @saved
+    '';
     efi.canTouchEfiVariables = true;
   };
 

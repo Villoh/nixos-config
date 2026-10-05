@@ -18,6 +18,12 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
+    # Upstream HM module matching the current NixOS DMS release.
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/v1.6.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     dms-plugin-registry = {
       url = "github:AvengeMedia/dms-plugin-registry";
       inputs.nixpkgs.follows = "nixpkgs";

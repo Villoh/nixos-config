@@ -1,4 +1,9 @@
-{ inputs, lib, ... }:
+{
+  config,
+  inputs,
+  lib,
+  ...
+}:
 
 {
   imports = [
@@ -47,6 +52,8 @@
     #   user = "mikel";
     # };
     defaultSession = "hyprland-uwsm";
+    # One shared login appearance, imported by nixpkgs before greetd starts.
+    dms-greeter.configHome = config.users.users.mikel.home;
   };
 
   # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.

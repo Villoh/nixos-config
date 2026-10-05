@@ -34,10 +34,12 @@ let
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
+          extraSpecialArgs = { inherit inputs; };
           users = {
             alice = {
               imports = [
                 ../modules/home/shell/zsh.nix
+                ../modules/home/desktop/dms-plugins.nix
                 ../modules/home/gaming
               ];
               home.stateVersion = "26.05";
@@ -54,6 +56,7 @@ let
   c = base.config;
   m = multi.config;
   d = desktop.config;
+  h = d.home-manager.users.mikel;
   names = packages: map lib.getName packages;
   systemNames = names c.environment.systemPackages;
   personalPackages = [
@@ -135,8 +138,27 @@ in
     ) "Compositor packages belong to NixOS";
     assert lib.assertMsg (
       d.programs.dms-shell.plugins == { }
-      && builtins.hasAttr "DankMaterialShell/plugins/bitwarden" d.home-manager.users.mikel.xdg.configFile
+      && builtins.hasAttr "DankMaterialShell/plugins/bitwarden" h.xdg.configFile
+      && builtins.hasAttr "DankMaterialShell/plugins/bitwarden" m.home-manager.users.alice.xdg.configFile
+      && !(builtins.hasAttr "DankMaterialShell/plugins/bitwarden" m.home-manager.users.bob.xdg.configFile)
     ) "Personal DMS plugins must be per-user";
+    assert lib.assertMsg (
+      h.programs.dank-material-shell.enable
+      && h.programs.dank-material-shell.package.outPath == d.programs.dms-shell.package.outPath
+      && h.programs.quickshell.package.outPath == d.programs.dms-shell.quickshell.package.outPath
+      && !h.programs.dank-material-shell.systemd.enable
+      && !(h.systemd.user.services ? dms)
+      && !(h.systemd.user.services ? quickshell)
+    ) "The official HM module must reuse the host runtime without a second shell service";
+    assert lib.assertMsg (
+      !h.programs.dank-material-shell.managePluginSettings
+      && lib.all (name: !(builtins.hasAttr "DankMaterialShell/${name}" h.xdg.configFile)) [
+        "settings.json"
+        "clsettings.json"
+        "plugin_settings.json"
+      ]
+      && !(builtins.hasAttr "DankMaterialShell/session.json" h.xdg.stateFile)
+    ) "DMS/chezmoi must retain ownership of personal settings and session state";
     assert lib.assertMsg (
       !d.home-manager.users.mikel.home.file."${d.home-manager.users.mikel.programs.gpg.homedir}/gpg-agent.conf".enable
     ) "Home Manager must not take over Mikel's chezmoi-owned GPG configuration";
@@ -160,6 +182,103 @@ in
     builtins.deepSeq [ c.system.build.toplevel.drvPath m.system.build.toplevel.drvPath ] (
       pkgs.runCommand "configuration-boundaries" { } ''touch "$out"''
     );
+
+  greeter-cache =
+    let
+      prepare = pkgs.writeShellScript "greeter-cache-prestart" c.systemd.services.greetd.preStart;
+      syncPrepare = pkgs.writeShellScript "greeter-home-prestart" d.systemd.services.greetd.preStart;
+      syncHook =
+        settings:
+        (base.extendModules {
+          modules = [ { services.displayManager.dms-greeter = settings; } ];
+        }).config.systemd.services.greetd.preStart;
+      cacheDir = d.systemd.tmpfiles.settings."10-dms-greeter"."/var/lib/dms-greeter".d;
+    in
+    assert lib.assertMsg (
+      c.systemd.services.greetd.preStart == ""
+      && !(c.systemd.services.greetd.serviceConfig ? ExecStartPre)
+      && cacheDir.user == "dms-greeter"
+      && cacheDir.group == "dms-greeter"
+      && cacheDir.mode == "0750"
+    ) "Cache-only greeter must skip sync while retaining directory provisioning";
+    assert lib.assertMsg (
+      lib.hasInfix "/test-greeter-home/.config/DankMaterialShell/settings.json" (syncHook {
+        configHome = lib.mkForce "/test-greeter-home";
+      })
+      && lib.hasInfix "/test-greeter-settings.json" (syncHook {
+        configFiles = [ "/test-greeter-settings.json" ];
+      })
+    ) "Explicit greeter sync sources must retain the upstream preparation hook";
+    assert lib.assertMsg (
+      d.services.displayManager.dms-greeter.configHome == d.users.users.mikel.home
+      && lib.hasInfix "${d.users.users.mikel.home}/.config/DankMaterialShell/settings.json" (
+        d.systemd.services.greetd.preStart
+      )
+      && d.systemd.services.greetd.serviceConfig ? ExecStartPre
+    ) "Desktop must import Mikel's appearance through the native greeter hook";
+    pkgs.runCommand "greeter-cache" { } ''
+      # Relocate the real hook, never execute it against /var/lib or a real HOME.
+      cache="$TMPDIR/greeter-cache"
+      mkdir -p "$cache"
+      sed "s|/var/lib/dms-greeter|$cache|g" ${prepare} > "$TMPDIR/prepare"
+      bash -e "$TMPDIR/prepare"
+
+      printf '{}\n' > "$cache/custom-theme.json"
+      printf '{"customThemeFile":"%s/custom-theme.json"}\n' "$cache" > "$cache/settings.json"
+      printf '{}\n' > "$cache/colors.json"
+      snapshot() {
+        (cd "$cache"; find . -type f -print0 | sort -z | xargs -0 sha256sum)
+      }
+      snapshot > "$TMPDIR/before"
+      bash -e "$TMPDIR/prepare"
+      bash -e "$TMPDIR/prepare"
+      snapshot > "$TMPDIR/after"
+      cmp "$TMPDIR/before" "$TMPDIR/after"
+
+      printf 'cached wallpaper\n' > "$cache/wallpaper"
+      printf 'cached monitor wallpaper\n' > "$cache/wallpaper-monitor-DP-1-"
+      printf '{"wallpaperPath":"%s/wallpaper","monitorWallpapers":{"DP-1":"%s/wallpaper-monitor-DP-1-"}}\n' \
+        "$cache" "$cache" > "$cache/session.json"
+      snapshot > "$TMPDIR/before"
+      bash -e "$TMPDIR/prepare"
+      bash -e "$TMPDIR/prepare"
+      snapshot > "$TMPDIR/after"
+      cmp "$TMPDIR/before" "$TMPDIR/after"
+
+      # Real desktop hook, with all sources/destinations relocated to fixtures.
+      home="$TMPDIR/home"
+      mkdir -p "$home/.config/DankMaterialShell" \
+        "$home/.local/state/DankMaterialShell" "$home/.cache/DankMaterialShell"
+      printf '{"theme":"first"}\n' > "$home/theme.json"
+      printf 'personal wallpaper\n' > "$home/wallpaper"
+      printf '{"customThemeFile":"%s/theme.json"}\n' "$home" \
+        > "$home/.config/DankMaterialShell/settings.json"
+      printf '{"wallpaperPath":"%s/wallpaper"}\n' "$home" \
+        > "$home/.local/state/DankMaterialShell/session.json"
+      printf '{"color":"first"}\n' > "$home/.cache/DankMaterialShell/dms-colors.json"
+      (cd "$home"; find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$TMPDIR/home-before"
+      sed "s|/var/lib/dms-greeter|$cache|g;s|${d.users.users.mikel.home}|$home|g" \
+        ${syncPrepare} > "$TMPDIR/sync"
+      bash -e "$TMPDIR/sync"
+      bash -e "$TMPDIR/sync"
+      cmp "$home/theme.json" "$cache/custom-theme.json"
+      cmp "$home/wallpaper" "$cache/wallpaper"
+      cmp "$home/.cache/DankMaterialShell/dms-colors.json" "$cache/colors.json"
+      ${lib.getExe pkgs.jq} -e --arg path "$cache/custom-theme.json" \
+        '.customThemeFile == $path' "$cache/settings.json"
+      ${lib.getExe pkgs.jq} -e --arg path "$cache/wallpaper" \
+        '.wallpaperPath == $path' "$cache/session.json"
+      (cd "$home"; find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$TMPDIR/home-after"
+      cmp "$TMPDIR/home-before" "$TMPDIR/home-after"
+
+      # UI changes are picked up on the next greetd start, not watched live.
+      printf '{"theme":"second"}\n' > "$home/theme.json"
+      printf 'new personal wallpaper\n' > "$home/wallpaper"
+      bash -e "$TMPDIR/sync"
+      cmp "$home/theme.json" "$cache/custom-theme.json"
+      cmp "$home/wallpaper" "$cache/wallpaper"
+      touch "$out"
+    '';
 
   gaming-session =
     let

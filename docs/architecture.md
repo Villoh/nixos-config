@@ -98,31 +98,66 @@ manual setup; outside UWSM, run `dms-hyprland-init` explicitly if needed.
 DMS/chezmoi keep ownership of their existing user files, scripts, and secret
 templates; do not declare the same paths in HM or NixOS. HM owns only its
 selected personal configuration, including plugin code under
-`~/.config/DankMaterialShell/plugins/` and the GPG agent's user service. Update
-Nix-managed plugin code through Nix, not DMS's plugin updater. DMS still owns
-plugin settings/state. Mikel's `~/.gnupg/gpg-agent.conf` and `sshcontrol` remain
+`~/.config/DankMaterialShell/plugins/` and the GPG agent's user service.
+Plugins use the official DMS Home Manager module and plugin registry, selected
+through `programs.dank-material-shell.plugins.<name>.enable`. The DMS input is
+pinned to v1.6.2 to match the current host package; review both when upgrading.
+HM reuses NixOS's patched DMS and Quickshell packages, leaves shell startup to
+NixOS (`systemd.enable = false`), and does not manage personal settings
+(`managePluginSettings = false`). Update Nix-managed plugin code through Nix,
+not DMS's plugin updater. DMS still owns plugin settings/state.
+
+When migrating existing plugins, preserve their directories and symlinks in a
+backup outside the plugin directory before letting HM take ownership. HM's
+`.bak` mechanism does not back up foreign symlinks, and DMS can discover plugin
+backups left inside its watched directory. Do not force-overwrite existing
+plugins or delete their backups.
+
+Mikel's `~/.gnupg/gpg-agent.conf` and `sshcontrol` remain
 chezmoi-owned and untouched; HM disables management of the former and selects
 pinentry explicitly in the GPG agent service's `ExecStart`. Tunnel Agent's
 desktop entry uses the absolute FHS wrapper path; host-specific scaling lives
 in `home.sessionVariables.AVALONIA_SCREEN_SCALE_FACTORS`.
-DankGreeter has `configHome = null`, so it no longer imports Mikel's settings.
-Existing greeter cache under `/var/lib/dms-greeter` is not cleared automatically
-and can retain its previous appearance; review it separately before changing
-or removing any cached configuration. UWSM starts DMS through `graphical-session.target`; do not also run
-`dms run` from Hyprland Lua.
+Desktop sets DankGreeter's `configHome` to `config.users.users.mikel.home`.
+The native nixpkgs `preStart` imports Mikel's DMS settings, colors, custom theme
+and referenced wallpapers into `/var/lib/dms-greeter` when greetd starts.
+This is one common login appearance for all accounts, not per-user profiles or
+live synchronization. DMS/chezmoi retain ownership of the source files; no
+exporter, watcher, timer or additional HOME permissions are introduced.
+
+The shared module keeps nixpkgs' default `configHome = null`. With no
+`configHome` or `configFiles` sources, we disable nixpkgs' appearance-sync
+`preStart`: the pinned implementation otherwise copies cached themes or
+wallpapers onto themselves and aborts greetd. Tmpfiles still provisions the
+cache directory. In cache-only mode existing files must already be prepared and
+readable by `dms-greeter`; this does not rename manually added color files or
+repair their permissions. Explicit sync sources retain the upstream hook,
+including its current limitations if a source goes missing. Review this
+workaround when upgrading nixpkgs. Do not restart greetd in an active session
+just to refresh appearance.
+
+See official [NixOS configuration](https://danklinux.com/docs/dankgreeter/nixos)
+and [greeter cache format](https://danklinux.com/docs/dankgreeter/configuration).
+Do not delete the cache to work around startup errors. UWSM starts DMS through
+`graphical-session.target`; do not also run `dms run` from Hyprland Lua.
 
 `nix flake check` includes [tests/default.nix](../tests/default.nix) for base
 evaluation without HM, two-user isolation, no implicit NVIDIA, separation of
 system capabilities and personal apps/gaming, and Gamescope's use of the user's
-Steam and the system wrapper. [tests/dms-session.sh](../tests/dms-session.sh)
+Steam and the system wrapper. Its `greeter-cache` check covers an empty cache,
+repeated preparation with cached theme/wallpapers, unchanged file contents,
+and preservation of explicit sync opt-ins. It also exercises the desktop's
+native import against disposable HOME/cache fixtures, including updated theme
+and wallpaper sources without modifying the originals.
+[tests/dms-session.sh](../tests/dms-session.sh)
 uses the real DMS CLI (`config resolve-include` and `keybinds`) for fresh and
 HM-plus-partial profiles, and real `Hyprland --verify-config` without starting
 a compositor. It checks empty/malformed files, dangling links, legacy profiles,
 custom/default XDG paths, non-Hyprland gating, and idempotence.
 
-These checks passed against disposable profiles, not the real HOME. No system
-activation was performed. Parser/CLI checks do not verify login, GPU behavior,
-or live DMS watchers.
+These checks use disposable profiles, not the real HOME, and do not activate
+the system. Parser/CLI checks do not verify login, GPU behavior, or live DMS
+watchers.
 
 After an approved temporary activation, manually check:
 

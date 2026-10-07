@@ -12,6 +12,7 @@
     ../../profiles/laptop.nix
     ../../users/mikel
     inputs.home-manager.nixosModules.home-manager
+    ./display.nix
     ./keyboard.nix
   ];
 

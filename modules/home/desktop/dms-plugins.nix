@@ -39,6 +39,8 @@
       cliproxyQuota.enable = true;
       commandRunner.enable = true;
       nixPackageRunner.enable = true;
+      emojiLauncher.enable = true;
+      emojiPicker.enable = true;
     };
   };
 

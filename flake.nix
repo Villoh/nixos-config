@@ -59,6 +59,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    himalaya-tui = {
+      url = "github:pimalaya/himalaya-tui";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
   };

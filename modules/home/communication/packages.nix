@@ -19,6 +19,7 @@
     equibop
     legcord
     meli
+    himalaya
     inputs.himalaya-tui.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
   ];

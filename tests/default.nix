@@ -18,6 +18,7 @@ let
       {
         # Evaluation fixture, never an installable host or a real account.
         boot.isContainer = true;
+        networking.useHostResolvConf = false; # incompatible with systemd-resolved
         system.stateVersion = "26.05";
       }
     ];

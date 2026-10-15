@@ -1,8 +1,8 @@
 # Recovery and generations
 
 NixOS keeps system generations so you can boot a previous version. This host
-uses systemd-boot and keeps at most ten entries, per
-`boot.loader.systemd-boot.configurationLimit` in
+uses Lanzaboote (systemd-boot menu) and keeps at most five entries, per
+`boot.lanzaboote.configurationLimit` in
 `hosts/desktop/default.nix`. Store cleanup can remove old configurations:
 do not run it while you depend on a generation to recover the system.
 

@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  pkgs,
   ...
 }:
 
@@ -21,19 +22,24 @@
     ../../users/mikel
     inputs.home-manager.nixosModules.home-manager
     inputs.acid-boot.nixosModules.default
+    inputs.lanzaboote.nixosModules.lanzaboote
   ];
 
   networking.hostName = "nixos";
 
+  # Secure Boot via Lanzaboote (replaces the stock systemd-boot installer but
+  # keeps the systemd-boot menu). Keys live in /var/lib/sbctl and must exist
+  # before the first rebuild. See docs/secure-boot.md.
   boot.loader = {
-    systemd-boot.enable = true;
-    systemd-boot.configurationLimit = 10;
-    # Remember the last selected OS/generation instead of each new build.
-    systemd-boot.extraInstallCommands = ''
-      ${config.systemd.package}/bin/bootctl set-default @saved
-    '';
+    systemd-boot.enable = lib.mkForce false;
     efi.canTouchEfiVariables = true;
   };
+  boot.lanzaboote = {
+    enable = true;
+    pkiBundle = "/var/lib/sbctl";
+    configurationLimit = 5;
+  };
+  environment.systemPackages = [ pkgs.sbctl ];
 
   services.tailscale.enable = true;
   programs.kdeconnect.enable = true;

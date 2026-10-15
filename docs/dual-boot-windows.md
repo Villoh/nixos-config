@@ -29,6 +29,18 @@ The motherboard's NVRAM Windows Boot Manager entry remains a separate fallback a
 
 If Windows appears in the menu but does not boot, disable UEFI Fast Boot. This is separate from Windows Fast Startup.
 
+### Default entry and booting Windows once
+
+The desktop does not set `bootctl set-default @saved`. Each rebuild makes the newest NixOS generation the default, because `@saved` keeps pointing at the previously selected (older) generation. To boot Windows without changing the default, use a one-shot entry; the next boot returns to NixOS:
+
+```bash
+sudo bootctl set-oneshot auto-windows && reboot
+```
+
+`auto-windows` is the ID of the auto-discovered "Windows Boot Manager" entry. Confirm it with `bootctl list`.
+
+If `bootctl status` still shows `Default Entry: @saved` after removing the old setting, clear the stale EFI variable with `sudo bootctl set-default ""`, then run `nh os boot .#desktop`.
+
 ## GRUB with os-prober (alternative)
 
 GRUB can probe other disks and add Windows to its menu during bootloader

@@ -6,7 +6,7 @@ reachable from profiles or GC roots; it does not delete active dependencies.
 Old generations are kept as roots for rollback, so you must first remove them
 from profiles and then collect the store.
 
-On this host, systemd-boot keeps up to ten entries. `nh clean all` cleans
+On this host, the boot menu keeps up to five entries. `nh clean all` cleans
 system and user profiles, collects the store, and also checks GC roots. By
 default it may remove build-result and direnv roots. Read the preview before
 running it.

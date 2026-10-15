@@ -50,6 +50,16 @@
       StartupNotify=false
       Terminal=false
     '';
+    "autostart/hylki.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Version=1.0
+      Name=Hylki
+      Comment=Start Hylki hidden at login
+      Exec=flatpak run co.hyprlab.Hylki --hidden
+      StartupNotify=false
+      Terminal=false
+    '';
     # Reuse the launcher's FHS wrapper, which provides ICU for Tunnel Agent.
     "autostart/tunnelagent.desktop".text = ''
       [Desktop Entry]

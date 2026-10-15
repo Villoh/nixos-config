@@ -7,6 +7,8 @@
     nil
     nixd
     nixfmt
+    nixpkgs-review
+    qt6.qtdeclarative # qmlls, qmlformat, qmllint
 
     # LSP + linters (replace pnpm/uv globals)
     vtsls
@@ -47,6 +49,7 @@
     defuddle
     devcontainer
     wrangler
+    android-tools
 
     # Languages + toolchains
     rustup
@@ -57,10 +60,12 @@
     deno
     jdk
     maven
+    tomcat9 # wannme-v2-admin: make admin TOMCAT_HOME=$(dirname $(dirname $(readlink -f $(which catalina.sh))))
     dotnet-sdk_10
     python3
 
     # Version/package managers
+    aube
     mise
     uv
     pnpm

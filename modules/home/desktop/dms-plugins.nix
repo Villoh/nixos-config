@@ -39,13 +39,13 @@
       wallpaperCarousel.enable = true;
       dockerManager.enable = true;
       dankscale.enable = true;
-      aiOverviewControl.enable = true;
       dmsProfiles.enable = true;
       cliproxyQuota.enable = true;
       commandRunner.enable = true;
       nixPackageRunner.enable = true;
       emojiLauncher.enable = true;
       emojiPicker.enable = true;
+      mise.enable = true;
     };
   };
 

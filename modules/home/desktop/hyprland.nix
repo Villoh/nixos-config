@@ -74,6 +74,9 @@ in
       -- Capture and annotate a selected region with Quick Capture.
       hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("dms screenshot"))
 
+      -- Toggle the mise tools panel (DMS plugin).
+      hl.bind("SUPER + CTRL + M", hl.dsp.exec_cmd("dms ipc call mise toggle"))
+
       -- Toggle the DMS emoji picker.
       hl.bind("SUPER + period", hl.dsp.exec_cmd("dms ipc call emojiPicker toggle"))
 

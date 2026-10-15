@@ -64,13 +64,13 @@
   services.udev.extraRules = ''
     KERNEL=="hidraw*", ATTRS{idVendor}=="4d4b", ATTRS{idProduct}=="304e", TAG+="uaccess", GROUP="al68", MODE="0660"
   '';
-    # Apps (DMS, Brave, xdg-mime) rewrite files like mimeapps.list; Nix wins and
-    # the last app-written version stays in <file>.bak instead of blocking activation.
-    overwriteBackup = true;
 
   home-manager = {
     # Preserve pre-existing user files when Home Manager first takes ownership.
     backupFileExtension = "bak";
+    # Apps (DMS, Brave, xdg-mime) rewrite files like mimeapps.list; Nix wins and
+    # the last app-written version stays in <file>.bak instead of blocking activation.
+    overwriteBackup = true;
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };

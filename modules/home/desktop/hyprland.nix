@@ -59,9 +59,13 @@ in
       -- Open WhatsApp in ZapFast.
       hl.bind("SUPER + SHIFT + Z", hl.dsp.exec_cmd("zapfast"))
 
-      -- Hold Super+D (dictation) to record; release to transcribe and paste.
-      hl.bind("SUPER + D", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
-      hl.bind("SUPER + D", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"), { release = true })
+      -- Toggle Handy on press and release so Ctrl+Shift+Space behaves as
+      -- push-to-talk. The CLI works reliably with the running instance.
+      hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
+      hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"), { release = true })
+      -- Alternative: tap Super+D to start, tap again to stop. The delay lets Super
+      -- be released before wtype types, otherwise letters fire as Super shortcuts.
+      -- hl.bind("SUPER + D", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
 
       -- Toggle microphone and speaker mute, independent of hardware media keys.
       hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))

@@ -10,8 +10,8 @@ support.
 
 - Use flakes and keep `flake.lock` committed and up to date.
 - Keep host-specific configuration under `hosts/<host>/`.
-- Keep reusable NixOS modules under `modules/`.
-- Keep Home Manager modules under `home/`.
+- Keep reusable NixOS modules under `modules/nixos/`.
+- Keep Home Manager modules under `modules/home/`.
 - Do not copy or modify a host's `hardware-configuration.nix` for another
   machine. A future host must have its own generated hardware configuration.
 - Do not manage chezmoi-owned dotfiles, scripts, or secret templates through

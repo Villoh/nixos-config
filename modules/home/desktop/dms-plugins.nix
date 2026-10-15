@@ -1,5 +1,6 @@
 {
   inputs,
+  lib,
   osConfig,
   pkgs,
   ...
@@ -28,7 +29,11 @@
     enableCalendarEvents = false;
 
     plugins = {
-      bitwarden.enable = true;
+      bitwarden = {
+        enable = true;
+        # Pinned on purpose (1.11.6-dms.2, audited 2026-10-14); registry bumps are ignored.
+        src = lib.mkForce (pkgs.callPackage ./dms-bitwarden.nix { });
+      };
       dankKDEConnect.enable = true;
       quickCapture.enable = true;
       wallpaperCarousel.enable = true;

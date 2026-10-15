@@ -3,10 +3,10 @@
 let
   tunnel-agent = pkgs.appimageTools.wrapType2 {
     pname = "tunnel-agent";
-    version = "1.1.11";
+    version = "1.1.12";
     src = pkgs.fetchurl {
-      url = "https://github.com/beyondhumane/tunnel-agent/releases/download/v1.1.11/TunnelAgent-1.1.11-linux-x64.AppImage";
-      hash = "sha256-pyEpfsaGAftF4sxXOWLcnxRV9phK6iYGEQrTcmBot5Y=";
+      url = "https://github.com/beyondhumane/tunnel-agent/releases/download/v1.1.12/TunnelAgent-1.1.12-linux-x64.AppImage";
+      hash = "sha256-DRQN2BgmJTbKIaHh0hX8iSxeKDgwONbzZQWfNXMWKMg=";
     };
     extraPkgs = pkgs: [ pkgs.icu ];
   };

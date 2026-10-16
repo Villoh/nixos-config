@@ -32,7 +32,11 @@ in
   home.packages = with pkgs; [
     vesktop
     equibop
-    legcord
+    # ponytail: nixpkgs' patchelf 0.15.2 corrupts DT_INIT in venmic (segfault on screenshare);
+    # drop this override once nixpkgs' patchelf/legcord is fixed.
+    (legcord.overrideAttrs (old: {
+      nativeBuildInputs = [ patchelfUnstable ] ++ old.nativeBuildInputs;
+    }))
     meli
     himalaya
     inputs.himalaya-tui.packages.${pkgs.stdenv.hostPlatform.system}.default

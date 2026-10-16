@@ -23,9 +23,13 @@ The former `modules/nixos/core/users.nix` account now lives in
 not the current package release; do not bump them as part of routine updates.
 
 NVIDIA is an explicit desktop import, not a generic desktop assumption.
-Docker, Tailscale, CUPS, Flatpak, and KDE Connect are host opt-ins. Desktop alone
-adds Mikel to `docker` and `al68`, alongside baseline `wheel` and
-`networkmanager`; another user must not inherit these groups. GameMode remains
+Docker, Tailscale, CUPS, Flatpak, and KDE Connect are host opt-ins. Each host
+that imports the Docker module adds Mikel to `docker` itself; `al68` (YUNZII AL68 WebHID access) comes from
+`users/mikel/al68.nix`, which a host imports where that keyboard is used. Both
+sit beside baseline `wheel` and `networkmanager`; another user must not inherit
+these groups. Home Manager's system-wide options (including `.bak` backups) live in
+`modules/nixos/home-manager.nix`, which each host imports; the base does not
+need Home Manager. GameMode remains
 a host opt-in, without adding `gamemode` or expanding Mikel's permissions.
 Desktop selects NixOS gaming support separately from Mikel's
 `modules/home/gaming` import. `programs.steam.enable` remains false; the

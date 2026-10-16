@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ ... }:
 
 {
   # Generate this host's hardware-configuration.nix on the Zenbook before
@@ -9,11 +9,15 @@
     # The RTX 3080 moves to a Thunderbolt eGPU; the Arc iGPU drives the desktop.
     ../../modules/nixos/hardware/egpu-nvidia.nix
     # Optional desktop services, selected by this host rather than the profile.
+    ../../modules/nixos/services/docker.nix
     ../../modules/nixos/services/flatpak.nix
     ../../modules/nixos/services/printing.nix
+    ../../modules/nixos/services/tailscale.nix
+    ../../modules/nixos/services/kdeconnect.nix
     ../../profiles/laptop.nix
     ../../users/mikel
-    inputs.home-manager.nixosModules.home-manager
+    ../../users/mikel/al68.nix
+    ../../modules/nixos/home-manager.nix
     ./display.nix
     ./keyboard.nix
   ];
@@ -27,12 +31,5 @@
     efi.canTouchEfiVariables = true;
   };
 
-  services.tailscale.enable = true;
-  programs.kdeconnect.enable = true;
-
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    extraSpecialArgs = { inherit inputs; };
-  };
+  users.users.mikel.extraGroups = [ "docker" ];
 }

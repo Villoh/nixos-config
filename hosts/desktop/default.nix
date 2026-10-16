@@ -17,10 +17,13 @@
     # Optional desktop services, selected by this host rather than the profile.
     ../../modules/nixos/services/flatpak.nix
     ../../modules/nixos/services/printing.nix
+    ../../modules/nixos/services/tailscale.nix
+    ../../modules/nixos/services/kdeconnect.nix
     ../../profiles/desktop.nix
     ../../profiles/gaming.nix
     ../../users/mikel
-    inputs.home-manager.nixosModules.home-manager
+    ../../users/mikel/al68.nix
+    ../../modules/nixos/home-manager.nix
     inputs.acid-boot.nixosModules.default
     inputs.lanzaboote.nixosModules.lanzaboote
   ];
@@ -41,14 +44,7 @@
   };
   environment.systemPackages = [ pkgs.sbctl ];
 
-  services.tailscale.enable = true;
-  programs.kdeconnect.enable = true;
-
-  users.groups.al68 = { };
-  users.users.mikel.extraGroups = [
-    "docker"
-    "al68"
-  ];
+  users.users.mikel.extraGroups = [ "docker" ];
 
   acidBoot = {
     enable = true;
@@ -65,11 +61,6 @@
     # One shared login appearance, imported by nixpkgs before greetd starts.
     dms-greeter.configHome = config.users.users.mikel.home;
   };
-
-  services.udev.extraRules = ''
-    # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.
-    KERNEL=="hidraw*", ATTRS{idVendor}=="4d4b", ATTRS{idProduct}=="304e", TAG+="uaccess", GROUP="al68", MODE="0660"
-  '';
 
   # The Logitech receiver (046d:c547) cut S3 short: with its wake enabled, sleep
   # ended after ~3 s with no input (ACPI GPE 0x08, the shared PCIe PME), but only
@@ -89,15 +80,6 @@
   boot.kernelParams = [ "usbhid.quirks=0x046d:0xc547:0x400" ];
 
   home-manager = {
-    # Preserve pre-existing user files when Home Manager first takes ownership.
-    backupFileExtension = "bak";
-    # Apps (DMS, Brave, xdg-mime) rewrite files like mimeapps.list; Nix wins and
-    # the last app-written version stays in <file>.bak instead of blocking activation.
-    overwriteBackup = true;
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    extraSpecialArgs = { inherit inputs; };
-
     users.mikel = {
       imports = [ ../../modules/home/gaming ];
 

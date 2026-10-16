@@ -66,9 +66,20 @@
     dms-greeter.configHome = config.users.users.mikel.home;
   };
 
-  # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.
   services.udev.extraRules = ''
+    # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.
     KERNEL=="hidraw*", ATTRS{idVendor}=="4d4b", ATTRS{idProduct}=="304e", TAG+="uaccess", GROUP="al68", MODE="0660"
+
+    # The Logitech receiver (046d:c547) cuts S3 short: with its wake enabled, sleep
+    # usually ended after ~3 s with no input (ACPI GPE 0x08, the shared PCIe PME),
+    # also with the mouse off. With it disabled, or the receiver unplugged, the PC
+    # stayed asleep until the AL68 keyboard woke it (tested up to ~30 s). Root
+    # cause unknown; the same symptom is reported for Logitech Bolt receivers
+    # (LKML, 2026-08-10). Trade-off: the Logitech mouse no longer wakes the PC.
+    # Matched by vendor:product, so it follows the receiver across USB ports (the
+    # kernel name, e.g. 1-3.1, is the physical port and changes). The receiver has
+    # no serial number, so any other 046d:c547 receiver gets the same rule.
+    ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="046d", ATTR{idProduct}=="c547", ATTR{power/wakeup}="disabled"
   '';
 
   home-manager = {

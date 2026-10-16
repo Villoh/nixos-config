@@ -104,4 +104,12 @@ in
       require("/etc/xdg/hypr/host")
     '';
   };
+
+  # Chromium/Electron open a second ScreenCast portal dialog for the actual
+  # stream; with restore tokens on by default the first pick is reused.
+  xdg.configFile."hypr/xdph.conf".text = ''
+    screencopy {
+      allow_token_by_default = true
+    }
+  '';
 }

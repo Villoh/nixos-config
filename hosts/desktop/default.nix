@@ -69,18 +69,24 @@
   services.udev.extraRules = ''
     # Let Chromium/WebHID access YUNZII AL68 for VIA configuration.
     KERNEL=="hidraw*", ATTRS{idVendor}=="4d4b", ATTRS{idProduct}=="304e", TAG+="uaccess", GROUP="al68", MODE="0660"
-
-    # The Logitech receiver (046d:c547) cuts S3 short: with its wake enabled, sleep
-    # usually ended after ~3 s with no input (ACPI GPE 0x08, the shared PCIe PME),
-    # also with the mouse off. With it disabled, or the receiver unplugged, the PC
-    # stayed asleep until the AL68 keyboard woke it (tested up to ~30 s). Root
-    # cause unknown; the same symptom is reported for Logitech Bolt receivers
-    # (LKML, 2026-08-10). Trade-off: the Logitech mouse no longer wakes the PC.
-    # Matched by vendor:product, so it follows the receiver across USB ports (the
-    # kernel name, e.g. 1-3.1, is the physical port and changes). The receiver has
-    # no serial number, so any other 046d:c547 receiver gets the same rule.
-    ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="046d", ATTR{idProduct}=="c547", ATTR{power/wakeup}="disabled"
   '';
+
+  # The Logitech receiver (046d:c547) cut S3 short: with its wake enabled, sleep
+  # ended after ~3 s with no input (ACPI GPE 0x08, the shared PCIe PME), but only
+  # if the mouse was moved in the 5 min before suspending.
+  # Likely cause: after wireless input the receiver queues data on USB interface
+  # 2 (hiddev, unread); when the port suspends it raises a remote wakeup ~3 s
+  # later. HID_QUIRK_ALWAYS_POLL (0x400) makes usbhid always read it; same fix as
+  # the Bolt (c548) one, lore.kernel.org
+  # 20260407-logi-bolt-hid-quirk-always-poll-v1-1-4dae0fda344e@collabora.com.
+  # Checked on this machine (kernel 6.18.55): sleep holds and the mouse wakes the
+  # PC. One Bolt user still hit the bug with it on 7.1.6 (LKML, 2026-08-10).
+  # If the PC wakes by itself after ~3 s again, fall back to a udev rule:
+  #   ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device",
+  #   ATTR{idVendor}=="046d", ATTR{idProduct}=="c547", ATTR{power/wakeup}="disabled"
+  # (matches by vendor:product, so it survives USB port changes; the mouse then
+  # no longer wakes the PC).
+  boot.kernelParams = [ "usbhid.quirks=0x046d:0xc547:0x400" ];
 
   home-manager = {
     # Preserve pre-existing user files when Home Manager first takes ownership.

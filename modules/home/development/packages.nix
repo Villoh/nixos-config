@@ -1,5 +1,17 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
+let
+  llm-agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+
+  # Default providerPackages would build codex/opencode/grok/cursor-agent from
+  # source; claude-code and codex are already on PATH from this profile.
+  # Electron only picks the libsecret backend on known DEs; Hyprland is not one.
+  claude-desktop = llm-agents.claude-desktop.override {
+    commandLineArgs = "--password-store=gnome-libsecret";
+  };
+
+  t3code-desktop = (llm-agents.t3code.override { providerPackages = [ ]; }).desktop;
+in
 {
   home.packages = with pkgs; [
     # Editor + LSP
@@ -29,6 +41,8 @@
 
     # AI agents
     claude-code
+    claude-desktop
+    t3code-desktop
     codex
     pi-coding-agent
     devin-cli

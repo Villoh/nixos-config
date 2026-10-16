@@ -71,6 +71,12 @@
 
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
+    # Only used for claude-desktop (official .deb repackaged, daily-updated).
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     arca = {
       url = "github:beyondhumane/arca?ref=devin/1791394095-egui-migration";
       inputs.nixpkgs.follows = "nixpkgs";

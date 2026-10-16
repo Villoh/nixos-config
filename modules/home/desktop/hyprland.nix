@@ -84,6 +84,22 @@ in
       -- Toggle the DMS emoji picker.
       hl.bind("SUPER + period", hl.dsp.exec_cmd("dms ipc call emojiPicker toggle"))
 
+      -- Claude Quick Entry via the GlobalShortcuts portal: Hyprland only forwards
+      -- it with an explicit bind. The id is stable across restarts and ends with
+      -- the accelerator set in the app (Command+Shift+Space); changing it there
+      -- changes the id, see `hyprctl globalshortcuts`.
+      hl.bind("SUPER + ALT + C", hl.dsp.global("com.anthropic.Claude:FCF51C952DD85146214EE0EF1DBF3B2F-Command+Shift+C"))
+
+      -- Claude Quick Entry is a 606x470 transparent floating window with only a
+      -- bar drawn at the top; skip blur, shadow and border over the empty area.
+      hl.window_rule({
+        match = { class = "^com\\.anthropic\\.Claude$", float = true },
+        no_blur = true,
+        no_shadow = true,
+        no_dim = true,
+        border_size = 0,
+      })
+
       -- Apply host-specific defaults after personal settings (e.g. keyboard).
       require("/etc/xdg/hypr/host")
     '';

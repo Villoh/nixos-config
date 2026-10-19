@@ -24,6 +24,7 @@
     procs
     btop
     tree
+    libarchive # bsdtar: opens .rar (RAR5 too) and .zip; imperivm-resurrected tools/wrap-map.js needs it
     tealdeer
     fastfetch
   ];

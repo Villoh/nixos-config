@@ -7,6 +7,7 @@
     lutris
     protonup-qt
     protonplus
+    protontricks
     mangohud
     goverlay
     wineWow64Packages.stable

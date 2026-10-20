@@ -26,6 +26,8 @@ in
         # nix-flatpak only installs bundles when sha256 changes (null -> null never installs).
         sha256 = "${flectarMail}";
       }
+      # nixpkgs builds the legacy Sciter UI, which lacks the third-party login the public server requires.
+      "com.rustdesk.RustDesk"
     ];
   };
 

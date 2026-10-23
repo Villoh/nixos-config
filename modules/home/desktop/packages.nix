@@ -6,6 +6,9 @@
     inputs.arca.packages.${pkgs.stdenv.hostPlatform.system}.default
   ]
   ++ (with pkgs; [
+    papirus-icon-theme
+    tela-icon-theme
+    fluent-icon-theme
     kdePackages.dolphin
     kdePackages.kio-extras
     kdePackages.kde-cli-tools

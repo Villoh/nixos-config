@@ -26,6 +26,4 @@ in
       dolphinrc.UiSettings.ColorScheme = "DankMatugen";
     };
   };
-
-  home.packages = [ pkgs.colloid-icon-theme ];
 }

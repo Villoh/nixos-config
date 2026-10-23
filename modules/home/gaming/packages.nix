@@ -5,6 +5,7 @@
     heroic
     hydralauncher
     lutris
+    umu-launcher
     protonup-qt
     protonplus
     # Same wrapper trick as nixpkgs' programs.steam.protontricks: protontricks
@@ -19,6 +20,10 @@
     wineWow64Packages.stable
     winetricks
   ];
+
+  # umu-run outside Steam: PROTONPATH points it at the Nix-managed GE-Proton
+  # instead of letting it download its own copy into ~/.local/share/umu.
+  home.sessionVariables.PROTONPATH = "${pkgs.proton-ge-bin.steamcompattool}";
 
   # Alternative, not enabled: link GE-Proton where Steam and third-party tools
   # (Heroic, ProtonUp-Qt...) look for compatibility tools, so no variable is

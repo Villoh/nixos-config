@@ -39,6 +39,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Omarchy themes: colors.toml palettes and wallpapers, consumed by dmsProfiles.
+    omarchy = {
+      url = "github:basecamp/omarchy";
+      flake = false;
+    };
+
     base46 = {
       url = "github:AvengeMedia/base46";
       flake = false;

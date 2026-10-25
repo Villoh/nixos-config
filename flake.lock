@@ -491,6 +491,22 @@
         "type": "github"
       }
     },
+    "omarchy": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792926166,
+        "narHash": "sha256-MAV43Gqeor6IHbVy6c2aUyCHufPcNIOzfw5YAmHzPPM=",
+        "owner": "basecamp",
+        "repo": "omarchy",
+        "rev": "2fca7fe073e5ef71cd066ddb0d2294ad067deaf5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "basecamp",
+        "repo": "omarchy",
+        "type": "github"
+      }
+    },
     "pimalaya": {
       "flake": false,
       "locked": {
@@ -545,6 +561,7 @@
         "llm-agents": "llm-agents",
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs_2",
+        "omarchy": "omarchy",
         "ytm-player": "ytm-player",
         "zapfast": "zapfast",
         "zen-browser": "zen-browser"

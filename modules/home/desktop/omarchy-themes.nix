@@ -17,13 +17,18 @@ let
     )
   );
 
-  theme-json = pkgs.writers.writePython3Bin "omarchy-dms-theme-json" {
-    flakeIgnore = [ "E501" ];
-  } (builtins.readFile ./omarchy-dms-theme-json.py);
+  # The published CLI, told where Omarchy's own themes live.
+  omarchy-dms = pkgs.symlinkJoin {
+    name = "omarchy-dms";
+    paths = [ inputs.omarchy-dms.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = "wrapProgram $out/bin/omarchy-dms --set OMARCHY_THEMES ${root}";
+    meta.mainProgram = "omarchy-dms";
+  };
 
-  dmsThemes = pkgs.runCommand "omarchy-dms-themes" { nativeBuildInputs = [ theme-json ]; } ''
+  dmsThemes = pkgs.runCommand "omarchy-dms-themes" { nativeBuildInputs = [ omarchy-dms ]; } ''
     for n in ${lib.escapeShellArgs names}; do
-      omarchy-dms-theme-json "${root}/$n/colors.toml" "$n" "$out/omarchy-$n"
+      omarchy-dms render "${root}/$n/colors.toml" "$n" "$out/omarchy-$n"
     done
   '';
 
@@ -38,27 +43,6 @@ let
         -exec cp {} "$out/$t/" \;
     done
   '';
-
-  omarchy-dms = pkgs.writeShellApplication {
-    name = "omarchy-dms";
-    runtimeInputs = [
-      theme-json
-    ]
-    ++ (with pkgs; [
-      coreutils
-      curl
-      findutils
-      fzf
-      git
-      gnugrep
-      gnused
-      util-linux
-    ]);
-    text = ''
-      export OMARCHY_THEMES=${root}
-    ''
-    + builtins.readFile ./omarchy-dms.sh;
-  };
 in
 {
   # Link the files, not the theme folders: DMS lists installed themes with a

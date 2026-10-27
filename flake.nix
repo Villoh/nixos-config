@@ -39,6 +39,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # CLI that turns Omarchy themes into dmsProfiles looks.
+    omarchy-dms = {
+      url = "github:Villoh/omarchy-dms";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Omarchy themes: colors.toml palettes and wallpapers, consumed by dmsProfiles.
     omarchy = {
       url = "github:basecamp/omarchy";

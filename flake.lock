@@ -507,6 +507,26 @@
         "type": "github"
       }
     },
+    "omarchy-dms": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793089030,
+        "narHash": "sha256-uImPbw+X1ck8ZYfkHDjS+BeCe7U1iy+vWIojDmrdvaE=",
+        "owner": "Villoh",
+        "repo": "omarchy-dms",
+        "rev": "8e4fae7820db142b5f111a9930afaea6538b0408",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Villoh",
+        "repo": "omarchy-dms",
+        "type": "github"
+      }
+    },
     "pimalaya": {
       "flake": false,
       "locked": {
@@ -562,6 +582,7 @@
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs_2",
         "omarchy": "omarchy",
+        "omarchy-dms": "omarchy-dms",
         "ytm-player": "ytm-player",
         "zapfast": "zapfast",
         "zen-browser": "zen-browser"

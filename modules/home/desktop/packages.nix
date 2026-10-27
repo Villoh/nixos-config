@@ -16,6 +16,8 @@
     kdePackages.plasma-workspace
     kdePackages.ark
     kdePackages.okular
+    qalculate-qt # standalone calculator (units, currency)
+    libqalculate # qalc CLI: optional engine of the DMS Calculator plugin
     dbeaver-bin
     onlyoffice-desktopeditors
     handy

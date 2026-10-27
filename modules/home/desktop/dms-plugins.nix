@@ -46,6 +46,7 @@
       emojiLauncher.enable = true;
       emojiPicker.enable = true;
       mise.enable = true;
+      calculator.enable = true;
     };
   };
 

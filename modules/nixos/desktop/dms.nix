@@ -4,6 +4,11 @@ let
   dms-shell = pkgs.dms-shell.overrideAttrs (old: {
     postPatch = (old.postPatch or "") + ''
       chmod -R u+w ../quickshell
+
+      # Zed theme: recolor the generated template (keyword, comment, type, ghost
+      # element hover/selected) with Material You roles instead of the dank16 palette.
+      # These sed patterns fail silently if upstream changes the template; recheck
+      # the Zed theme after DMS updates.
       template=../quickshell/matugen/templates/dank-zed.json
       sed -i \
         -e '/"keyword": {/,/"font_style"/s/dank16.color5.dark.hex/colors.secondary.dark.hex/' \
@@ -17,6 +22,18 @@ let
         -e '/"type": {/,/"font_style"/s/dank16.color3.dark.hex/colors.primary.dark.hex/' \
         -e '/"type": {/,/"font_style"/s/dank16.color3.light.hex/colors.primary.light.hex/' \
         "$template"
+
+      # Toasts: start expanded and stay longer (info 1.5s -> 5s, warning 3s -> 6s).
+      # DMS 1.6.2 has no setting for this: durations are hardcoded in ToastService.qml.
+      # Kept as sed on purpose; fails silently if upstream changes those lines, so
+      # recheck after DMS updates. Replace with a setting if upstream adds one.
+      sed -i \
+        -e 's/property bool expanded: false/property bool expanded: true/' \
+        -e 's/toast.expanded = false;/toast.expanded = true;/' \
+        ../quickshell/Modules/Toast.qml
+      sed -i \
+        -e 's/levelWarn ? 3000 : 1500/levelWarn ? 6000 : 5000/' \
+        ../quickshell/Services/ToastService.qml
     '';
   });
 in
@@ -24,6 +41,8 @@ in
   # Shared AT-SPI2 accessibility bus, available without a personal profile.
   services.gnome.at-spi2-core.enable = true;
   services.gnome.gnome-keyring.enable = true;
+  # The enable above only hooks PAM `login`; greeter logins go through `greetd`.
+  security.pam.services.greetd.enableGnomeKeyring = true;
 
   programs.dms-shell = {
     enable = true;

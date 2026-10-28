@@ -12,6 +12,10 @@
   programs.nix-ld.enable = true;
   nixpkgs.config.allowUnfree = true;
 
+  # uv's standalone Pythons look for the CA bundle in /etc/ssl/cert.pem (NixOS has no such file),
+  # so every HTTPS call from them fails with CERTIFICATE_VERIFY_FAILED.
+  environment.etc."ssl/cert.pem".source = "/etc/ssl/certs/ca-bundle.crt";
+
   # Backport of NixOS/nixpkgs#569777 (canvas 3.1.0 fails on GCC 15+).
   # Remove once the PR lands in nixos-unstable.
   nixpkgs.overlays = [

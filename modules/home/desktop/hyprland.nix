@@ -50,6 +50,10 @@ in
         },
       })
 
+      -- Free Ctrl+Shift+R for apps (hard reload in browsers); DMS binds it to
+      -- workspace rename. Case must match the DMS bind exactly.
+      hl.unbind("CTRL + SHIFT + R")
+
       -- Open the configured Discord client.
       hl.bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("${discord.launch}"))
       -- Open the default browser on a blank page.
@@ -98,6 +102,18 @@ in
       -- bar drawn at the top; skip blur, shadow and border over the empty area.
       hl.window_rule({
         match = { class = "^com\\.anthropic\\.Claude$", float = true },
+        no_blur = true,
+        no_shadow = true,
+        no_dim = true,
+        border_size = 0,
+      })
+
+      -- XP Music draws its own skinned, rounded/transparent frame (the compact
+      -- mode is not even rectangular); float it and drop Hyprland's border,
+      -- blur, shadow and dim so they do not show through the transparent areas.
+      hl.window_rule({
+        match = { class = "^xp-music$" },
+        float = true,
         no_blur = true,
         no_shadow = true,
         no_dim = true,

@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 {
   # DankGreeter runs in separate Hyprland; keep its output/focus host-specific.
@@ -34,6 +34,11 @@
 
     -- Mixed-DPI XWayland apps handle their own scale on this host.
     hl.config({ xwayland = { force_zero_scaling = true } })
+
+    -- XWayland marks no primary output, so Wine/Proton games pick HDMI-A-1.
+    hl.on("hyprland.start", function()
+      hl.exec_cmd("${pkgs.xrandr}/bin/xrandr --output DP-1 --primary")
+    end)
 
     hl.monitor({
       output = "DP-1",

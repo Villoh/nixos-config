@@ -19,6 +19,26 @@ let
       platforms = pkgs.lib.platforms.all;
     };
   };
+  # corefonts ships Tahoma Regular only; this adds the real Tahoma and Tahoma Bold from
+  # Microsoft's IE 5.5 SP2 Thai language pack (same source as winetricks).
+  tahoma = pkgs.stdenvNoCC.mkDerivation {
+    pname = "tahoma";
+    version = "5.5";
+    src = pkgs.fetchurl {
+      url = "https://downloads.sourceforge.net/corefonts/OldFiles/IELPKTH.CAB";
+      hash = "sha256-wb4/uPAEJXC+duxtqgOpkULIg2fBvIECQLhYJ8cVlho=";
+    };
+    nativeBuildInputs = [ pkgs.cabextract ];
+    unpackPhase = "cabextract --lowercase --filter='*.ttf' $src";
+    installPhase = ''
+      install -Dm644 tahoma.ttf tahomabd.ttf -t $out/share/fonts/truetype
+    '';
+    meta = {
+      description = "Microsoft Tahoma and Tahoma Bold";
+      license = pkgs.lib.licenses.unfree;
+      platforms = pkgs.lib.platforms.all;
+    };
+  };
 in
 {
   fonts = {
@@ -28,6 +48,7 @@ in
       pkgs.vista-fonts
       pkgs.noto-fonts
       selawik
+      tahoma
       # Optional: add flake input above and pass inputs into this module.
       # It covers corefonts except Andale Mono, plus all vista-fonts families:
       # Arial, Arial Black, Comic Sans MS, Courier New, Georgia, Impact,

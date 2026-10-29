@@ -223,11 +223,11 @@
     "dms-profiles": {
       "flake": false,
       "locked": {
-        "lastModified": 1793287500,
-        "narHash": "sha256-SDkncTFyCtUodJXqYKDBgbD3OQ/AnujX5f3YEGz0Hvg=",
+        "lastModified": 1793297989,
+        "narHash": "sha256-SyjYccoWy5X7t4BGLvajs7nAkEYQSwUJi4/xU8HP+OQ=",
         "owner": "Villoh",
         "repo": "dms-profiles",
-        "rev": "bf9f83e13ea290cdb9f44138b4ee6ccea6164baa",
+        "rev": "fc49a7ef7e17bb5a978d38936d8c064b82f62c15",
         "type": "github"
       },
       "original": {

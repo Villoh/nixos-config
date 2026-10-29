@@ -13,12 +13,15 @@
     ./display.nix
     ../../modules/nixos/core
     ../../modules/nixos/hardware/nvidia.nix
+    ../../modules/nixos/hardware/qualcomm-edl.nix
     ../../modules/nixos/services/docker.nix
     # Optional desktop services, selected by this host rather than the profile.
     ../../modules/nixos/services/flatpak.nix
     ../../modules/nixos/services/printing.nix
     ../../modules/nixos/services/tailscale.nix
     ../../modules/nixos/services/kdeconnect.nix
+    # NVIDIA-only: the compositor must run on the NVIDIA GPU (not the zenbook).
+    ../../modules/nixos/services/waydroid-nvidia.nix
     ../../profiles/desktop.nix
     ../../profiles/gaming.nix
     ../../users/mikel

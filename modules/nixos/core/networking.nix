@@ -1,7 +1,11 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    # DMS gestiona los perfiles OpenVPN importados en NetworkManager.
+    plugins = [ pkgs.networkmanager-openvpn ];
+  };
 
   # DNS cifrado (DoT) a nivel de sistema. NetworkManager empuja el DNS de cada
   # interfaz a systemd-resolved, pero `Domains = [ "~." ]` hace que estos

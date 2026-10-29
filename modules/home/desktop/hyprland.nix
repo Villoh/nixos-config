@@ -81,9 +81,9 @@ in
       -- Toggle the mise tools panel (DMS plugin).
       hl.bind("SUPER + CTRL + M", hl.dsp.exec_cmd("dms ipc call mise toggle"))
 
-      -- Omarchy-style pickers: theme profile (dmsProfiles) and wallpaper carousel.
+      -- Omarchy-style pickers (dmsProfiles): theme profile, and wallpapers of the current folder.
       hl.bind("SUPER + CTRL + SPACE", hl.dsp.exec_cmd("dms ipc call profiles toggle"))
-      hl.bind("SUPER + CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("dms ipc call wallpaperCarousel toggle"))
+      hl.bind("SUPER + CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("dms ipc call profiles wallpapers"))
 
       -- Toggle the DMS emoji picker.
       hl.bind("SUPER + period", hl.dsp.exec_cmd("dms ipc call emojiPicker toggle"))

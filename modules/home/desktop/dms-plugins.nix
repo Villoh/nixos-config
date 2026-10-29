@@ -36,10 +36,14 @@
       };
       dankKDEConnect.enable = true;
       quickCapture.enable = true;
-      wallpaperCarousel.enable = true;
       dockerManager.enable = true;
       dankscale.enable = true;
-      dmsProfiles.enable = true;
+      dmsProfiles = {
+        enable = true;
+        # Fork with the wallpaper picker and the per-profile wallpaper folder (upstream
+        # PR #2), tracked through the dms-profiles flake input.
+        src = lib.mkForce inputs.dms-profiles;
+      };
       cliproxyQuota.enable = true;
       commandRunner.enable = true;
       nixPackageRunner.enable = true;

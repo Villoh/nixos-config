@@ -33,7 +33,7 @@ let
   '';
 
   # Still images only (no intro videos, no ~700-byte placeholders). Real copies,
-  # not symlinks, so the wallpaper carousel lists them.
+  # not symlinks, so the dmsProfiles wallpaper picker lists them.
   wallpapers = pkgs.runCommand "omarchy-wallpapers" { } ''
     for dir in ${root}/*/backgrounds; do
       t=$(basename "$(dirname "$dir")")

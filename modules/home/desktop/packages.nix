@@ -7,6 +7,7 @@
     inputs.arca.packages.${pkgs.stdenv.hostPlatform.system}.default
   ]
   ++ (with pkgs; [
+    nautilus
     papirus-icon-theme
     tela-icon-theme
     fluent-icon-theme

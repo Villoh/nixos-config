@@ -3,6 +3,7 @@
 {
   home.packages = [
     inputs.ytm-player.packages.${pkgs.stdenv.hostPlatform.system}.ytm-player-full
+    inputs.xp-music.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.imv
     pkgs.mpv
     pkgs.obs-studio

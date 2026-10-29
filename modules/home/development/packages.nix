@@ -1,7 +1,8 @@
 { inputs, pkgs, ... }:
 
 let
-  llm-agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+  system = pkgs.stdenv.hostPlatform.system;
+  llm-agents = inputs.llm-agents.packages.${system};
 
   # Default providerPackages would build codex/opencode/grok/cursor-agent from
   # source; claude-code and codex are already on PATH from this profile.
@@ -83,5 +84,10 @@ in
     mise
     uv
     pnpm
+
+    # Own CLI tools
+    inputs.holded-tt.packages.${system}.default
+    inputs.goopdl.packages.${system}.default
+    inputs.masamune.packages.${system}.default
   ];
 }

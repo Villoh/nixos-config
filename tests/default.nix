@@ -12,6 +12,7 @@ let
   };
   base = lib.nixosSystem {
     inherit system;
+    specialArgs = { inherit inputs; };
     modules = [
       ../modules/nixos/core
       ../profiles/desktop.nix

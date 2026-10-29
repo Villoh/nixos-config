@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 let
   selawik = pkgs.stdenvNoCC.mkDerivation {
@@ -19,42 +19,16 @@ let
       platforms = pkgs.lib.platforms.all;
     };
   };
-  # corefonts ships Tahoma Regular only; this adds the real Tahoma and Tahoma Bold from
-  # Microsoft's IE 5.5 SP2 Thai language pack (same source as winetricks).
-  tahoma = pkgs.stdenvNoCC.mkDerivation {
-    pname = "tahoma";
-    version = "5.5";
-    src = pkgs.fetchurl {
-      url = "https://downloads.sourceforge.net/corefonts/OldFiles/IELPKTH.CAB";
-      hash = "sha256-wb4/uPAEJXC+duxtqgOpkULIg2fBvIECQLhYJ8cVlho=";
-    };
-    nativeBuildInputs = [ pkgs.cabextract ];
-    unpackPhase = "cabextract --lowercase --filter='*.ttf' $src";
-    installPhase = ''
-      install -Dm644 tahoma.ttf tahomabd.ttf -t $out/share/fonts/truetype
-    '';
-    meta = {
-      description = "Microsoft Tahoma and Tahoma Bold";
-      license = pkgs.lib.licenses.unfree;
-      platforms = pkgs.lib.platforms.all;
-    };
-  };
 in
 {
   fonts = {
     packages = [
       pkgs.inter
-      pkgs.corefonts
-      pkgs.vista-fonts
       pkgs.noto-fonts
       selawik
-      tahoma
-      # Optional: add flake input above and pass inputs into this module.
-      # It covers corefonts except Andale Mono, plus all vista-fonts families:
-      # Arial, Arial Black, Comic Sans MS, Courier New, Georgia, Impact,
-      # Times New Roman, Trebuchet MS, Verdana, Webdings, Calibri, Cambria,
-      # Candara, Consolas, Constantia, Corbel.
-      # inputs.nix-ttf-ms-win11-auto.packages.${pkgs.stdenv.hostPlatform.system}.ttf-ms-win11-auto
+      # Real Tahoma and Tahoma Bold (corefonts only has Tahoma Regular), Segoe UI, Consolas,
+      # Lucida Console and the rest of the Windows 11 base fonts.
+      inputs.nix-ttf-ms-win11-auto.packages.${pkgs.stdenv.hostPlatform.system}.ttf-ms-win11-auto
     ];
 
     fontconfig = {
@@ -75,14 +49,6 @@ in
 
       localConf = ''
         <fontconfig>
-          <match target="pattern">
-            <test name="family" qual="any"><string>Segoe UI</string></test>
-            <edit name="family" mode="assign" binding="same"><string>Selawik</string></edit>
-          </match>
-          <match target="pattern">
-            <test name="family" qual="any"><string>Segoe UI Variable</string></test>
-            <edit name="family" mode="assign" binding="same"><string>Selawik</string></edit>
-          </match>
           <match target="pattern">
             <test name="family" qual="any"><string>Segoe UI Webfont</string></test>
             <edit name="family" mode="assign" binding="same"><string>Selawik</string></edit>

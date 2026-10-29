@@ -3,8 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # Optional Microsoft font bundle; upstream warns about its Windows EULA.
-    # nix-ttf-ms-win11-auto.url = "github:kugland/nix-ttf-ms-win11-auto";
+    # Microsoft fonts extracted from the official Windows 11 ISO; their EULA only covers use on
+    # Windows. Private mirror of kugland/nix-ttf-ms-win11-auto, hence git+ssh.
+    # No nixpkgs.follows: upstream warns the extraction VM breaks on stable httpdirfs.
+    nix-ttf-ms-win11-auto.url = "git+ssh://git@github.com/Villoh/nix-ttf-ms-win11-auto";
 
     acid-boot = {
       url = "github:kurisu-agent/nix-acid-boot";

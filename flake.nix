@@ -39,10 +39,34 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Fork of satoshoe-dev/dms-profiles (wallpaper picker, per-profile wallpaper folder;
+    # upstream PR #2). Back to the plugin registry once it is merged.
+    dms-profiles = {
+      url = "github:Villoh/dms-profiles/integration";
+      flake = false;
+    };
+
     # CLI that turns Omarchy themes into dmsProfiles looks.
     omarchy-dms = {
       url = "github:Villoh/omarchy-dms";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Own CLI tools, packaged by a flake in their repositories.
+    holded-tt = {
+      url = "github:Villoh/holded-tt";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    goopdl = {
+      url = "github:Villoh/goopdl";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    masamune = {
+      url = "github:Villoh/masamune";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.goopdl.follows = "goopdl";
     };
 
     # Omarchy themes: colors.toml palettes and wallpapers, consumed by dmsProfiles.
@@ -71,6 +95,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    xp-music = {
+      # Fork branch with the pending PRs (#8 skins, #9 Discord); back to github:Iznardo/xp-music once merged.
+      url = "github:Villoh/xp-music?ref=integration";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     zapfast = {
       url = "github:crmne/zapfast";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -90,7 +120,13 @@
     };
 
     arca = {
-      url = "github:beyondhumane/arca?ref=devin/1791394095-egui-migration";
+      url = "github:beyondhumane/arca";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Community packaging of Shiro836/waydroid-nvidia (GPU-accelerated Waydroid).
+    waydroid-nvidia-nix = {
+      url = "github:yigexuanmu/waydroid-nvidia-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -113,20 +149,32 @@
         desktop = inputs.self.nixosConfigurations.desktop;
       };
 
-      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
-        packages = with nixpkgs.legacyPackages.${system}; [
-          git
-          gh
-          nodejs_24
-          nixfmt
-          nil
-          statix
-        ];
+      devShells.${system} = {
+        android = import ./shells/android.nix {
+          pkgs = import nixpkgs {
+            inherit system;
+            config = {
+              allowUnfree = true;
+              android_sdk.accept_license = true;
+            };
+          };
+        };
 
-        shellHook = ''
-          echo "nixos-config development shell"
-          echo "Run 'nix flake check' before committing Nix changes."
-        '';
+        default = nixpkgs.legacyPackages.${system}.mkShell {
+          packages = with nixpkgs.legacyPackages.${system}; [
+            git
+            gh
+            nodejs_24
+            nixfmt
+            nil
+            statix
+          ];
+
+          shellHook = ''
+            echo "nixos-config development shell"
+            echo "Run 'nix flake check' before committing Nix changes."
+          '';
+        };
       };
     };
 }

@@ -27,16 +27,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1791401255,
-        "narHash": "sha256-FFTUJfuupjEU7fJSO+gQcJ9WRMXLBmToB1idDGAgRVE=",
+        "lastModified": 1792262274,
+        "narHash": "sha256-zh8LkJFRiVkVGfV9rc3wDUe3tgjDIzfzegit6NPD2qA=",
         "owner": "beyondhumane",
         "repo": "arca",
-        "rev": "b770ef38982286bf917dab3b907a2af5cf370c89",
+        "rev": "50bc41096d980ee91cfeb84182e7dfefb0a1abb6",
         "type": "github"
       },
       "original": {
         "owner": "beyondhumane",
-        "ref": "devin/1791394095-egui-migration",
         "repo": "arca",
         "type": "github"
       }
@@ -221,6 +220,23 @@
         "type": "github"
       }
     },
+    "dms-profiles": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793287500,
+        "narHash": "sha256-SDkncTFyCtUodJXqYKDBgbD3OQ/AnujX5f3YEGz0Hvg=",
+        "owner": "Villoh",
+        "repo": "dms-profiles",
+        "rev": "bf9f83e13ea290cdb9f44138b4ee6ccea6164baa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Villoh",
+        "ref": "integration",
+        "repo": "dms-profiles",
+        "type": "github"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -333,6 +349,26 @@
         "type": "github"
       }
     },
+    "goopdl": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793207963,
+        "narHash": "sha256-BQOQ+NWxnvnv3uWe4wE4fo+SG3o5/PtkgqDD+OI5/Ps=",
+        "owner": "Villoh",
+        "repo": "goopdl",
+        "rev": "61a5617595bd6e263426d6844a6317130c68e183",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Villoh",
+        "repo": "goopdl",
+        "type": "github"
+      }
+    },
     "helium-browser": {
       "inputs": {
         "nixpkgs": [
@@ -372,6 +408,26 @@
       "original": {
         "owner": "pimalaya",
         "repo": "himalaya-tui",
+        "type": "github"
+      }
+    },
+    "holded-tt": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793210315,
+        "narHash": "sha256-3NNd4qosM7w/8E3EqtPACyKbwblIqoLzFJXeqzIQ8k4=",
+        "owner": "Villoh",
+        "repo": "holded-tt",
+        "rev": "317b6f5ec4ce4ac9ed7a0dd053c458fa7908af6d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Villoh",
+        "repo": "holded-tt",
         "type": "github"
       }
     },
@@ -440,6 +496,29 @@
       "original": {
         "owner": "numtide",
         "repo": "llm-agents.nix",
+        "type": "github"
+      }
+    },
+    "masamune": {
+      "inputs": {
+        "goopdl": [
+          "goopdl"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793208066,
+        "narHash": "sha256-jNgnKZROtpe2OkKr5AbjYgIXPyTAxtL1YYYGS9dOp3I=",
+        "owner": "Villoh",
+        "repo": "masamune",
+        "rev": "5928366689d8c0026a536fb9d9ec1d36e1458609",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Villoh",
+        "repo": "masamune",
         "type": "github"
       }
     },
@@ -514,11 +593,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793089030,
-        "narHash": "sha256-uImPbw+X1ck8ZYfkHDjS+BeCe7U1iy+vWIojDmrdvaE=",
+        "lastModified": 1793287965,
+        "narHash": "sha256-J1GZwvRwhTXYHg9YNgJE0WkRNOpY+g928vjEkSAGxoc=",
         "owner": "Villoh",
         "repo": "omarchy-dms",
-        "rev": "8e4fae7820db142b5f111a9930afaea6538b0408",
+        "rev": "dbbea146f018b03a66d009472c2eba795874593b",
         "type": "github"
       },
       "original": {
@@ -574,15 +653,21 @@
         "dankcalendar": "dankcalendar",
         "dms": "dms",
         "dms-plugin-registry": "dms-plugin-registry",
+        "dms-profiles": "dms-profiles",
+        "goopdl": "goopdl",
         "helium-browser": "helium-browser",
         "himalaya-tui": "himalaya-tui",
+        "holded-tt": "holded-tt",
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",
         "llm-agents": "llm-agents",
+        "masamune": "masamune",
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs_2",
         "omarchy": "omarchy",
         "omarchy-dms": "omarchy-dms",
+        "waydroid-nvidia-nix": "waydroid-nvidia-nix",
+        "xp-music": "xp-music",
         "ytm-player": "ytm-player",
         "zapfast": "zapfast",
         "zen-browser": "zen-browser"
@@ -710,6 +795,65 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "waydroid-nvidia-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "wnv-src": "wnv-src"
+      },
+      "locked": {
+        "lastModified": 1784900959,
+        "narHash": "sha256-wh11g5RcmQR/vSPBG1q08wA9F9ZmS5IkJ97+OUVo9RU=",
+        "owner": "yigexuanmu",
+        "repo": "waydroid-nvidia-nix",
+        "rev": "180697edb1ea2c53fed49d6a07d20a39af563083",
+        "type": "github"
+      },
+      "original": {
+        "owner": "yigexuanmu",
+        "repo": "waydroid-nvidia-nix",
+        "type": "github"
+      }
+    },
+    "wnv-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784896711,
+        "narHash": "sha256-D1qG0+t9+6bdIEGZw6LaiIsU3yzASwY/VF0U2PM1Pcw=",
+        "owner": "Shiro836",
+        "repo": "waydroid-nvidia",
+        "rev": "4239f9055d9ecee765cf6890227cf4d1d9f7b13e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Shiro836",
+        "ref": "v0.1.2",
+        "repo": "waydroid-nvidia",
+        "type": "github"
+      }
+    },
+    "xp-music": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793220520,
+        "narHash": "sha256-ZJQH5ZYSZ20M0sYPWkTh2Z7wljkhU2YcSwyL66MIspw=",
+        "owner": "Villoh",
+        "repo": "xp-music",
+        "rev": "947f4d50b365a8e6060f6ee9971b171b41ceaf80",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Villoh",
+        "ref": "integration",
+        "repo": "xp-music",
         "type": "github"
       }
     },

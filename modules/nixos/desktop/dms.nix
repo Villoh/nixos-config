@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
   dms-shell = pkgs.dms-shell.overrideAttrs (old: {
@@ -45,7 +45,8 @@ in
   security.pam.services.greetd.enableGnomeKeyring = true;
 
   programs.dms-shell = {
-    enable = true;
+    # mkDefault so a host can switch to Noctalia with a plain `enable = false`.
+    enable = lib.mkDefault true;
     package = dms-shell;
     systemd = {
       enable = true;

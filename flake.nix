@@ -48,6 +48,22 @@
       flake = false;
     };
 
+    # Alternative shell to DMS, see modules/nixos/desktop/noctalia.nix. The `cachix` branch is the
+    # latest commit CI has built. No nixpkgs.follows: overriding it changes the derivation hash
+    # and misses the binary cache, so Noctalia would compile locally.
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
+
+    # Plugin repos, pinned by flake.lock instead of Noctalia's runtime git clones. Plugins are
+    # trusted Luau code: review the diff before `nix flake update noctalia-*-plugins`.
+    noctalia-official-plugins = {
+      url = "github:noctalia-dev/official-plugins";
+      flake = false;
+    };
+    noctalia-community-plugins = {
+      url = "github:noctalia-dev/community-plugins";
+      flake = false;
+    };
+
     # CLI that turns Omarchy themes into dmsProfiles looks.
     omarchy-dms = {
       url = "github:Villoh/omarchy-dms";

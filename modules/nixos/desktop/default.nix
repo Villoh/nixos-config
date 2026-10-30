@@ -13,6 +13,7 @@
     ./packages.nix
     ./dms-greeter.nix
     ./dms.nix
+    ./noctalia.nix
     ./hyprland.nix
     ./portals.nix
   ];

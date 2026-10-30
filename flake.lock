@@ -688,6 +688,70 @@
         "type": "github"
       }
     },
+    "nixpkgs_5": {
+      "locked": {
+        "lastModified": 1792773339,
+        "narHash": "sha256-17eNBI5Khe4JZaRkL5hRGPWf8MZ6qv+bWAr4V8YeKBw=",
+        "rev": "3ec636362e1816bc2f0888fa0fa2c69f1bc9e504",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1100280.3ec636362e18/nixexprs.tar.zst"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst"
+      }
+    },
+    "noctalia": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_5"
+      },
+      "locked": {
+        "lastModified": 1793323748,
+        "narHash": "sha256-VEgcl32h2oXdPNJ23K/WAbTkHLvSmAnn1cKfhFCeL9Q=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia",
+        "rev": "1da2ac39231fbd351bbed0ce47a7050aef2df558",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "ref": "cachix",
+        "repo": "noctalia",
+        "type": "github"
+      }
+    },
+    "noctalia-community-plugins": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793319703,
+        "narHash": "sha256-7wPyyyTl8+G5m3BlHSLeF+/YUyHqOv9cxb0F5Jugr2w=",
+        "owner": "noctalia-dev",
+        "repo": "community-plugins",
+        "rev": "c37305cfca32f25e5bc393c2e49c77376ccfd512",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "community-plugins",
+        "type": "github"
+      }
+    },
+    "noctalia-official-plugins": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793357694,
+        "narHash": "sha256-3X4yTKYdKtPRMAYqyNgq44HhW3m91ye90HiVb7E5P0g=",
+        "owner": "noctalia-dev",
+        "repo": "official-plugins",
+        "rev": "71ffcef8fab2df8a2accbf8b76fa6c97eae34436",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "official-plugins",
+        "type": "github"
+      }
+    },
     "omarchy": {
       "flake": false,
       "locked": {
@@ -783,6 +847,9 @@
         "nix-flatpak": "nix-flatpak",
         "nix-ttf-ms-win11-auto": "nix-ttf-ms-win11-auto",
         "nixpkgs": "nixpkgs_4",
+        "noctalia": "noctalia",
+        "noctalia-community-plugins": "noctalia-community-plugins",
+        "noctalia-official-plugins": "noctalia-official-plugins",
         "omarchy": "omarchy",
         "omarchy-dms": "omarchy-dms",
         "waydroid-nvidia-nix": "waydroid-nvidia-nix",

@@ -55,6 +55,15 @@ let
       }
     ];
   };
+  # Evaluation only: enabling Noctalia would otherwise compile it just to run the checks.
+  withNoctalia = modules: (desktop.extendModules { inherit modules; }).config;
+  n = withNoctalia [
+    {
+      programs.noctalia.enable = true;
+      programs.dms-shell.enable = false;
+    }
+  ];
+  nWithDms = withNoctalia [ { programs.noctalia.enable = true; } ];
   c = base.config;
   m = multi.config;
   d = desktop.config;
@@ -110,6 +119,18 @@ in
       && !c.services.printing.enable
       && !c.programs.kdeconnect.enable
     ) "Optional host services leaked into desktop base";
+    assert lib.assertMsg (
+      !d.programs.noctalia.enable
+      && !(d.systemd.user.services ? noctalia)
+      && !(h.xdg.configFile ? "noctalia/config.toml")
+    ) "Noctalia must stay inert until a host enables it";
+    assert lib.assertMsg (
+      n.systemd.user.services ? noctalia
+      && !(n.systemd.user.services ? dms)
+      && n.home-manager.users.mikel.xdg.configFile ? "noctalia/config.toml"
+      && lib.any (a: !a.assertion) nWithDms.assertions
+      && lib.all (a: a.assertion) n.assertions
+    ) "Noctalia must replace DMS, never run next to it";
     assert lib.assertMsg (
       c.services.displayManager.dms-greeter.configHome == null
       && !(c.systemd.user.services.dms.environment ? TERMINAL)

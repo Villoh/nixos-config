@@ -7,6 +7,7 @@
     ./dms-plugins.nix
     ./gtk.nix
     ./mime.nix
+    ./noctalia.nix
     ./omarchy-themes.nix
     ./packages.nix
     ./qt.nix

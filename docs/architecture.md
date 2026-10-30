@@ -73,6 +73,37 @@ Gaming requires both host gaming support and that user's explicit HM import.
    explicit approval; see [installation](installation-laptop.md) and
    [bootloader precautions](dual-boot-windows.md#grub-with-os-prober-alternative).
 
+## Noctalia (alternative shell)
+
+Noctalia is prepared but off: `modules/nixos/desktop/noctalia.nix` (package,
+user service, recommended services, binary cache) and
+`modules/home/desktop/noctalia.nix` (settings, plugins, Hyprland binds) change
+nothing until a host sets `programs.noctalia.enable = true`. The HM side follows
+that one switch. NixOS asserts that DMS is disabled at the same time.
+
+To switch, in `hosts/<host>/default.nix`:
+
+```nix
+programs.noctalia.enable = true;
+programs.dms-shell.enable = false;
+```
+
+Then `nh os test .#desktop`. Not covered, decide when switching: the Hyprland
+main still imports `dms.*` (including the `dms ipc` binds, which fail once DMS is
+disabled), `dms-hyprland-init` keeps seeding `~/.config/hypr/dms/`, DankGreeter
+stays as the login screen, and `programs.dsearch` and the DMS HM plugins stay on.
+
+Hand-written settings are generated into `~/.config/noctalia/config.toml`
+(validated at build time with `noctalia config validate`); whatever is changed in
+the GUI lands in `~/.local/state/noctalia/settings.toml` and wins over it. Plugins
+come from the `noctalia-official-plugins` and `noctalia-community-plugins` inputs
+through one read-only `path` source, so Noctalia never clones or auto-updates them.
+The plugin store in Settings therefore only lists those. To add a plugin, put its
+directory name in the lists of the HM module (ids are read from its `plugin.toml`);
+to update, `nix flake update noctalia-community-plugins` and review the diff, since
+plugins are trusted code. The `noctalia` input has no `nixpkgs.follows` and tracks
+the `cachix` branch so the build comes from `noctalia.cachix.org` instead of compiling.
+
 ## Ownership and smoke checks
 
 NixOS owns `/etc/xdg/hypr/host.lua`, not a global `hyprland.lua` or

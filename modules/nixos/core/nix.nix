@@ -1,4 +1,4 @@
-{ ... }:
+{ inputs, ... }:
 
 {
   nix.settings.experimental-features = [
@@ -19,6 +19,7 @@
   # Backport of NixOS/nixpkgs#569777 (canvas 3.1.0 fails on GCC 15+).
   # Remove once the PR lands in nixos-unstable.
   nixpkgs.overlays = [
+    inputs.self.overlays.default
     (_final: prev: {
       filen-desktop = prev.filen-desktop.overrideAttrs (old: {
         npmRebuildFlags = (old.npmRebuildFlags or [ ]) ++ [ "--ignore-scripts" ];

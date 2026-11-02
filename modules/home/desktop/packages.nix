@@ -2,8 +2,8 @@
 
 {
   home.packages = [
-    (pkgs.callPackage ./strata.nix { })
-    (pkgs.callPackage ./wealthfolio.nix { })
+    pkgs.strata
+    pkgs.wealthfolio
     inputs.arca.packages.${pkgs.stdenv.hostPlatform.system}.default
   ]
   ++ (with pkgs; [

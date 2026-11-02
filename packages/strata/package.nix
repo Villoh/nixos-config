@@ -18,6 +18,7 @@
   ffmpegthumbnailer,
   imagemagick,
   squashfsTools,
+  nix-update-script,
 }:
 
 # strata is not in nixpkgs and upstream ships no flake, so build it from source.
@@ -60,6 +61,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   # ponytail: tests need a display/portal/bwrap; skip, add when sandboxed GUI tests are wanted.
   doCheck = false;
+
+  passthru.updateScript = nix-update-script { };
 
   postInstall = ''
     install -Dm644 data/io.github.lgse.Strata.desktop \

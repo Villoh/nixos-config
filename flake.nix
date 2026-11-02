@@ -156,6 +156,10 @@
       system = "x86_64-linux";
     in
     {
+      # Own packages (packages/): overlay for the hosts, plain outputs for nix-update/CI.
+      overlays.default = _final: prev: import ./packages prev;
+      packages.${system} = import ./packages nixpkgs.legacyPackages.${system};
+
       nixosConfigurations.desktop = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs; };

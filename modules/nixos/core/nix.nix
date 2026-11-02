@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   nix.settings.experimental-features = [
@@ -7,6 +7,7 @@
   ];
 
   programs.nh.enable = true;
+  environment.systemPackages = [ inputs.nixup.packages.${pkgs.stdenv.hostPlatform.system}.default ];
 
   # Allow Pi's prebuilt Linux computer-use helper to run on NixOS.
   programs.nix-ld.enable = true;

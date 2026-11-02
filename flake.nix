@@ -135,6 +135,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Update checker for this repo (nixup check / lock / pkg); never activates anything.
+    nixup = {
+      url = "github:Villoh/nixup";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
     # Only used for claude-desktop (official .deb repackaged, daily-updated).

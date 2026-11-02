@@ -701,6 +701,26 @@
         "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst"
       }
     },
+    "nixup": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793641759,
+        "narHash": "sha256-AyndJg6RyY6ms1FIraOcmf2GsMimMUaHhy7OBRrqoJM=",
+        "owner": "Villoh",
+        "repo": "nixup",
+        "rev": "3649bcbe33d31b6c075412230c3571f2749363f6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Villoh",
+        "repo": "nixup",
+        "type": "github"
+      }
+    },
     "noctalia": {
       "inputs": {
         "nixpkgs": "nixpkgs_5"
@@ -847,6 +867,7 @@
         "nix-flatpak": "nix-flatpak",
         "nix-ttf-ms-win11-auto": "nix-ttf-ms-win11-auto",
         "nixpkgs": "nixpkgs_4",
+        "nixup": "nixup",
         "noctalia": "noctalia",
         "noctalia-community-plugins": "noctalia-community-plugins",
         "noctalia-official-plugins": "noctalia-official-plugins",

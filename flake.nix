@@ -129,6 +129,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Upstream flake (added after v1.1.1, so tracked on main until a release has it).
+    strata = {
+      url = "github:lgse/strata";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Update checker for this repo (nixup check / lock / pkg); never activates anything.
+    nixup = {
+      url = "github:Villoh/nixup";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
     # Only used for claude-desktop (official .deb repackaged, daily-updated).
@@ -156,6 +168,10 @@
       system = "x86_64-linux";
     in
     {
+      # Own packages (packages/): overlay for the hosts, plain outputs for nix-update/CI.
+      overlays.default = _final: prev: import ./packages prev;
+      packages.${system} = import ./packages nixpkgs.legacyPackages.${system};
+
       nixosConfigurations.desktop = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs; };

@@ -1,10 +1,7 @@
 { inputs, pkgs, ... }:
 
 let
-  flectarMail = pkgs.fetchurl {
-    url = "https://github.com/flectar/mail/releases/download/v0.1.0-alpha.7/flectar-mail-0.1.0-alpha.7-linux-x64.flatpak";
-    hash = "sha256-tDlFa59TaEylVGSi+w1YuK7eXd8eDrT4Hm4l66s6b5U=";
-  };
+  flectarMail = pkgs.flectar-mail;
 in
 {
   imports = [ inputs.nix-flatpak.homeManagerModules.nix-flatpak ];
@@ -23,7 +20,7 @@ in
       }
       {
         appId = "com.flectar.mail";
-        bundle = "${flectarMail}";
+        bundle = "${flectarMail}/share/flatpak/flectar-mail.flatpak";
         # nix-flatpak only installs bundles when sha256 changes (null -> null never installs).
         sha256 = "${flectarMail}";
       }

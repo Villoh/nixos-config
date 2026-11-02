@@ -1,4 +1,4 @@
-{ ... }:
+{ inputs, pkgs, ... }:
 
 {
   nix.settings.experimental-features = [
@@ -7,6 +7,7 @@
   ];
 
   programs.nh.enable = true;
+  environment.systemPackages = [ inputs.nixup.packages.${pkgs.stdenv.hostPlatform.system}.default ];
 
   # Allow Pi's prebuilt Linux computer-use helper to run on NixOS.
   programs.nix-ld.enable = true;
@@ -19,6 +20,7 @@
   # Backport of NixOS/nixpkgs#569777 (canvas 3.1.0 fails on GCC 15+).
   # Remove once the PR lands in nixos-unstable.
   nixpkgs.overlays = [
+    inputs.self.overlays.default
     (_final: prev: {
       filen-desktop = prev.filen-desktop.overrideAttrs (old: {
         npmRebuildFlags = (old.npmRebuildFlags or [ ]) ++ [ "--ignore-scripts" ];

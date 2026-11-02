@@ -5,7 +5,6 @@ pkgs: {
   flectar-mail = pkgs.callPackage ./flectar-mail/package.nix { };
   padpoll = pkgs.callPackage ./padpoll/package.nix { };
   selawik = pkgs.callPackage ./selawik/package.nix { };
-  strata = pkgs.callPackage ./strata/package.nix { };
   tunnel-agent = pkgs.callPackage ./tunnel-agent/package.nix { };
   # Shadows nixpkgs' wealthfolio on purpose: nixpkgs runs behind upstream.
   wealthfolio = pkgs.callPackage ./wealthfolio/package.nix { };

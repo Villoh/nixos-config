@@ -53,13 +53,15 @@ git diff packages/
 ```
 
 `nix-update` bumps `version` and every hash (source, pnpm, cargo) in one go. It follows
-the newest stable release, even across major versions (strata 0.21 → 1.1 would be
-applied unprompted), so read the upstream changelog first.
+the newest stable release, even across major versions, so read the upstream
+changelog first.
 
 - `flectar-mail` only has alpha tags: add `--version=unstable`.
 - `nix-update --flake` ignores the `extraArgs` of `passthru.updateScript` (only
   nixpkgs' own runner reads them), so such flags are never implicit.
 - A matching hash does not prove the new version runs: build it and try it before `switch`.
+- `strata` is not here: upstream ships a flake, so it is the `strata` input and moves with
+  `nix flake update strata`. It tracks `main` until a tagged release includes the flake.
 - Not covered: `dms-bitwarden` (pinned on purpose, audited by hand).
 
 ## Manual Nix profiles

@@ -2,7 +2,9 @@
 
 {
   home.packages = [
-    pkgs.strata
+    inputs.strata.packages.${pkgs.stdenv.hostPlatform.system}.strata
+    # Registers org.freedesktop.FileManager1 (what the previous in-tree package did).
+    inputs.strata.packages.${pkgs.stdenv.hostPlatform.system}.strata.fileManagerService
     pkgs.wealthfolio
     inputs.arca.packages.${pkgs.stdenv.hostPlatform.system}.default
   ]

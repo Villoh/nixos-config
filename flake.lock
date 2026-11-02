@@ -852,6 +852,7 @@
         "noctalia-official-plugins": "noctalia-official-plugins",
         "omarchy": "omarchy",
         "omarchy-dms": "omarchy-dms",
+        "strata": "strata",
         "waydroid-nvidia-nix": "waydroid-nvidia-nix",
         "xp-music": "xp-music",
         "ytm-player": "ytm-player",
@@ -915,6 +916,26 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "strata": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793592126,
+        "narHash": "sha256-f+WfVS5N7r8DbFKb7E11hUsDbFjBLLBD6XvQ9ZJ/AKQ=",
+        "owner": "lgse",
+        "repo": "strata",
+        "rev": "ede64d928ab6723c71c774948fbf07bc24616cdb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lgse",
+        "repo": "strata",
         "type": "github"
       }
     },

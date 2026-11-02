@@ -129,6 +129,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Upstream flake (added after v1.1.1, so tracked on main until a release has it).
+    strata = {
+      url = "github:lgse/strata";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
     # Only used for claude-desktop (official .deb repackaged, daily-updated).

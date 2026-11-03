@@ -418,11 +418,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793471656,
-        "narHash": "sha256-jdEbux7fJMbMQ2Gv1fXjSB9njxtBGNCOowF5Nzb2zPA=",
+        "lastModified": 1793691415,
+        "narHash": "sha256-agfCUAUUDdRc6imNsB0uv7iBnfaGOlZztF4nfMQ1n5c=",
         "owner": "Villoh",
         "repo": "holded-tt",
-        "rev": "41509d9eacb05560d951d90c7a6fc40ccbbc0b7e",
+        "rev": "140963997b4e4f8f05e9eabdeb5c9e56b7439304",
         "type": "github"
       },
       "original": {

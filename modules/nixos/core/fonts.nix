@@ -25,15 +25,6 @@
           "Noto Sans Mono"
         ];
       };
-
-      localConf = ''
-        <fontconfig>
-          <match target="pattern">
-            <test name="family" qual="any"><string>Segoe UI Webfont</string></test>
-            <edit name="family" mode="assign" binding="same"><string>Segoe UI</string></edit>
-          </match>
-        </fontconfig>
-      '';
     };
   };
 }

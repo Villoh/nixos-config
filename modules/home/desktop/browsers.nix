@@ -8,10 +8,10 @@
 let
   # Defaults only: prefs.js/about:config in the profile still override them.
   zenPrefs = {
-    # Unload tabs inactive for >1h under memory pressure. Threshold 100 makes
-    # Firefox treat memory as always low, so only the inactivity time filters.
+    # Unload tabs inactive for >1h, only under real memory pressure. Do NOT set
+    # browser.low_commit_space_threshold_percent to 100: Linux then polls and
+    # runs the tab unloader on the main thread every second (typing stutter).
     "browser.tabs.unloadOnLowMemory" = true;
-    "browser.low_commit_space_threshold_percent" = 100;
     "browser.tabs.min_inactive_duration_before_unload" = 3600000;
     # Dim tabs unloaded automatically so they are visible in the tab bar.
     "browser.tabs.fadeOutUnloadedTabs" = true;

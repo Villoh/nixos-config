@@ -30,6 +30,21 @@ let
     };
   };
   discord = discordClients.${config.home.sessionVariables.DISCORD};
+
+  # Push-to-talk commands run on key press and key release.
+  # Pick the client with DICTATION in modules/home/core/defaults.nix.
+  # Handy only has a toggle, so it runs the same command on both edges.
+  dictationClients = {
+    handy = rec {
+      press = "${pkgs.handy}/bin/handy --toggle-transcription";
+      release = press;
+    };
+    hex = {
+      press = "hex dictation start";
+      release = "hex dictation stop";
+    };
+  };
+  dictation = dictationClients.${config.home.sessionVariables.DICTATION};
 in
 {
   wayland.windowManager.hyprland = {
@@ -63,10 +78,10 @@ in
       -- Open WhatsApp in ZapFast.
       hl.bind("SUPER + SHIFT + Z", hl.dsp.exec_cmd("zapfast"))
 
-      -- Toggle Handy on press and release so Ctrl+Shift+Space behaves as
-      -- push-to-talk. The CLI works reliably with the running instance.
-      hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
-      hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"), { release = true })
+      -- Push-to-talk dictation with the client selected by DICTATION. The CLI
+      -- works reliably with the running instance.
+      hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${dictation.press}"))
+      hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${dictation.release}"), { release = true })
       -- Alternative: tap Super+D to start, tap again to stop. The delay lets Super
       -- be released before wtype types, otherwise letters fire as Super shortcuts.
       -- hl.bind("SUPER + D", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))

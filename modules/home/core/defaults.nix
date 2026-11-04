@@ -12,6 +12,8 @@ let
     # Override UWSM's compositor-derived prefix after its defaults are loaded.
     XDG_MENU_PREFIX = "plasma-";
     DISCORD = "equibop";
+    # Dictation client bound to Ctrl+Shift+Space: handy or hex.
+    DICTATION = "hex";
     # Ask Nix-packaged Electron apps to use native Wayland.
     NIXOS_OZONE_WL = "1";
   };

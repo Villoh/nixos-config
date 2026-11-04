@@ -119,6 +119,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Local voice dictation. Must follow our nixpkgs: its own pinned glibc can be older than the
+    # graphics drivers need, and the window then finds no Vulkan adapter.
+    hex = {
+      url = "github:anomalyco/hex";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     zapfast = {
       url = "github:crmne/zapfast";
       inputs.nixpkgs.follows = "nixpkgs";

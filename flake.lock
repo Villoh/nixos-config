@@ -389,6 +389,27 @@
         "type": "github"
       }
     },
+    "hex": {
+      "inputs": {
+        "home-manager": "home-manager",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793824776,
+        "narHash": "sha256-ORRF0v6adD1ZcsgqBwZBy8NoXN037z3OYMlHcTc/CSU=",
+        "owner": "anomalyco",
+        "repo": "hex",
+        "rev": "227d0f5d9bab8bd9bb2d41551f1dbec29a70a994",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "repo": "hex",
+        "type": "github"
+      }
+    },
     "himalaya-tui": {
       "inputs": {
         "fenix": "fenix",
@@ -432,6 +453,27 @@
       }
     },
     "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "hex",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787797243,
+        "narHash": "sha256-8+Q7NOB7RPajRjA4pbCDLzqH+MTjnG9x6LUPLfL2joA=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "99c9ec63390f1d8c14d95d9e8b17cc29cfbd4e11",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "home-manager_2": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -774,9 +816,10 @@
         "dms-profiles": "dms-profiles",
         "goopdl": "goopdl",
         "helium-browser": "helium-browser",
+        "hex": "hex",
         "himalaya-tui": "himalaya-tui",
         "holded-tt": "holded-tt",
-        "home-manager": "home-manager",
+        "home-manager": "home-manager_2",
         "lanzaboote": "lanzaboote",
         "llm-agents": "llm-agents",
         "masamune": "masamune",

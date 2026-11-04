@@ -22,6 +22,19 @@
   nixpkgs.overlays = [
     inputs.self.overlays.default
     (_final: prev: {
+      # Handy 0.9.6 forces WEBKIT_DISABLE_DMABUF_RENDERER=1, which makes WebKitGTK 2.54
+      # draw only the damaged regions (overlay turns into a glitchy square). Use the
+      # upstream fix (cjpais/Handy#2360) instead. Remove once nixpkgs ships Handy >= 0.10.
+      handy = prev.handy.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          substituteInPlace src-tauri/src/main.rs \
+            --replace-fail 'std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");' \
+                           'std::env::set_var("WEBKIT_DMABUF_RENDERER_FORCE_SHM", "1");'
+        '';
+        preFixup = builtins.replaceStrings [ "--set WEBKIT_DISABLE_DMABUF_RENDERER 1" ] [
+          "--set WEBKIT_DMABUF_RENDERER_FORCE_SHM 1"
+        ] old.preFixup;
+      });
       filen-desktop = prev.filen-desktop.overrideAttrs (old: {
         npmRebuildFlags = (old.npmRebuildFlags or [ ]) ++ [ "--ignore-scripts" ];
         preBuild = (old.preBuild or "") + ''

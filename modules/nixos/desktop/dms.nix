@@ -23,6 +23,17 @@ let
         -e '/"type": {/,/"font_style"/s/dank16.color3.light.hex/colors.primary.light.hex/' \
         "$template"
 
+      # GTK: DMS makes headerbar_bg == headerbar_backdrop == window_bg, so GTK/Chromium
+      # apps (Brave) can't tell the focused window from the rest, even after pressing
+      # "Apply GTK colors". The focused headerbar gets a raised surface and unfocused
+      # text is dimmed (same values adw-gtk3 uses).
+      # Fails silently if upstream changes the templates; recheck after DMS updates.
+      tpl=../quickshell/matugen/templates
+      sed -i \
+        -e 's/\(headerbar_bg_color {{colors\.\)\(surface\|background\)\./\1surface_container./' \
+        -e 's/\(theme_unfocused_fg_color \)@window_fg_color;/\1mix(@window_fg_color,@window_bg_color,0.5);/' \
+        "$tpl/gtk-colors.css" "$tpl/gtk-light-colors.css"
+
       # Toasts: start expanded and stay longer (info 1.5s -> 5s, warning 3s -> 6s).
       # DMS 1.6.2 has no setting for this: durations are hardcoded in ToastService.qml.
       # Kept as sed on purpose; fails silently if upstream changes those lines, so

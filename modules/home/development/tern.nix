@@ -39,20 +39,22 @@ in
 {
   home.packages = [ tern ];
 
-  # Overrides the entry Tern writes itself, whose Exec bypasses the wrapper.
-  xdg.desktopEntries."so.stencil.tern" = {
-    name = "Tern";
-    comment = "Multiplexing terminal";
-    exec = "${lib.getExe tern}";
-    icon = "so.stencil.tern";
-    terminal = false;
-    categories = [
-      "System"
-      "TerminalEmulator"
-    ];
-    settings = {
-      StartupWMClass = "so.stencil.tern";
-      X-TerminalArgExec = "-e";
-    };
+  # Replaces the entry Tern writes itself, whose Exec bypasses the wrapper. It
+  # must live in ~/.local/share/applications (not a profile) because that dir
+  # shadows XDG_DATA_DIRS; force overwrites Tern's regular file.
+  xdg.dataFile."applications/so.stencil.tern.desktop" = {
+    force = true;
+    text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Tern
+      Comment=Multiplexing terminal
+      Exec=${lib.getExe tern}
+      Icon=so.stencil.tern
+      StartupWMClass=so.stencil.tern
+      Terminal=false
+      Categories=System;TerminalEmulator;
+      X-TerminalArgExec=-e
+    '';
   };
 }

@@ -24,10 +24,7 @@
     dbeaver-bin
     onlyoffice-desktopeditors
     handy
-    # Upstream's Russian i18n test fails on a missing macOS string at this rev; skip checks.
-    (inputs.hex.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
-      doCheck = false;
-    }))
+    hex
     wtype
   ]);
 }

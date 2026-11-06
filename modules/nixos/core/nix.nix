@@ -35,6 +35,10 @@
           "--set WEBKIT_DMABUF_RENDERER_FORCE_SHM 1"
         ] old.preFixup;
       });
+      # Upstream's Russian i18n test fails on a missing macOS string at this rev; skip checks.
+      hex = inputs.hex.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
+        doCheck = false;
+      });
       filen-desktop = prev.filen-desktop.overrideAttrs (old: {
         npmRebuildFlags = (old.npmRebuildFlags or [ ]) ++ [ "--ignore-scripts" ];
         preBuild = (old.preBuild or "") + ''

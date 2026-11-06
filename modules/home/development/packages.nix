@@ -46,8 +46,6 @@ in
     t3code-desktop
     codex
     pi-coding-agent
-    devin-cli
-    devin-desktop
     herdr
     omp
     happy-coder

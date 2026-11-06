@@ -31,16 +31,6 @@
       StartupNotify=false
       Terminal=false
     '';
-    "autostart/equibop.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=Equibop
-      Comment=Equibop autostart script
-      Exec=${pkgs.equibop}/bin/equibop --start-minimized
-      StartupNotify=false
-      Terminal=false
-      Icon=equibop
-    '';
     "autostart/filen-desktop.desktop".text = ''
       [Desktop Entry]
       Type=Application

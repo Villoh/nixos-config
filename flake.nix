@@ -131,6 +131,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    serein = {
+      url = "github:ViceVerse-cz/Serein";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Pinned to its own nixpkgs (25.11) plus rust-overlay, as upstream builds it.
+    yapfast.url = "github:yapfast/yapfast";
+
     himalaya-tui = {
       url = "github:pimalaya/himalaya-tui";
       inputs.nixpkgs.follows = "nixpkgs";

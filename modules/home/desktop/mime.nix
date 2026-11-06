@@ -19,8 +19,9 @@
     #     (_: [ "imv.desktop" ])
     #   // { ... }
     defaultApplications = {
-      "inode/directory" = [ "org.kde.dolphin.desktop" ];
-      "x-scheme-handler/trash" = [ "org.kde.dolphin.desktop" ];
+      "inode/directory" = [ "io.github.lgse.Strata.desktop" ];
+      # Strata browses trash:/// but its .desktop doesn't declare the scheme.
+      "x-scheme-handler/trash" = [ "io.github.lgse.Strata.desktop" ];
       "application/pdf" = [ "okularApplication_pdf.desktop" ];
       "x-scheme-handler/http" = [ "zen.desktop" ];
       "x-scheme-handler/https" = [ "zen.desktop" ];

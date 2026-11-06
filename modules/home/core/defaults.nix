@@ -6,9 +6,9 @@ let
     VISUAL = "zeditor";
     BROWSER = "zen";
     TERMINAL = "ghostty";
-    EXPLORER = "dolphin";
+    EXPLORER = "strata";
     PAGER = "less";
-    FILE_MANAGER = "dolphin";
+    FILE_MANAGER = "strata";
     # Override UWSM's compositor-derived prefix after its defaults are loaded.
     XDG_MENU_PREFIX = "plasma-";
     DISCORD = "serein";

@@ -1,10 +1,14 @@
 { inputs, pkgs, ... }:
 
+let
+  # rarSupport pulls in non-free UnRAR (allowUnfree is set in modules/nixos/core/nix.nix).
+  strata = pkgs.callPackage "${inputs.strata}/package.nix" { rarSupport = true; };
+in
 {
   home.packages = [
-    inputs.strata.packages.${pkgs.stdenv.hostPlatform.system}.strata
+    strata
     # Registers org.freedesktop.FileManager1 (what the previous in-tree package did).
-    inputs.strata.packages.${pkgs.stdenv.hostPlatform.system}.strata.fileManagerService
+    strata.fileManagerService
     pkgs.wealthfolio
     inputs.arca.packages.${pkgs.stdenv.hostPlatform.system}.default
   ]

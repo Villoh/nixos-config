@@ -889,7 +889,7 @@
         "sheprd": "sheprd",
         "strata": "strata",
         "waydroid-nvidia-nix": "waydroid-nvidia-nix",
-        "xp-music": "xp-music",
+        "workmux": "workmux",
         "yapfast": "yapfast",
         "ytm-player": "ytm-player",
         "zapfast": "zapfast",
@@ -1161,24 +1161,23 @@
         "type": "github"
       }
     },
-    "xp-music": {
+    "workmux": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1793475546,
-        "narHash": "sha256-I4n7CnV2soVChGcOduqE7NFqf++oKZXuEuPibBIsSxE=",
-        "owner": "Villoh",
-        "repo": "xp-music",
-        "rev": "cf52000a20accd7e1e999a16ead963ad0d824e40",
+        "lastModified": 1794085825,
+        "narHash": "sha256-agwSg00KQ5WxTQBKNprgHuMC7s90tP+xk+ON9IY6lDQ=",
+        "owner": "raine",
+        "repo": "workmux",
+        "rev": "355ff467b3ca93731e4d74b2b793891bf3dcc47a",
         "type": "github"
       },
       "original": {
-        "owner": "Villoh",
-        "ref": "integration",
-        "repo": "xp-music",
+        "owner": "raine",
+        "repo": "workmux",
         "type": "github"
       }
     },

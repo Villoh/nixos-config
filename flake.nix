@@ -113,12 +113,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    xp-music = {
-      # Fork branch with the pending PRs (#8 skins, #9 Discord); back to github:Iznardo/xp-music once merged.
-      url = "github:Villoh/xp-music?ref=integration";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Local voice dictation. Must follow our nixpkgs: its own pinned glibc can be older than the
     # graphics drivers need, and the window then finds no Vulkan adapter.
     hex = {
@@ -176,6 +170,12 @@
     # Community packaging of Shiro836/waydroid-nvidia (GPU-accelerated Waydroid).
     waydroid-nvidia-nix = {
       url = "github:yigexuanmu/waydroid-nvidia-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Git worktrees plus agent status in tmux; not in nixpkgs, upstream ships a flake.
+    workmux = {
+      url = "github:raine/workmux";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 let
   whichKey = pkgs.tmuxPlugins.tmux-which-key;
@@ -35,6 +35,7 @@ in
   home.packages = [
     pkgs.tmux
     pkgs.sesh
+    inputs.workmux.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   xdg.configFile."tmux/plugins/tmux-which-key/config.yaml".source = whichKeyConfig;
@@ -61,6 +62,11 @@ in
     set -g @continuum-restore on
 
     bind -N "Pick a session (sesh)" T display-popup -E -w 80% -h 70% -d "#{pane_current_path}" -T "Sessions" "sesh picker -i"
+    # Omarchy's window tabs plus workmux's status icon (status_format: false in its config).
+    set -g window-status-format "#[fg=brightblack] #I:#W#{?@workmux_status, #{@workmux_status},} "
+    set -g window-status-current-format "#[fg=blue,bold] #I:#W#{?@workmux_status, #{@workmux_status},} "
+    bind -N "Toggle workmux sidebar" B run-shell "workmux sidebar"
+    bind -N "workmux dashboard" W display-popup -E -w 90% -h 90% -d "#{pane_current_path}" -T "workmux" "workmux dashboard"
 
     ${builtins.concatStringsSep "\n" (map (p: "run-shell ${p.rtp}") plugins)}
   '';

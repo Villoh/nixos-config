@@ -10,6 +10,8 @@
     git-lfs
     nix-index
     gh
+    glab # GitLab CLI, the gh equivalent for gitlab.com
+    tea # Gitea/Forgejo CLI, works against codeberg.org
     chezmoi
     gum
     rtk

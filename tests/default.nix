@@ -81,7 +81,7 @@ let
     "goverlay"
     "wine-wow64"
     "winetricks"
-    "brave"
+    "brave-origin"
     "helium"
     "zen-browser"
   ];

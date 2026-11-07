@@ -139,6 +139,10 @@
     # Pinned to its own nixpkgs (25.11) plus rust-overlay, as upstream builds it.
     yapfast.url = "github:yapfast/yapfast";
 
+    # Builds from source with the toolchain its rust-toolchain.toml pins, so it keeps its own
+    # nixpkgs: a nixpkgs bump here does not recompile it, only a new Sheprd commit does.
+    sheprd.url = "github:sheprd-labs/sheprd";
+
     himalaya-tui = {
       url = "github:pimalaya/himalaya-tui";
       inputs.nixpkgs.follows = "nixpkgs";

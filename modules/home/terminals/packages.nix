@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   home.packages = with pkgs; [
@@ -13,5 +13,12 @@
     sshfs
     superfile
     nerd-fonts.jetbrains-mono
+
+    # Modern workspaces under evaluation; keep the ones that stay and drop the rest.
+    warp-terminal
+    herdr-app
+    # On PATH so Sheprd (its flake build bundles none) can start it for Herdr 2 terminals.
+    herdr-core
+    inputs.sheprd.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

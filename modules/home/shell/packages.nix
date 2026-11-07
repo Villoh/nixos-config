@@ -12,6 +12,7 @@
     gh
     glab # GitLab CLI, the gh equivalent for gitlab.com
     tea # Gitea/Forgejo CLI, works against codeberg.org
+    forgejo-cli # fj: Forgejo-native CLI, browser login for codeberg.org
     chezmoi
     gum
     rtk

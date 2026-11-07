@@ -17,7 +17,6 @@ in
     papirus-icon-theme
     tela-icon-theme
     fluent-icon-theme
-    kdePackages.dolphin
     kdePackages.kio-extras
     kdePackages.kde-cli-tools
     kdePackages.plasma-workspace

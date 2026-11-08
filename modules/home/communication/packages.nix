@@ -50,11 +50,15 @@ in
     telegram-desktop
     nchat
     inputs.himalaya-tui.packages.${pkgs.stdenv.hostPlatform.system}.default
-    inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
+    # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
+    # inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
+    zapfast-bin
     # Disabled: the host build has no app ID, so Wayland global shortcuts never register
     # (ViceVerse-cz/Serein#905). Serein runs from Flatpak above; re-enable once fixed upstream.
     # inputs.serein.packages.${pkgs.stdenv.hostPlatform.system}.serein
     # Fallback client (beta; compiles libwebrtc/Skia).
-    inputs.yapfast.packages.${pkgs.stdenv.hostPlatform.system}.yapfast
+    # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
+    # inputs.yapfast.packages.${pkgs.stdenv.hostPlatform.system}.yapfast
+    yapfast-bin
   ];
 }

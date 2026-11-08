@@ -4,9 +4,11 @@
 # To switch, enable ONE block (portal in extraPortals + its FileChooser line).
 # Always keep "gtk" last as a fallback.
 #
-# The callPackage is identical to modules/home/desktop/packages.nix, so it is not built twice.
+# The package is the same as in modules/home/desktop/packages.nix, so it is not built twice.
 let
-  strata = pkgs.callPackage "${inputs.strata}/package.nix" { rarSupport = true; };
+  # PENDING: cache. Prebuilt release (no RAR) meanwhile; the source build was
+  # pkgs.callPackage "${inputs.strata}/package.nix" { rarSupport = true; }.
+  strata = pkgs.strata-bin;
 in
 {
   xdg.portal = {

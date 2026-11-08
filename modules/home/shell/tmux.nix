@@ -36,7 +36,9 @@ in
   home.packages = [
     pkgs.tmux
     pkgs.sesh
-    inputs.workmux.packages.${pkgs.stdenv.hostPlatform.system}.default
+    # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
+    # inputs.workmux.packages.${pkgs.stdenv.hostPlatform.system}.default
+    pkgs.workmux-bin
   ];
 
   xdg.configFile."tmux/plugins/tmux-which-key/config.yaml".source = whichKeyConfig;

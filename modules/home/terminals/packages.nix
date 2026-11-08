@@ -21,6 +21,8 @@
     herdr-app
     # On PATH so Sheprd (its flake build bundles none) can start it for Herdr 2 terminals.
     herdr-core
-    inputs.sheprd.packages.${pkgs.stdenv.hostPlatform.system}.default
+    # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
+    # inputs.sheprd.packages.${pkgs.stdenv.hostPlatform.system}.default
+    sheprd-bin
   ];
 }

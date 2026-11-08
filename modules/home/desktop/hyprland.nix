@@ -137,18 +137,6 @@ in
         border_size = 0,
       })
 
-      -- XP Music draws its own skinned, rounded/transparent frame (the compact
-      -- mode is not even rectangular); float it and drop Hyprland's border,
-      -- blur, shadow and dim so they do not show through the transparent areas.
-      hl.window_rule({
-        match = { class = "^xp-music$" },
-        float = true,
-        no_blur = true,
-        no_shadow = true,
-        no_dim = true,
-        border_size = 0,
-      })
-
       -- Apply host-specific defaults after personal settings (e.g. keyboard).
       require("/etc/xdg/hypr/host")
     '';

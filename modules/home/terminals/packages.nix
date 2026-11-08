@@ -13,6 +13,8 @@
     sshfs
     superfile
     nerd-fonts.jetbrains-mono
+    # Logos of the herdr-agent-usage sidebar; Sheprd maps them via `[sidebar] fallback`.
+    herdr-agent-icons
 
     # Modern workspaces under evaluation; keep the ones that stay and drop the rest.
     warp-terminal

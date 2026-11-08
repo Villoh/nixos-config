@@ -113,6 +113,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Music players under evaluation; both ship their own flake.
+    sonora = {
+      url = "github:sonorahq/sonora";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    kopuz = {
+      url = "github:Kopuz-org/kopuz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Local voice dictation. Must follow our nixpkgs: its own pinned glibc can be older than the
     # graphics drivers need, and the window then finds no Vulkan adapter.
     hex = {
@@ -130,8 +141,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Pinned to its own nixpkgs (25.11) plus rust-overlay, as upstream builds it.
-    yapfast.url = "github:yapfast/yapfast";
+    # Follows our nixpkgs although upstream tests against 25.11: it builds and starts on ours
+    # (glibc 2.44). Its build hardcodes llvmPackages_21; if a nixpkgs bump drops it, go back to
+    # `yapfast.url = "github:yapfast/yapfast";` without follows.
+    yapfast = {
+      url = "github:yapfast/yapfast";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Builds from source with the toolchain its rust-toolchain.toml pins, so it keeps its own
     # nixpkgs: a nixpkgs bump here does not recompile it, only a new Sheprd commit does.

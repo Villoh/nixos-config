@@ -9,6 +9,9 @@ in
   services.flatpak = {
     enable = true;
     uninstallUnmanaged = false;
+    # Flatpaks only update with `flatpak update` (Hylki lagged several releases). Enable ONE:
+    # update.onActivation = true; # on every `nh os switch`, so it needs the network
+    # update.auto = { enable = true; onCalendar = "weekly"; }; # on its own, once a week
     # Flatpak on NixOS can't resolve /etc/localtime, so the sandbox falls back to UTC.
     overrides."co.hyprlab.Hylki".Environment.TZ = "Europe/Madrid";
     overrides."com.flectar.mail".Environment.TZ = "Europe/Madrid";

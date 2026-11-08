@@ -26,6 +26,7 @@ let
     tmux-fzf
     fingers
     extrakto
+    fzf-tmux-url
     tmux-floax
     resurrect
     continuum
@@ -67,6 +68,8 @@ in
     set -g window-status-current-format "#[fg=blue,bold] #I:#W#{?@workmux_status, #{@workmux_status},} "
     bind -N "Toggle workmux sidebar" B run-shell "workmux sidebar"
     bind -N "workmux dashboard" W display-popup -E -w 90% -h 90% -d "#{pane_current_path}" -T "workmux" "workmux dashboard"
+    bind -N "workmux: last done or waiting agent" a run-shell "workmux last-done"
+    bind -N "workmux: toggle last agent" A run-shell "workmux last-agent"
 
     ${builtins.concatStringsSep "\n" (map (p: "run-shell ${p.rtp}") plugins)}
   '';

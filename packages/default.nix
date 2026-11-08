@@ -19,5 +19,7 @@ rec {
   # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
   # wealthfolio = pkgs.callPackage ./wealthfolio/package.nix { };
   wealthfolio = prebuilt.wealthfolio-bin;
+  # Music player under evaluation: prebuilt release, upstream ships no flake.
+  meiro = pkgs.callPackage ./meiro/package.nix { };
 }
 // prebuilt

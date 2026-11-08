@@ -3,7 +3,12 @@
 # except herdr-core and herdr-app (upstream hosts them outside GitHub) and herdr-agent-icons
 # (a single font file pinned to a commit).
 # Exposed as `packages.<system>.*` and, through `overlays.default`, as `pkgs.<name>`.
-pkgs: rec {
+pkgs:
+let
+  # TEMPORARY prebuilt releases, see prebuilt/default.nix.
+  prebuilt = import ./prebuilt pkgs;
+in
+rec {
   flectar-mail = pkgs.callPackage ./flectar-mail/package.nix { };
   tunnel-agent = pkgs.callPackage ./tunnel-agent/package.nix { };
   # Herdr App under evaluation: a prebuilt release, so nothing is compiled.
@@ -11,5 +16,8 @@ pkgs: rec {
   herdr-app = pkgs.callPackage ./herdr-app/package.nix { inherit herdr-core; };
   herdr-agent-icons = pkgs.callPackage ./herdr-agent-icons/package.nix { };
   # Shadows nixpkgs' wealthfolio on purpose: nixpkgs runs behind upstream.
-  wealthfolio = pkgs.callPackage ./wealthfolio/package.nix { };
+  # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
+  # wealthfolio = pkgs.callPackage ./wealthfolio/package.nix { };
+  wealthfolio = prebuilt.wealthfolio-bin;
 }
+// prebuilt

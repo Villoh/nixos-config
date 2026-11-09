@@ -9,6 +9,7 @@ pkgs: {
   handy-bin = pkgs.callPackage ./handy/package.nix { };
   hex-bin = pkgs.callPackage ./hex/package.nix { };
   kopuz-bin = pkgs.callPackage ./kopuz/package.nix { };
+  serein-bin = pkgs.callPackage ./serein/package.nix { };
   sheprd-bin = pkgs.callPackage ./sheprd/package.nix { };
   strata-bin = pkgs.callPackage ./strata/package.nix { };
   wealthfolio-bin = pkgs.callPackage ./wealthfolio/package.nix { };

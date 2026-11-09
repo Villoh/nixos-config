@@ -136,8 +136,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Host build, disabled for now (modules/home/communication/packages.nix): 764 derivations
-    # compile locally and it has no app ID, so Wayland global shortcuts fail (#905). It follows our
+    # Host build (modules/home/communication/packages.nix): 764 derivations compile locally until
+    # a cache serves them. Needs a rev with #906 (host app ID for global shortcuts). It follows our
     # nixpkgs so it shares the system's glibc and Mesa (wgpu needs a matching Vulkan stack, as with
     # hex). Cost: every nixpkgs bump rebuilds it, so the pipeline must rebuild it too. The cache
     # hits when the pipeline builds `inputs.serein.packages.<system>.serein` from this same lock.

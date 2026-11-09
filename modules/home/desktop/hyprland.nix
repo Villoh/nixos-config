@@ -18,13 +18,12 @@ let
       mute = ''hl.dsp.send_shortcut({ mods = "CTRL_SHIFT", key = "m", window = "class:^(vesktop)$" })'';
       deafen = ''hl.dsp.send_shortcut({ mods = "CTRL_SHIFT", key = "d", window = "class:^(vesktop)$" })'';
     };
-    # Serein runs as a Flatpak, where it has an app ID and registers its global
-    # shortcuts (the Nix build can't, ViceVerse-cz/Serein#905). The ids come from
-    # `hyprctl globalshortcuts`: serein-0 is mute, serein-1 deafen.
+    # Serein registers its global shortcuts with the portal under a stable id per action
+    # (see `hyprctl globalshortcuts`); the Nix build needs ViceVerse-cz/Serein#906 for that.
     serein = {
-      launch = "flatpak run cz.viceverse.serein";
-      mute = ''hl.dsp.global("cz.viceverse.serein:serein-0")'';
-      deafen = ''hl.dsp.global("cz.viceverse.serein:serein-1")'';
+      launch = "serein";
+      mute = ''hl.dsp.global("cz.viceverse.serein:toggle-mute")'';
+      deafen = ''hl.dsp.global("cz.viceverse.serein:toggle-deafen")'';
     };
     # Yapfast has no CLI nor mute/deafen keys (only push-to-talk), so those binds do nothing.
     yapfast = {

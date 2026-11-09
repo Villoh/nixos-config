@@ -66,8 +66,8 @@ changelog first.
 
 ## Prebuilt releases (`packages/prebuilt/`, temporary)
 
-`arca`, `handy`, `hex`, `kopuz`, `sheprd`, `strata`, `wealthfolio`, `workmux`, `yapfast` and
-`zapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
+`arca`, `handy`, `hex`, `kopuz`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux`, `yapfast`
+and `zapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
 compile locally (no binary cache yet). They are bumped like the packages above:
 
 ```bash
@@ -94,6 +94,14 @@ helpers.
 separate channel (`*-nightly` binaries, `moe.kopuz.kopuz.nightly`, `kopuzd-nightly.sock`), so it
 does not share the stable app's socket. Bump it with `nix-update --flake kopuz-bin
 --version=unstable`; the tags are `v0.68.0-nightly.YYYYMMDD[.N]`.
+
+`serein-bin` is the nightly Arch package (upstream publishes only pre-releases, tagged
+`v1.0.0-nightly.YYYYMMDD.N`), so it moves with the `serein` input's `main`. The Flatpak is
+not an option: its PID namespace makes Serein hand Hyprland a sandbox PID, so the tray hide
+never finds the window. Global shortcuts need a build with ViceVerse-cz/Serein#906; they
+register as `cz.viceverse.serein:toggle-mute` and `:toggle-deafen`. Bump it with
+`nix-update --flake serein-bin --version=unstable`, then log in again only if the profile
+moved: the host build keeps its data in `~/.local/share/serein`, not in the Flatpak's.
 
 ## Package formats: flake, binary or Flatpak
 
@@ -128,7 +136,7 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | dankcalendar | yes (Go) | yes (`dcal`) | no | Flake |
 | himalaya-tui | yes (482 crates) | no | no | Flake |
 | nixup | yes (own flake) | no | no | Flake |
-| serein | yes (input kept, 764 derivations, host build disabled until a cache and #905) | ? | yes (own repo) | Flatpak: the sandbox gives it the app ID that global shortcuts need (ViceVerse-cz/Serein#905) |
+| serein | yes (764 derivations; needs a rev with ViceVerse-cz/Serein#906 for global shortcuts) | nightly only (all releases are pre-releases; Arch `pkg.tar.zst`) | yes (own repo), but its PID namespace breaks the tray hide: Serein sends Hyprland its sandbox PID | Binary (nightly) |
 | hylki | no official flake; community `clementpoiret/hylki-flake` builds it from source | yes (`.deb` 11 MiB, `.rpm`, AppImage; native Rust and GTK4 app) | yes (own `.flatpakref`, GNOME 50 runtime) | Flatpak |
 | flectar-mail | no (no flake found, not in nixpkgs) | yes (`.deb` 33 MiB with a native binary and `libpdfium`, AppImage, `.rpm`) | yes (release bundle, `packages/flectar-mail`) | Flatpak |
 | rustdesk | nixpkgs, legacy Sciter UI | ? | yes (Flathub) | Flatpak: nixpkgs lacks the login the public server needs |

@@ -17,6 +17,9 @@ in
     overrides."com.flectar.mail".Environment.TZ = "Europe/Madrid";
     overrides."com.cherry_ai.CherryStudio".Environment.TZ = "Europe/Madrid";
     overrides."cz.viceverse.serein".Environment.TZ = "Europe/Madrid";
+    # Closing (Super+Q) parks the window in the tray through Hyprland's IPC socket; without
+    # it the sandboxed Serein can't hide on Wayland and the close is silently ignored.
+    overrides."cz.viceverse.serein".Context.filesystems = [ "xdg-run/hypr" ];
     packages = [
       {
         flatpakref = "https://hylki.hyprlab.co/flatpak/co.hyprlab.Hylki.flatpakref";
@@ -42,9 +45,11 @@ in
   };
 
   # Serein's Game Activity socket lives in the Flatpak's private runtime dir; link it
-  # into the host's so host apps (music players, games) can reach it.
+  # into the host's so host apps (music players, games) can reach it. The tray icon
+  # (IconThemePath=%t/serein-tray-icons) has the same problem: the shell shows an "S" fallback.
   systemd.user.tmpfiles.rules = [
     "L %t/discord-ipc-0 - - - - .flatpak/cz.viceverse.serein/xdg-run/discord-ipc-0"
+    "L %t/serein-tray-icons - - - - .flatpak/cz.viceverse.serein/xdg-run/serein-tray-icons"
   ];
 
   home.packages = with pkgs; [
@@ -56,8 +61,11 @@ in
     # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
     # inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
     zapfast-bin
-    # Disabled: the host build has no app ID, so Wayland global shortcuts never register
-    # (ViceVerse-cz/Serein#905). Serein runs from Flatpak above; re-enable once fixed upstream.
+    # PENDING: cache + upstream. Disabled: the host build compiles locally (764 derivations) and
+    # has no app ID, so Wayland global shortcuts never register (ViceVerse-cz/Serein#905).
+    # To switch: uncomment this, drop the Flatpak entry, the TZ/hypr overrides and the two
+    # tmpfiles links above, and point `launch` in hyprland.nix at `serein`.
+    # The input is wired and evaluates; only the cache and #905 are missing.
     # inputs.serein.packages.${pkgs.stdenv.hostPlatform.system}.serein
     # Fallback client (beta; compiles libwebrtc/Skia).
     # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.

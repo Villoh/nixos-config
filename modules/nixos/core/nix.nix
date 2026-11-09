@@ -6,6 +6,13 @@
     "flakes"
   ];
 
+  # PENDING: cache. Fill in when the pipeline pushes to the private cache, then revert the
+  # `-bin` swaps (see docs/maintenance/updates.md). Keep the key public; never commit the secret.
+  # nix.settings = {
+  #   extra-substituters = [ "https://<private-cache>" ];
+  #   extra-trusted-public-keys = [ "<cache-name>:<public-key>" ];
+  # };
+
   programs.nh.enable = true;
   environment.systemPackages = [ inputs.nixup.packages.${pkgs.stdenv.hostPlatform.system}.default ];
 

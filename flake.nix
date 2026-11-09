@@ -136,6 +136,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Host build, disabled for now (modules/home/communication/packages.nix): 764 derivations
+    # compile locally and it has no app ID, so Wayland global shortcuts fail (#905). It follows our
+    # nixpkgs so it shares the system's glibc and Mesa (wgpu needs a matching Vulkan stack, as with
+    # hex). Cost: every nixpkgs bump rebuilds it, so the pipeline must rebuild it too. The cache
+    # hits when the pipeline builds `inputs.serein.packages.<system>.serein` from this same lock.
+    # Dropping the follows avoids those rebuilds but risks the glibc/Vulkan mismatch.
     serein = {
       url = "github:ViceVerse-cz/Serein";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -170,6 +176,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # No nixpkgs.follows: upstream tests against its own nixpkgs, and its flake declares a Cachix
+    # cache (codex-desktop-linux.cachix.org) that only hits with that exact nixpkgs. Not trusted
+    # here: on 2026-11-09 it returned 404 for the path its CI says it pushed, so it builds locally.
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
     # Only used for claude-desktop (official .deb repackaged, daily-updated).

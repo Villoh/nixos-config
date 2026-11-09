@@ -128,7 +128,7 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | dankcalendar | yes (Go) | yes (`dcal`) | no | Flake |
 | himalaya-tui | yes (482 crates) | no | no | Flake |
 | nixup | yes (own flake) | no | no | Flake |
-| serein | yes (input kept, host build disabled) | ? | yes (own repo) | Flatpak: the sandbox gives it the app ID that global shortcuts need (ViceVerse-cz/Serein#905) |
+| serein | yes (input kept, 764 derivations, host build disabled until a cache and #905) | ? | yes (own repo) | Flatpak: the sandbox gives it the app ID that global shortcuts need (ViceVerse-cz/Serein#905) |
 | hylki | no official flake; community `clementpoiret/hylki-flake` builds it from source | yes (`.deb` 11 MiB, `.rpm`, AppImage; native Rust and GTK4 app) | yes (own `.flatpakref`, GNOME 50 runtime) | Flatpak |
 | flectar-mail | no (no flake found, not in nixpkgs) | yes (`.deb` 33 MiB with a native binary and `libpdfium`, AppImage, `.rpm`) | yes (release bundle, `packages/flectar-mail`) | Flatpak |
 | rustdesk | nixpkgs, legacy Sciter UI | ? | yes (Flathub) | Flatpak: nixpkgs lacks the login the public server needs |

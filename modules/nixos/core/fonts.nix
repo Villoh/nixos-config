@@ -6,6 +6,7 @@
       pkgs.inter
       pkgs.fira-code
       pkgs.liberation_ttf
+      pkgs.nerd-fonts.jetbrains-mono # kitty and ghostty
       pkgs.noto-fonts # GTK's UI font (Noto Sans) and the glyph fallback
       # Real Tahoma and Tahoma Bold (corefonts only has Tahoma Regular), Segoe UI, Consolas,
       # Lucida Console and the rest of the Windows 11 base fonts.

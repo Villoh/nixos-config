@@ -12,7 +12,6 @@
     exiftool
     sshfs
     superfile
-    nerd-fonts.jetbrains-mono
     # Logos of the herdr-agent-usage sidebar; Sheprd maps them via `[sidebar] fallback`.
     herdr-agent-icons
 

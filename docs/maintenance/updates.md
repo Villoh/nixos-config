@@ -137,9 +137,9 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | himalaya-tui | yes (482 crates) | no | no | Flake |
 | nixup | yes (own flake) | no | no | Flake |
 | serein | yes (764 derivations; needs a rev with ViceVerse-cz/Serein#906 for global shortcuts) | nightly only (all releases are pre-releases; Arch `pkg.tar.zst`) | yes (own repo), but its PID namespace breaks the tray hide: Serein sends Hyprland its sandbox PID | Binary (nightly) |
-| hylki | no official flake; community `clementpoiret/hylki-flake` builds it from source | yes (`.deb` 11 MiB, `.rpm`, AppImage; native Rust and GTK4 app) | yes (own `.flatpakref`, GNOME 50 runtime) | Flatpak |
+| hylki | no official flake; community `clementpoiret/hylki-flake` builds it from source (186 derivations) | yes (`.deb` 12 MiB, `.rpm`, AppImage; native Rust and GTK4 app), tested and working | yes (own `.flatpakref`, GNOME 50 runtime) | Flatpak: no problems so far; the flake is the goal once a private cache exists, the binary adds nothing over the Flatpak |
 | flectar-mail | no (no flake found, not in nixpkgs) | yes (`.deb` 33 MiB with a native binary and `libpdfium`, AppImage, `.rpm`) | yes (release bundle, `packages/flectar-mail`) | Flatpak |
-| rustdesk | nixpkgs, legacy Sciter UI | ? | yes (Flathub) | Flatpak: nixpkgs lacks the login the public server needs |
+| rustdesk | nixpkgs `rustdesk` is the legacy Sciter UI; `rustdesk-flutter` (1.4.9, current UI) is in cache.nixos.org | yes (`.deb`, AppImage 1.5.1) | yes (Flathub) | nixpkgs `rustdesk-flutter` (upstream is at 1.5.x) |
 | cherry-studio | nixpkgs, 1.9.11 on EOL Electron | ? | yes (Flathub) | Flatpak: Flathub tracks 2.x |
 
 "Crates" is the size of the project's `Cargo.lock`, a rough proxy for compile cost. Only

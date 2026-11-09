@@ -9,7 +9,7 @@ in
   services.flatpak = {
     enable = true;
     uninstallUnmanaged = false;
-    # Flatpaks only update with `flatpak update` (Hylki lagged several releases). Enable ONE:
+    # Flatpaks only update with `flatpak update` (Hylki lagged six releases). Enable ONE:
     # update.onActivation = true; # on every `nh os switch`, so it needs the network
     # update.auto = { enable = true; onCalendar = "weekly"; }; # on its own, once a week
     # Flatpak on NixOS can't resolve /etc/localtime, so the sandbox falls back to UTC.
@@ -27,8 +27,6 @@ in
         # nix-flatpak only installs bundles when sha256 changes (null -> null never installs).
         sha256 = "${flectarMail}";
       }
-      # nixpkgs builds the legacy Sciter UI, which lacks the third-party login the public server requires.
-      "com.rustdesk.RustDesk"
       # nixpkgs ships Cherry Studio 1.9.11 on EOL Electron 40 (marked insecure); Flathub tracks 2.x.
       "com.cherry_ai.CherryStudio"
     ];
@@ -39,6 +37,9 @@ in
     himalaya
     telegram-desktop
     nchat
+    # `rustdesk` is the legacy Sciter UI, which lacks the third-party login the public server
+    # requires; `rustdesk-flutter` is the current one and is in cache.nixos.org.
+    rustdesk-flutter
     inputs.himalaya-tui.packages.${pkgs.stdenv.hostPlatform.system}.default
     # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
     # inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast

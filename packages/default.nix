@@ -11,6 +11,7 @@ in
 rec {
   flectar-mail = pkgs.callPackage ./flectar-mail/package.nix { };
   tunnel-agent = pkgs.callPackage ./tunnel-agent/package.nix { };
+  google-sans-flex = pkgs.callPackage ./google-sans-flex/package.nix { };
   # Herdr App under evaluation: a prebuilt release, so nothing is compiled.
   herdr-core = pkgs.callPackage ./herdr-core/package.nix { };
   herdr-app = pkgs.callPackage ./herdr-app/package.nix { inherit herdr-core; };

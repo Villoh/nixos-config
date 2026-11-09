@@ -14,7 +14,12 @@
   # };
 
   programs.nh.enable = true;
-  environment.systemPackages = [ inputs.nixup.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+  environment.systemPackages = [
+    inputs.nixup.packages.${pkgs.stdenv.hostPlatform.system}.default
+    # `nixup update` edits the packages in packages/ with it; without it on PATH nixup falls
+    # back to `nix run nixpkgs#nix-update`, which needs the network after every GC.
+    pkgs.nix-update
+  ];
 
   # Allow Pi's prebuilt Linux computer-use helper to run on NixOS.
   programs.nix-ld.enable = true;

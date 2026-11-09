@@ -77,7 +77,14 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  passthru.updateScript = nix-update-script { extraArgs = [ "--version=unstable" ]; };
+  # Published releases only: the repo also has a stray v2.0 tag, 1428 commits behind the
+  # nightlies, that a tag search would pick as the newest version.
+  passthru.updateScript = nix-update-script {
+    extraArgs = [
+      "--version=unstable"
+      "--use-github-releases"
+    ];
+  };
 
   meta = {
     description = "Fast, modern music player with Jellyfin and local library support (nightly)";

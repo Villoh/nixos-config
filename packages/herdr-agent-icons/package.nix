@@ -45,6 +45,9 @@ stdenvNoCC.mkDerivation {
     runHook postInstall
   '';
 
+  # Tells nixup the pin is on purpose, so check does not ask for an update script.
+  passthru.nixup.pinned = "a font file at a plugin commit; bump it when the font changes";
+
   meta = {
     description = "Agent logo icon font for herdr-agent-usage";
     homepage = "https://github.com/levi-qiao/herdr-agent-quota";

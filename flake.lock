@@ -475,11 +475,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793700388,
-        "narHash": "sha256-Hlgwf/b/FifTzUTXF0cEx++c6XO0jJdZQ1ulPu6sAMg=",
+        "lastModified": 1794300737,
+        "narHash": "sha256-xNng5PhiAY9djpMrJOn8GfZFtvHXJAD06tfj9/oGi7A=",
         "owner": "Villoh",
         "repo": "holded-tt",
-        "rev": "beaa752ae63a000ccb29c8b71d6ae3598a8877ac",
+        "rev": "ca416865c9bd96cd2d73a1e3e9462ce76c6840b7",
         "type": "github"
       },
       "original": {
@@ -740,11 +740,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793696642,
-        "narHash": "sha256-HgOqai5AsLz+nfYMwFogQ9gJrXuYZt/DIGHk0k9ZP1Y=",
+        "lastModified": 1794302568,
+        "narHash": "sha256-lTa/g2vIr+D8dd9uKl5uWcDWBlYHoprs+bPy5wKVuTU=",
         "owner": "Villoh",
         "repo": "nixup",
-        "rev": "6babab1971cf3067671b5e4f18fbcfafa61a6a4e",
+        "rev": "ebdd480ba2f85aa583d40752776fd461d7be084b",
         "type": "github"
       },
       "original": {
@@ -1275,11 +1275,11 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1793906338,
-        "narHash": "sha256-sKvIvLdIdr968pXrkmDMEzABcn/+uV52ylfI3VvsTLU=",
+        "lastModified": 1794193831,
+        "narHash": "sha256-FylKrsJhnUGEipf8FqyxOeZlWZHIzIFKo3VAa8e0UnU=",
         "owner": "yapfast",
         "repo": "yapfast",
-        "rev": "ab7de6f55928be264f15453a807f55c4fe8eb3dc",
+        "rev": "f32ef7712ed3efe148782ef3459253c26f994c36",
         "type": "github"
       },
       "original": {

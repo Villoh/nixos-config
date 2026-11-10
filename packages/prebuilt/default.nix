@@ -1,7 +1,8 @@
 # TEMPORARY: upstream's prebuilt Linux releases of apps that otherwise compile from source here
 # (flake inputs with nixpkgs.follows, or nixpkgs packages missing from cache.nixos.org).
 # Drop this folder once a binary cache serves the source builds; each module line that uses
-# one of these carries a "PENDING: cache" comment next to the original source-built line.
+# one of these carries a "PENDING: cache" comment next to the original source-built line,
+# and the flake input that line needs is commented out in flake.nix with the same note.
 # Spread into packages/default.nix, so the names stay flat (a nested set would not be a
 # valid `packages.<system>` output).
 pkgs: {

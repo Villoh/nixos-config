@@ -96,7 +96,7 @@ does not share the stable app's socket. Bump it with `nix-update --flake kopuz-b
 --version=unstable`; the tags are `v0.68.0-nightly.YYYYMMDD[.N]`.
 
 `serein-bin` is the nightly Arch package (upstream publishes only pre-releases, tagged
-`v1.0.0-nightly.YYYYMMDD.N`), so it moves with the `serein` input's `main`. The Flatpak is
+`v1.0.0-nightly.YYYYMMDD.N`), so it moves with Serein's `main` branch. The Flatpak is
 not an option: its PID namespace makes Serein hand Hyprland a sandbox PID, so the tray hide
 never finds the window. Global shortcuts need a build with ViceVerse-cz/Serein#906; they
 register as `cz.viceverse.serein:toggle-mute` and `:toggle-deafen`. Bump it with

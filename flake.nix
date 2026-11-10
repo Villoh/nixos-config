@@ -119,22 +119,28 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    kopuz = {
-      url = "github:Kopuz-org/kopuz";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # PENDING: cache. Off while the modules use kopuz-bin (packages/prebuilt): uncomment it
+    # together with the source-built line next to that package.
+    # kopuz = {
+    #   url = "github:Kopuz-org/kopuz";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # Local voice dictation. Must follow our nixpkgs: its own pinned glibc can be older than the
     # graphics drivers need, and the window then finds no Vulkan adapter.
-    hex = {
-      url = "github:anomalyco/hex";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # PENDING: cache. Off while the modules use hex-bin (packages/prebuilt): uncomment it
+    # together with the source-built line next to that package.
+    # hex = {
+    #   url = "github:anomalyco/hex";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
-    zapfast = {
-      url = "github:crmne/zapfast";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # PENDING: cache. Off while the modules use zapfast-bin (packages/prebuilt): uncomment it
+    # together with the source-built line next to that package.
+    # zapfast = {
+    #   url = "github:crmne/zapfast";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # Host build (modules/home/communication/packages.nix): 764 derivations compile locally until
     # a cache serves them. Needs a rev with #906 (host app ID for global shortcuts). It follows our
@@ -142,22 +148,28 @@
     # hex). Cost: every nixpkgs bump rebuilds it, so the pipeline must rebuild it too. The cache
     # hits when the pipeline builds `inputs.serein.packages.<system>.serein` from this same lock.
     # Dropping the follows avoids those rebuilds but risks the glibc/Vulkan mismatch.
-    serein = {
-      url = "github:ViceVerse-cz/Serein";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # PENDING: cache. Off while the modules use serein-bin (packages/prebuilt): uncomment it
+    # together with the source-built line next to that package.
+    # serein = {
+    #   url = "github:ViceVerse-cz/Serein";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # Follows our nixpkgs although upstream tests against 25.11: it builds and starts on ours
     # (glibc 2.44). Its build hardcodes llvmPackages_21; if a nixpkgs bump drops it, go back to
     # `yapfast.url = "github:yapfast/yapfast";` without follows.
-    yapfast = {
-      url = "github:yapfast/yapfast";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # PENDING: cache. Off while the modules use yapfast-bin (packages/prebuilt): uncomment it
+    # together with the source-built line next to that package.
+    # yapfast = {
+    #   url = "github:yapfast/yapfast";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # Builds from source with the toolchain its rust-toolchain.toml pins, so it keeps its own
     # nixpkgs: a nixpkgs bump here does not recompile it, only a new Sheprd commit does.
-    sheprd.url = "github:sheprd-labs/sheprd";
+    # PENDING: cache. Off while the modules use sheprd-bin (packages/prebuilt): uncomment it
+    # together with the source-built line next to that package.
+    # sheprd.url = "github:sheprd-labs/sheprd";
 
     himalaya-tui = {
       url = "github:pimalaya/himalaya-tui";
@@ -170,7 +182,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Update checker for this repo (nixup check / lock / pkg); never activates anything.
+    # Update checker for this repo (nixup check / update); never activates a generation.
     nixup = {
       url = "github:Villoh/nixup";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -187,10 +199,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    arca = {
-      url = "github:beyondhumane/arca";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # PENDING: cache. Off while the modules use arca-bin (packages/prebuilt): uncomment it
+    # together with the source-built line next to that package.
+    # arca = {
+    #   url = "github:beyondhumane/arca";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # Community packaging of Shiro836/waydroid-nvidia (GPU-accelerated Waydroid).
     waydroid-nvidia-nix = {
@@ -199,10 +213,12 @@
     };
 
     # Git worktrees plus agent status in tmux; not in nixpkgs, upstream ships a flake.
-    workmux = {
-      url = "github:raine/workmux";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # PENDING: cache. Off while the modules use workmux-bin (packages/prebuilt): uncomment it
+    # together with the source-built line next to that package.
+    # workmux = {
+    #   url = "github:raine/workmux";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
   };
 

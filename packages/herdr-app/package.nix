@@ -2,6 +2,7 @@
   lib,
   stdenv,
   fetchurl,
+  nix-update-script,
   autoPatchelfHook,
   makeWrapper,
   herdr-core,
@@ -20,15 +21,13 @@
 
 # Upstream's prebuilt Linux release, so nothing is compiled here. Upstream's installer
 # is not used: it pipes a script into sh and writes to ~/.local.
-# No updateScript: the tarball is hosted outside GitHub, bump version and hash by hand
-# from https://releases.herdr.dev/app/latest.json.
 stdenv.mkDerivation (finalAttrs: {
   pname = "herdr-app";
-  version = "0.1.13";
+  version = "0.1.14";
 
   src = fetchurl {
     url = "https://releases.herdr.dev/app/${finalAttrs.version}/herdr-app-linux-x86_64.tar.gz";
-    hash = "sha256-d7C+cqRsoUuzZzZaBBZGQfkUs6aXErrDkdOcVqlZvvQ=";
+    hash = "sha256-R1o4P49DnjGRqGY1tcEobOTf0tn83x58vf3Wxxdvj/M=";
   };
 
   sourceRoot = "herdr-app";
@@ -76,6 +75,14 @@ stdenv.mkDerivation (finalAttrs: {
     EOF
     runHook postInstall
   '';
+
+  # The tarball lives on releases.herdr.dev; the versions are the tags of the GitHub repo.
+  passthru.updateScript = nix-update-script {
+    extraArgs = [
+      "--url"
+      "https://github.com/herdrdev/herdr-app"
+    ];
+  };
 
   meta = {
     description = "Desktop app for terminals and coding agents";

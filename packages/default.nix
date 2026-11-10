@@ -1,7 +1,6 @@
 # Packages that are not in nixpkgs (or run ahead of it). Every one carries
 # `passthru.updateScript`, so `nix-update --flake <name>` bumps version and hashes,
-# except herdr-core and herdr-app (upstream hosts them outside GitHub) and herdr-agent-icons
-# (a single font file pinned to a commit).
+# except herdr-agent-icons (a single font file pinned to a commit).
 # Exposed as `packages.<system>.*` and, through `overlays.default`, as `pkgs.<name>`.
 pkgs:
 let

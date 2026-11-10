@@ -2,18 +2,18 @@
   lib,
   stdenv,
   fetchurl,
+  nix-update-script,
   autoPatchelfHook,
 }:
 
-# Runs Herdr App's terminals and agents. Upstream publishes no GitHub releases for it, so
-# bump version and hash by hand from https://releases.herdr.dev/core/latest.json.
+# Runs Herdr App's terminals and agents.
 stdenv.mkDerivation (finalAttrs: {
   pname = "herdr-core";
-  version = "0.1.18";
+  version = "0.1.19";
 
   src = fetchurl {
     url = "https://releases.herdr.dev/core/${finalAttrs.version}/herdr-core-linux-x86_64.tar.gz";
-    hash = "sha256-Wy+Xy0sqnXprLMWUJiggPtn7t8wMK0sJrYpvVkjiRrc=";
+    hash = "sha256-Stz7Qj1S8kxcxKHizS/K0fYtKLt3h2rEcsKQgqPqpCQ=";
   };
 
   sourceRoot = ".";
@@ -27,6 +27,14 @@ stdenv.mkDerivation (finalAttrs: {
     ln -s herdr-core $out/bin/hc
     runHook postInstall
   '';
+
+  # The tarball lives on releases.herdr.dev; the versions are the tags of the GitHub repo.
+  passthru.updateScript = nix-update-script {
+    extraArgs = [
+      "--url"
+      "https://github.com/herdrdev/herdr-core"
+    ];
+  };
 
   meta = {
     description = "Session core that keeps Herdr's terminals and agents alive";

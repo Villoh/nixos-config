@@ -336,15 +336,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1793207963,
-        "narHash": "sha256-BQOQ+NWxnvnv3uWe4wE4fo+SG3o5/PtkgqDD+OI5/Ps=",
+        "lastModified": 1794437201,
+        "narHash": "sha256-fJJwRmUZX+vSjikjo2Mfix3Ci+esEyw9osRHh7IxzTw=",
         "owner": "Villoh",
         "repo": "goopdl",
-        "rev": "61a5617595bd6e263426d6844a6317130c68e183",
+        "rev": "b66bf60d686fd93724b7c9f1963fe8bf4070b89d",
         "type": "github"
       },
       "original": {
         "owner": "Villoh",
+        "ref": "v2.0.1",
         "repo": "goopdl",
         "type": "github"
       }
@@ -407,6 +408,7 @@
       },
       "original": {
         "owner": "Villoh",
+        "ref": "v1.8.0",
         "repo": "holded-tt",
         "type": "github"
       }
@@ -489,15 +491,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1793208066,
-        "narHash": "sha256-jNgnKZROtpe2OkKr5AbjYgIXPyTAxtL1YYYGS9dOp3I=",
+        "lastModified": 1793714955,
+        "narHash": "sha256-5+Fpk45hmAc0YTgZisinRfDpnQf63FSx5LU7j3IfPr4=",
         "owner": "Villoh",
         "repo": "masamune",
-        "rev": "5928366689d8c0026a536fb9d9ec1d36e1458609",
+        "rev": "26ddf9f9ce87bc47c025f8656c17898a2b7b2841",
         "type": "github"
       },
       "original": {
         "owner": "Villoh",
+        "ref": "v1.1.2",
         "repo": "masamune",
         "type": "github"
       }
@@ -613,6 +616,7 @@
       },
       "original": {
         "owner": "Villoh",
+        "ref": "v0.9.0",
         "repo": "nixup",
         "type": "github"
       }
@@ -671,15 +675,16 @@
     "omarchy": {
       "flake": false,
       "locked": {
-        "lastModified": 1792926166,
-        "narHash": "sha256-MAV43Gqeor6IHbVy6c2aUyCHufPcNIOzfw5YAmHzPPM=",
+        "lastModified": 1793846910,
+        "narHash": "sha256-uuihai61/LOa2CTrf6bIIBH5EqBatKHyv1wvJSbeA4w=",
         "owner": "basecamp",
         "repo": "omarchy",
-        "rev": "2fca7fe073e5ef71cd066ddb0d2294ad067deaf5",
+        "rev": "ac2690cd7be4f47e4a255f5e2e78d904d436b068",
         "type": "github"
       },
       "original": {
         "owner": "basecamp",
+        "ref": "v4.5.0",
         "repo": "omarchy",
         "type": "github"
       }
@@ -700,6 +705,7 @@
       },
       "original": {
         "owner": "Villoh",
+        "ref": "v0.4.1",
         "repo": "omarchy-dms",
         "type": "github"
       }
@@ -842,15 +848,16 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1794068787,
-        "narHash": "sha256-n1JusFA/cVsfyikZl8SXel1z3wzrdpa+mXKQq874qoI=",
+        "lastModified": 1794149737,
+        "narHash": "sha256-hhhHWTkglGgYPIPW+ivc/nH2wK4rCAv4y8cHW/RqYMA=",
         "owner": "sonorahq",
         "repo": "sonora",
-        "rev": "1d9e2106d229307cc8c594fc2d69851b754548d3",
+        "rev": "3f931bb30c048190b0c9f6ca60c846353b04d593",
         "type": "github"
       },
       "original": {
         "owner": "sonorahq",
+        "ref": "v0.48.1",
         "repo": "sonora",
         "type": "github"
       }
@@ -862,15 +869,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1793630622,
-        "narHash": "sha256-KABqjhCzsl0eg8fPjEX1VHpK6Iad2a04iFxh6eZFNBM=",
+        "lastModified": 1794289180,
+        "narHash": "sha256-pK8XAf3fjSVBUWz73iWHnCvqyBgSfWScLig2R5o95yk=",
         "owner": "lgse",
         "repo": "strata",
-        "rev": "bae71c026b94e109b7507c4fe895c3ceed642f8f",
+        "rev": "491e6ba9735e821f9f49910ffd2582076196865c",
         "type": "github"
       },
       "original": {
         "owner": "lgse",
+        "ref": "v1.2.1",
         "repo": "strata",
         "type": "github"
       }
@@ -987,15 +995,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1788849233,
-        "narHash": "sha256-/oP9JFQkbDtRJ+1GIoYQgcrMO07wokBOYaf9HKqVs5c=",
+        "lastModified": 1794247602,
+        "narHash": "sha256-OGtH4oCQLvL9CsbCzonoaAUmqiPaumKnozCem4Uqius=",
         "owner": "peternaame-boop",
         "repo": "ytm-player",
-        "rev": "45af0220d4b1d2752568f2636191320cd9ea1ed7",
+        "rev": "3b3ffe6fd5c6172fc1b32c1e37c68da9e8535046",
         "type": "github"
       },
       "original": {
         "owner": "peternaame-boop",
+        "ref": "v2.2.0",
         "repo": "ytm-player",
         "type": "github"
       }

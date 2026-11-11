@@ -66,30 +66,30 @@
 
     # CLI that turns Omarchy themes into dmsProfiles looks.
     omarchy-dms = {
-      url = "github:Villoh/omarchy-dms";
+      url = "github:Villoh/omarchy-dms/v0.4.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Own CLI tools, packaged by a flake in their repositories.
     holded-tt = {
-      url = "github:Villoh/holded-tt";
+      url = "github:Villoh/holded-tt/v1.8.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     goopdl = {
-      url = "github:Villoh/goopdl";
+      url = "github:Villoh/goopdl/v2.0.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     masamune = {
-      url = "github:Villoh/masamune";
+      url = "github:Villoh/masamune/v1.1.2";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.goopdl.follows = "goopdl";
     };
 
     # Omarchy themes: colors.toml palettes and wallpapers, consumed by dmsProfiles.
     omarchy = {
-      url = "github:basecamp/omarchy";
+      url = "github:basecamp/omarchy/v4.5.0";
       flake = false;
     };
 
@@ -109,13 +109,13 @@
     };
 
     ytm-player = {
-      url = "github:peternaame-boop/ytm-player";
+      url = "github:peternaame-boop/ytm-player/v2.2.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Music players under evaluation; both ship their own flake.
     sonora = {
-      url = "github:sonorahq/sonora";
+      url = "github:sonorahq/sonora/v0.48.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -178,13 +178,13 @@
 
     # Upstream flake (added after v1.1.1, so tracked on main until a release has it).
     strata = {
-      url = "github:lgse/strata";
+      url = "github:lgse/strata/v1.2.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Update checker for this repo (nixup check / update); activates only with --test, --switch or --boot.
     nixup = {
-      url = "github:Villoh/nixup";
+      url = "github:Villoh/nixup/v0.9.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

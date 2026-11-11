@@ -1,0 +1,119 @@
+# Weekly reminder of pending updates from `nixup check` (inputs and own
+# packages), as issues labelled `updates`. It changes nothing in the
+# repository; apply the updates locally with `nixup update`.
+# At most one issue is open. A new one (which notifies) replaces it only when
+# something new is pending; otherwise the open one is refreshed. When nothing
+# is pending, it is closed.
+name: updates
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency: updates
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }} # gh, and nixup's GitHub API calls
+      TITLE: Pending updates
+      LABEL: updates
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+
+      - name: update the issue
+        run: |
+          set -euo pipefail
+          # The nixup this repository locks: the issue says what
+          # `nixup check` says here.
+          rev=$(jq -r .nodes.nixup.locked.rev flake.lock)
+          nixup="github:Villoh/nixup/$rev"
+          sources=input,package
+
+          code=0
+          nix run "$nixup" -- check --source "$sources" --json > rows.json ||
+            code=$?
+          if [ "$code" -ge 2 ]; then # a check failed: red run
+            cat rows.json
+            exit 1
+          fi
+
+          read -r num state < <(
+            gh issue list --label "$LABEL" --state all --limit 1 \
+              --json number,state --jq '.[0] | "\(.number) \(.state)"'
+          ) || true
+          open=""
+          if [ "${state:-}" = OPEN ]; then open=$num; fi
+
+          if [ "$code" -eq 0 ]; then # everything is up to date
+            if [ -n "$open" ]; then
+              gh issue close "$open" --comment "Everything is up to date."
+            fi
+            exit 0
+          fi
+
+          # name=latest of each pending update: what "something new" means.
+          pending=$(jq -r '[.[] | select(.status == "outdated")
+            | "\(.name)=\(.latest)"] | sort | join(" ")' rows.json)
+          nix run "$nixup" -- check --source "$sources" --markdown \
+            --review > review.md || [ $? -eq 1 ]
+          {
+            echo "Pending updates as of $(date -u +%F)."
+            echo "Apply them locally with \`nixup update\`."
+            echo
+            # The ACTION column is left out: it is "nixup update <name>"
+            # but for the rows that need something else, kept as Notes.
+            jq -r '
+              def kind: {inputs: "input", packages: "package"}[.] // .;
+              def status: if .status != "outdated" then .status
+                elif (.warning // "") | test("MAJOR") then "**major**"
+                elif (.warning // "") != "" then "**0.x-minor**"
+                else "update" end;
+              def notes: [(.note // "" | select(startswith("nixup update")
+                | not)), (.hint // empty)] | map(select(. != ""))
+                | join("; ");
+              "| Source | Name | Current | Latest | Status | Notes |",
+              "|---|---|---|---|---|---|",
+              (.[] | select(.status != "ok")
+                | "| \(.section | kind) | \(.name) | `\(.current)` " +
+                  "| `\(.latest // "")` | \(status) | \(notes) |")
+            ' rows.json
+          } > body.md
+          # Issue bodies stop at 65536 characters: drop the details if
+          # they do not fit.
+          size=$(($(wc -c < body.md) + $(wc -c < review.md)))
+          if [ "$size" -lt 60000 ]; then
+            {
+              printf '\n<details><summary>What changed upstream</summary>\n\n'
+              cat review.md
+              printf '\n</details>\n'
+            } >> body.md
+          fi
+
+          printf '\n<!-- nixup: %s -->\n' "$pending" >> body.md
+
+          if [ -n "$open" ]; then
+            before=$(gh issue view "$open" --json body --jq .body |
+              sed -n 's/^<!-- nixup: \(.*\) -->$/\1/p')
+            new=$(comm -23 <(tr ' ' '\n' <<< "$pending" | sort) \
+              <(tr ' ' '\n' <<< "$before" | sort))
+            if [ -z "$new" ]; then # nothing new: refresh it quietly
+              gh issue edit "$open" --body-file body.md
+              exit 0
+            fi
+          fi
+
+          gh label create "$LABEL" --color 4A6FC4 --force \
+            --description "Pending flake updates (nixup)"
+          url=$(gh issue create --title "$TITLE ($(date -u +%F))" \
+            --label "$LABEL" --body-file body.md)
+          if [ -n "$open" ]; then
+            gh issue close "$open" --comment "Superseded by #${url##*/}."
+          fi

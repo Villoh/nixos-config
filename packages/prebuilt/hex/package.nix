@@ -34,11 +34,11 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "hex";
-  version = "3.3.0";
+  version = "3.4.0";
 
   src = fetchurl {
     url = "https://github.com/anomalyco/hex/releases/download/v${finalAttrs.version}/hex-${finalAttrs.version}-linux-x64.deb";
-    hash = "sha256-5bNnju0zygfIdxUI9Y34ajRva3EyQ2buk9IF6KbVRFA=";
+    hash = "sha256-hibrpP9q/4cQYx5ex9mnFvMDBs/yaq2fG6ELLRcHp/c=";
   };
 
   nativeBuildInputs = [

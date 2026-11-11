@@ -9,11 +9,11 @@
 # Runs Herdr App's terminals and agents.
 stdenv.mkDerivation (finalAttrs: {
   pname = "herdr-core";
-  version = "0.1.19";
+  version = "0.1.20";
 
   src = fetchurl {
     url = "https://releases.herdr.dev/core/${finalAttrs.version}/herdr-core-linux-x86_64.tar.gz";
-    hash = "sha256-Stz7Qj1S8kxcxKHizS/K0fYtKLt3h2rEcsKQgqPqpCQ=";
+    hash = "sha256-rGuGiQxFGjdYRiCqpDi3G8DQvUMKLnwdfglfBSxBTnQ=";
   };
 
   sourceRoot = ".";

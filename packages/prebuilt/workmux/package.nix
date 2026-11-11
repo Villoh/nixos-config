@@ -8,11 +8,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "workmux";
-  version = "0.1.281";
+  version = "0.1.282";
 
   src = fetchurl {
     url = "https://github.com/raine/workmux/releases/download/v${finalAttrs.version}/workmux-linux-amd64.tar.gz";
-    hash = "sha256-iVOxAEeik+Nb3Ob3H6q0K9NKYT+skkSi/iyZWtRXQcw=";
+    hash = "sha256-+OME9Feh4LR8bDMXET1usfzUTfRvIzzINuJhUnm7lO4=";
   };
 
   # The tarball holds the bare binary, no top-level folder.

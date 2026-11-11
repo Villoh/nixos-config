@@ -59,9 +59,11 @@ jobs:
             exit 0
           fi
 
-          # name=latest of each pending update: what "something new" means.
-          pending=$(jq -r '[.[] | select(.status == "outdated")
-            | "\(.name)=\(.latest)"] | sort | join(" ")' rows.json)
+          # What "something new" means: a name that was not pending before.
+          # Versions are left out: a branch or a nightly moves every day, and
+          # an entry already pending is already known.
+          pending=$(jq -r '[.[] | select(.status == "outdated") | .name]
+            | sort | join(" ")' rows.json)
           nix run "$nixup" -- check --source "$sources" --markdown \
             --review > review.md || [ $? -eq 1 ]
           {

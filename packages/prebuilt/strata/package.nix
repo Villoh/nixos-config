@@ -69,11 +69,11 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "strata";
-  version = "1.2.0";
+  version = "1.2.1";
 
   src = fetchurl {
     url = "https://github.com/lgse/strata/releases/download/v${finalAttrs.version}/strata-${finalAttrs.version}-x86_64-unknown-linux-gnu.tar.gz";
-    hash = "sha256-HLaEKNYHlHOGJSPw/zXkj/CSx+0hzXK1NjVvbFHfRuM=";
+    hash = "sha256-pjcQzmJgeOzBBxBSI2gBeaRDe4y5+8401049QsgDMNA=";
   };
 
   sourceRoot = "strata-${finalAttrs.version}-x86_64-unknown-linux-gnu";

@@ -182,7 +182,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Update checker for this repo (nixup check / update); never activates a generation.
+    # Update checker for this repo (nixup check / update); activates only with --test, --switch or --boot.
     nixup = {
       url = "github:Villoh/nixup";
       inputs.nixpkgs.follows = "nixpkgs";

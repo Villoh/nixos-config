@@ -119,8 +119,8 @@ Each module line that uses one carries a `PENDING: cache` comment next to the or
 source-built line (the flake input stays in `flake.nix`, so it is still pinned in
 `flake.lock`). `aube` and `wealthfolio` also have a source package (`packages/aube`,
 `packages/wealthfolio`, copied from nixpkgs, which runs behind upstream), commented out in
-`packages/default.nix` until then. `handy`, `hex` and `wealthfolio` are swapped in the overlay and in
-`packages/default.nix`, so `pkgs.handy`, `pkgs.hex` and `pkgs.wealthfolio` keep working.
+`packages/default.nix` until then. `handy` and `hex` are swapped in the overlay, so `pkgs.handy`
+and `pkgs.hex` keep working; the modules use the other `-bin` packages by their own name.
 Once a binary cache serves the source builds, revert those lines and delete
 `packages/prebuilt/`. A release can lag the flake input (it is built from `main`), so
 check the version before assuming they match.

@@ -16,9 +16,8 @@ rec {
   herdr-app = pkgs.callPackage ./herdr-app/package.nix { inherit herdr-core; };
   herdr-agent-icons = pkgs.callPackage ./herdr-agent-icons/package.nix { };
   # Shadows nixpkgs' wealthfolio on purpose: nixpkgs runs behind upstream.
-  # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
+  # PENDING: cache. Source build, swapped for the prebuilt release (wealthfolio-bin) meanwhile.
   # wealthfolio = pkgs.callPackage ./wealthfolio/package.nix { };
-  wealthfolio = prebuilt.wealthfolio-bin;
   # Shadows nixpkgs' aube on purpose: nixpkgs runs behind upstream.
   # PENDING: cache. Source build, swapped for the prebuilt release (aube-bin) meanwhile.
   # aube = pkgs.callPackage ./aube/package.nix { };

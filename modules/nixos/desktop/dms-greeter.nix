@@ -16,22 +16,17 @@ in
     enable = true;
     compositor.name = "hyprland";
     # The shell's `dms` wrapper adds these image plugins; the greeter runs plain
-    # quickshell, so a .webp or .avif wallpaper would not load there.
-    quickshell.package = pkgs.symlinkJoin {
-      name = "quickshell-greeter";
-      paths = [ config.programs.dux-shell.quickshell.package ];
-      nativeBuildInputs = [ pkgs.makeWrapper ];
-      postBuild = ''
-        for bin in qs quickshell; do
-          wrapProgram $out/bin/$bin --prefix QT_PLUGIN_PATH : ${
-            lib.makeSearchPath "lib/qt-6/plugins" [
-              pkgs.qt6.qtimageformats
-              pkgs.kdePackages.kimageformats
-            ]
-          }
-        done
-      '';
-    };
+    # quickshell, so a .webp or .avif wallpaper would not load there. Set them in
+    # the greeter's Hyprland, not with quickshell.package: the module appends that
+    # to PATH, after the system quickshell that PAM's PATH already has.
+    compositor.customConfig = ''
+      hl.env("QT_PLUGIN_PATH", "${
+        lib.makeSearchPath "lib/qt-6/plugins" [
+          pkgs.qt6.qtimageformats
+          pkgs.kdePackages.kimageformats
+        ]
+      }")
+    '';
   };
 
   # nixpkgs' sync hook copies already-cached themes/wallpapers onto themselves.

@@ -29,8 +29,6 @@
   # so every HTTPS call from them fails with CERTIFICATE_VERIFY_FAILED.
   environment.etc."ssl/cert.pem".source = "/etc/ssl/certs/ca-bundle.crt";
 
-  # Backport of NixOS/nixpkgs#569777 (canvas 3.1.0 fails on GCC 15+).
-  # Remove once the PR lands in nixos-unstable.
   nixpkgs.overlays = [
     inputs.self.overlays.default
     (final: prev: {
@@ -56,16 +54,6 @@
       # hex = inputs.hex.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
       #   doCheck = false;
       # });
-      filen-desktop = prev.filen-desktop.overrideAttrs (old: {
-        npmRebuildFlags = (old.npmRebuildFlags or [ ]) ++ [ "--ignore-scripts" ];
-        preBuild = (old.preBuild or "") + ''
-          substituteInPlace node_modules/canvas/src/CharData.h \
-            --replace-fail '#pragma once' '#pragma once
-          #include <cstdint>'
-
-          npm rebuild
-        '';
-      });
     })
   ];
 }

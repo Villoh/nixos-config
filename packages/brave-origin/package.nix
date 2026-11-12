@@ -4,7 +4,7 @@
 #
 # Brave tags Release, Beta and Nightly builds alike on GitHub and does not mark them
 # consistently as prereleases, so the version comes from versions.brave.com, the
-# channel Brave's own updater reads.
+# channel Brave's own updater reads: passthru.nixup.versionUrl tells nixup where.
 {
   lib,
   stdenv,
@@ -181,8 +181,11 @@ stdenv.mkDerivation {
         --set-rpath "${rpath}" $exe
     done
 
+    # Icon themes (Colloid, Papirus...) ship `brave` but not `brave-origin`, so a
+    # launcher trims the name and shows the regular Brave logo: use an absolute path.
     substituteInPlace $out/share/applications/{brave-origin,com.brave.Origin}.desktop \
-      --replace-fail /usr/bin/brave-origin-stable $out/bin/brave-origin
+      --replace-fail /usr/bin/brave-origin-stable $out/bin/brave-origin \
+      --replace-fail "Icon=brave-origin" "Icon=$out/share/icons/hicolor/256x256/apps/brave-origin.png"
     substituteInPlace $out/share/gnome-control-center/default-apps/brave-origin.xml \
       --replace-fail /opt/brave.com $out/opt/brave.com
     substituteInPlace $out/${dir}/default-app-block \
@@ -223,11 +226,15 @@ stdenv.mkDerivation {
     $out/${dir}/brave --version
   '';
 
-  passthru.updateScript = writeShellScript "update-brave-origin" ''
-    set -eu
-    version=$(${lib.getExe curl} -fsS https://versions.brave.com/latest/origin-release-linux-x64.version)
-    exec ${lib.getExe nix-update} --flake brave-origin --version="$version" "$@"
-  '';
+  passthru = rec {
+    # nixup reads the same channel (nix-update alone would follow GitHub's tags).
+    nixup.versionUrl = "https://versions.brave.com/latest/origin-release-linux-x64.version";
+    updateScript = writeShellScript "update-brave-origin" ''
+      set -eu
+      version=$(${lib.getExe curl} -fsS ${nixup.versionUrl})
+      exec ${lib.getExe nix-update} --flake brave-origin --version="$version" "$@"
+    '';
+  };
 
   meta = {
     homepage = "https://brave.com/origin/";

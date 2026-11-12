@@ -98,20 +98,18 @@ Not covered: `dms-bitwarden` (pinned on purpose, audited by hand).
 
 ## Temporary nixpkgs workarounds
 
-Each one carries a `PENDING` comment where it is applied. Remove it once the fix reaches
-nixos-unstable (the channel moves only after Hydra builds the commit):
-
-- `rustdesk-flutter` (Home Manager package) adds the library nixpkgs' fix adds
-  ("rustdesk-flutter: fix build"). Since `cargoSetupHook` forces Rust `-sys` crates onto
-  system libraries (nixpkgs 44cddf9, 2026-10-12), a package that does not list them fails
-  to build. An overridden package is never in cache.nixos.org, so it compiles here. The
-  override applies only while the package lacks libsodium: once the fix arrives, the
-  cached package is used and evaluation warns to delete the override.
+None right now. When nixpkgs breaks a package you use, override it where it is used, with
+a `PENDING` comment naming the nixpkgs fix, and remove it once that fix reaches
+nixos-unstable (the channel moves only after Hydra builds the commit). An overridden
+package is never in cache.nixos.org, so it compiles here: prefer an override that applies
+only while the package still lacks the fix and warns once it is there, as was done for
+rustdesk-flutter when `cargoSetupHook` started forcing Rust `-sys` crates onto system
+libraries (nixpkgs 44cddf9, 2026-10-12).
 
 ## Prebuilt releases (`packages/prebuilt/`, temporary)
 
-`arca`, `aube`, `handy`, `hex`, `kopuz`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux`,
-`yapfast` and `zapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
+`arca`, `aube`, `handy`, `hex`, `kopuz`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux`
+and `yapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
 compile locally (no binary cache yet). They are bumped like the packages above, with
 `nixup update workmux-bin`.
 
@@ -164,7 +162,7 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | Package | Flake (source) | Binary | Flatpak | Current |
 |---|---|---|---|---|
 | workmux | yes (364 crates) | yes (tar.gz) | no | Binary |
-| zapfast | yes (864 crates) | yes (tar.gz) | yes (release bundle, app ID not checked) | Binary |
+| zapfast | yes (864 crates), and nixpkgs (cached) | yes (tar.gz) | yes (release bundle, app ID not checked) | nixpkgs |
 | arca | yes (477 crates) | yes (tar.gz) | no | Binary |
 | yapfast | yes (about 10 min measured) | yes (pkg.tar.zst) | no | Binary |
 | sheprd | yes (1,177 crates) | yes (tar.gz) | no | Binary |
@@ -182,7 +180,7 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | serein | yes (764 derivations; needs a rev with ViceVerse-cz/Serein#906 for global shortcuts) | nightly only (all releases are pre-releases; Arch `pkg.tar.zst`) | yes (own repo), but its PID namespace breaks the tray hide: Serein sends Hyprland its sandbox PID | Binary (nightly) |
 | hylki | no official flake; community `clementpoiret/hylki-flake` builds it from source (186 derivations) | yes (`.deb` 12 MiB, `.rpm`, AppImage; native Rust and GTK4 app), tested and working | yes (own `.flatpakref`, GNOME 50 runtime) | Flatpak: no problems so far; the flake is the goal once a private cache exists, the binary adds nothing over the Flatpak |
 | flectar-mail | no (no flake found, not in nixpkgs) | yes (`.deb` 33 MiB with a native binary and `libpdfium`, AppImage, `.rpm`) | yes (release bundle, `packages/flectar-mail`) | Flatpak |
-| rustdesk | nixpkgs `rustdesk` is the legacy Sciter UI; `rustdesk-flutter` is the current UI | yes (`.deb`, AppImage) | yes (Flathub) | nixpkgs `rustdesk-flutter`, with a temporary build fix (it compiles locally until then) |
+| rustdesk | nixpkgs `rustdesk` is the legacy Sciter UI; `rustdesk-flutter` is the current UI | yes (`.deb`, AppImage) | yes (Flathub) | nixpkgs `rustdesk-flutter` |
 | cherry-studio | nixpkgs, 1.9.11 on EOL Electron | ? | yes (Flathub) | Flatpak: Flathub tracks 2.x |
 
 "Crates" is the size of the project's `Cargo.lock`, a rough proxy for compile cost. Only

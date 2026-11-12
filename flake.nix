@@ -132,13 +132,6 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
 
-    # PENDING: cache. Off while the modules use zapfast-bin (packages/prebuilt): uncomment it
-    # together with the source-built line next to that package.
-    # zapfast = {
-    #   url = "github:crmne/zapfast";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
     # Host build (modules/home/communication/packages.nix): 764 derivations compile locally until
     # a cache serves them. Needs a rev with #906 (host app ID for global shortcuts). It follows our
     # nixpkgs so it shares the system's glibc and Mesa (wgpu needs a matching Vulkan stack, as with

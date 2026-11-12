@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
@@ -45,8 +44,7 @@ in
       Name=ZapFast
       Comment=Start ZapFast at login
       # ZapFast only hides if the tray exists at launch; DMS registers it late.
-      # PENDING: cache. Source build was inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast
-      Exec=${pkgs.runtimeShell} -c "sleep 5 && exec ${pkgs.zapfast-bin}/bin/zapfast --start-hidden"
+      Exec=${pkgs.runtimeShell} -c "sleep 5 && exec ${lib.getExe pkgs.zapfast} --start-hidden"
       StartupNotify=false
       Terminal=false
     '';

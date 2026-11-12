@@ -17,5 +17,4 @@ pkgs: {
   wealthfolio-bin = pkgs.callPackage ./wealthfolio/package.nix { };
   workmux-bin = pkgs.callPackage ./workmux/package.nix { };
   yapfast-bin = pkgs.callPackage ./yapfast/package.nix { };
-  zapfast-bin = pkgs.callPackage ./zapfast/package.nix { };
 }

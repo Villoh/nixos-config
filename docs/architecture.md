@@ -136,9 +136,9 @@ selected personal configuration, including plugin code under
 `~/.config/dms/plugins/` and the GPG agent's user service.
 Plugins use the official DMS Home Manager module and plugin registry, selected
 through `programs.dank-material-shell.plugins.<name>.enable`. DMS is Dux Shell
-since 2.0 (`programs.dux-shell` in nixpkgs); the `dms` input, which only provides
-the HM module, is pinned to the release nixpkgs packages (v2.1.1): review both when
-upgrading.
+since 2.0 (`programs.dux-shell` in nixpkgs); the `dms` input only provides the HM
+module, which installs plugin files, so it may run ahead of the nixpkgs package. Before
+moving it, check its `distro/nix` diff for option changes.
 HM reuses NixOS's patched DMS and Quickshell packages, leaves shell startup to
 NixOS (`systemd.enable = false`), and does not manage personal settings
 (`managePluginSettings = false`). Update Nix-managed plugin code through Nix,

@@ -29,7 +29,7 @@
     # so this input stays at nixpkgs' version: nixup moves it when nixpkgs moves.
     # nixup: follows nixpkgs#dux-shell
     dms = {
-      url = "github:duxlabs-dev/dux-shell/v2.1.1";
+      url = "github:duxlabs-dev/dux-shell/v2.1.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

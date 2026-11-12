@@ -25,11 +25,11 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
-    # Dux Shell's HM module (plugin files only; the shell package is nixpkgs' dux-shell,
-    # passed in by modules/home/desktop/dms-plugins.nix). It may run ahead of nixpkgs:
-    # before moving it, check the diff of distro/nix for option changes.
+    # Dux Shell's HM module (plugin files only). The shell itself is nixpkgs' dux-shell,
+    # so this input stays at nixpkgs' version: nixup moves it when nixpkgs moves.
+    # nixup: follows nixpkgs#dux-shell
     dms = {
-      url = "github:duxlabs-dev/dux-shell/v2.1.2";
+      url = "github:duxlabs-dev/dux-shell/v2.1.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

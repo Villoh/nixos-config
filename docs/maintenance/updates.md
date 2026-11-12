@@ -65,8 +65,10 @@ moves the tag and asks first when the jump is likely breaking. The rest follow a
 branch, and the table shows the locked commit and its age.
 
 - `goopdl`, `holded-tt`, `masamune`, `nixup`, `omarchy`, `omarchy-dms`, `sonora`, `strata`,
-  `ytm-player`, `dms` (Dux Shell's HM module only; check its `distro/nix` diff before
-  moving it) and `lanzaboote` are tags.
+  `ytm-player`, `dms` and `lanzaboote` are tags.
+- `dms` provides only Dux Shell's HM module; the shell is nixpkgs' `dux-shell`. Its
+  `# nixup: follows nixpkgs#dux-shell` marker makes nixup move the tag to nixpkgs'
+  version (after `nixup update nixpkgs`), and show a newer upstream tag only as `info`.
 - `himalaya-tui` keeps its own nixpkgs (nixos-25.11), the one upstream tests: with unstable's
   `cargoSetupHook` its `-sys` crates need libraries its derivation does not list.
 - Noctalia's plugin inputs are trusted Luau code: review their diff before updating them.

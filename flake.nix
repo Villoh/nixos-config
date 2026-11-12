@@ -173,7 +173,7 @@
 
     # Update checker for this repo (nixup check / update); activates only with --test, --switch or --boot.
     nixup = {
-      url = "github:Villoh/nixup/v0.11.0";
+      url = "github:Villoh/nixup/v0.11.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

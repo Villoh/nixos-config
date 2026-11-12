@@ -47,6 +47,42 @@ let
       edit ../quickshell/Modules/Toast.qml -e 's/property bool expanded: false/property bool expanded: true/'
       edit ../quickshell/Modules/Toast.qml -e 's/toast.expanded = false;/toast.expanded = true;/'
       edit ../quickshell/Services/ToastService.qml -e 's/levelWarn ? 3000 : 1500/levelWarn ? 6000 : 5000/'
+
+      # Connected frame mode: the frame window stops presenting while a popout
+      # resizes (a tray menu opening with another menu's size), so the popout body
+      # stays at the stale height and the menu looks transparent for 1-2 s. A
+      # throwaway animation keeps it rendering until the geometry settles.
+      # Not reported upstream.
+      # Remove this block when updating dux-shell; if the build fails here, the
+      # anchor moved upstream, so retest the bug without the patch first (measured
+      # on 2.1.2: 0/3 fixed before, 8/8 after).
+      cat > "$TMPDIR/frame-render-nudge.qml" <<'EOF'
+          // Keeps the frame window presenting while a popout surface changes.
+          property bool _renderNudge: false
+          on_SdfSlotsChanged: {
+              win._renderNudge = true;
+              _renderNudgeOff.restart();
+          }
+          Timer {
+              id: _renderNudgeOff
+              interval: 500
+              onTriggered: win._renderNudge = false
+          }
+          Rectangle {
+              width: 1
+              height: 1
+              opacity: 0.01
+              color: "black"
+              NumberAnimation on x {
+                  from: 0
+                  to: 1
+                  duration: 100
+                  loops: Animation.Infinite
+                  running: win._renderNudge
+              }
+          }
+      EOF
+      edit ../quickshell/Modules/Frame/FrameWindow.qml -e '/^    readonly property bool _frameActive:/r '"$TMPDIR"'/frame-render-nudge.qml'
     '';
   });
 in

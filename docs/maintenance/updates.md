@@ -86,15 +86,13 @@ those flags, so `nixup update <name>` follows the same rules:
 - `--use-github-releases`: published releases instead of tags (google-sans-flex, kopuz-bin).
 - `--version=unstable`: prereleases count (flectar-mail, kopuz-bin, serein-bin).
 - `--version-regex`: one tag series out of several (meiro's `desktop-v*`).
-- `passthru.nixup.versionUrl`: a URL that serves the latest version, for brave-origin,
-  whose GitHub tags mix the Release, Beta and Nightly channels.
+- `passthru.nixup.versionUrl`: a URL that serves the latest version, for a project whose
+  GitHub tags mix release channels (none here now; brave-origin used it while it was out
+  of nixpkgs).
 - `passthru.nixup.pinned`: kept where it is on purpose (herdr-agent-icons).
 
 A matching hash does not prove the new version runs: build it and try it before `switch`.
 Not covered: `dms-bitwarden` (pinned on purpose, audited by hand).
-
-`brave-origin` is Brave's own `.deb`: nixpkgs removed `brave` and `brave-origin` on
-2026-11-03. Its security updates come only through `nixup update brave-origin`.
 
 ## Temporary nixpkgs workarounds
 
@@ -208,7 +206,6 @@ official repo, no host integration and no wish to pin it from the flake.
 | herdr-core, herdr-app | Binary, upstream tarball (hosted outside GitHub) | `packages/herdr-*` |
 | herdr-agent-icons | Binary, a single font file | `packages/herdr-agent-icons` |
 | filen-desktop | nixpkgs | `modules/home/cloud/packages.nix` |
-| brave-origin | Binary, official `.deb` (removed from nixpkgs) | `packages/brave-origin` |
 
 ## Manual Nix profiles
 

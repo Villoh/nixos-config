@@ -5,7 +5,7 @@
     enable = true;
     gtk2.enable = false;
     iconTheme = {
-      name = "Colloid";
+      name = "Colloid-Dark"; # dconf fallback if DMS iconThemeDark is "System Default"
       package = pkgs.colloid-icon-theme;
     };
   };

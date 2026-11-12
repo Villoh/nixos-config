@@ -21,6 +21,10 @@
   #   https://github.com/paulchambaz/nixos-plymouth
   # - Material: add flake input + nixosModules.material; theme = "material"; enable boot.initrd.systemd.
   #   https://github.com/krozzzis/plymouth-theme-material
+  # - nixos-boot: add flake input + nixosModules.default; set nixos-boot.enable = true; theme = "load_unload" or "evil-nixos" (bloats the initrd up to ~50 MB; prompt anchored to the bottom of the canvas, so with mixed-size monitors it can fall off the smaller one).
+  #   https://github.com/Melkor333/nixos-boot
+  # - mac-style: add flake input + overlays.default; themePackages = [ pkgs.mac-style-plymouth ]; theme = "mac-style" (two-step module, fixed-size images; needs acidBoot.enable = false).
+  #   https://github.com/SergioRibera/s4rchiso-plymouth-theme
   # - Acid Boot: add flake input + nixosModules.default; set acidBoot.enable = true (custom Plymouth/systemd integration).
   #   https://github.com/kurisu-agent/nix-acid-boot
 }

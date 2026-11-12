@@ -7,7 +7,7 @@
   `desktop` retains hostname `nixos`; its bootloader values are unchanged.
 - `profiles/`: reusable compositions of NixOS capabilities, not personal apps.
 - `modules/nixos/`: shared system services and session infrastructure. Core
-  enables `nh`; desktop supplies Hyprland/UWSM, DMS, DankGreeter, portals,
+  enables `nh`; desktop supplies Hyprland/UWSM, Dux Shell (DMS), Dux Greeter, portals,
   Ghostty, and Qt/Breeze/qtengine without requiring Home Manager or an account.
 - `modules/home/`: Home Manager modules using per-user options directly, not
   NixOS wrappers around `home-manager.users.mikel`. Browsers, application
@@ -85,13 +85,13 @@ To switch, in `hosts/<host>/default.nix`:
 
 ```nix
 programs.noctalia.enable = true;
-programs.dms-shell.enable = false;
+programs.dux-shell.enable = false;
 ```
 
 Then `nh os test .#desktop`. Not covered, decide when switching: the Hyprland
 main still imports `dms.*` (including the `dms ipc` binds, which fail once DMS is
-disabled), `dms-hyprland-init` keeps seeding `~/.config/hypr/dms/`, DankGreeter
-stays as the login screen, and `programs.dsearch` and the DMS HM plugins stay on.
+disabled), `dms-hyprland-init` keeps seeding `~/.config/hypr/dms/`, Dux Greeter
+stays as the login screen, and `programs.dux-search` and the DMS HM plugins stay on.
 
 Hand-written settings are generated into `~/.config/noctalia/config.toml`
 (validated at build time with `noctalia config validate`); whatever is changed in
@@ -133,10 +133,12 @@ manual setup; outside UWSM, run `dms-hyprland-init` explicitly if needed.
 DMS/chezmoi keep ownership of their existing user files, scripts, and secret
 templates; do not declare the same paths in HM or NixOS. HM owns only its
 selected personal configuration, including plugin code under
-`~/.config/DankMaterialShell/plugins/` and the GPG agent's user service.
+`~/.config/dms/plugins/` and the GPG agent's user service.
 Plugins use the official DMS Home Manager module and plugin registry, selected
-through `programs.dank-material-shell.plugins.<name>.enable`. The DMS input is
-pinned to v1.6.2 to match the current host package; review both when upgrading.
+through `programs.dank-material-shell.plugins.<name>.enable`. DMS is Dux Shell
+since 2.0 (`programs.dux-shell` in nixpkgs); the `dms` input, which only provides
+the HM module, is pinned to the release nixpkgs packages (v2.1.1): review both when
+upgrading.
 HM reuses NixOS's patched DMS and Quickshell packages, leaves shell startup to
 NixOS (`systemd.enable = false`), and does not manage personal settings
 (`managePluginSettings = false`). Update Nix-managed plugin code through Nix,
@@ -153,7 +155,7 @@ chezmoi-owned and untouched; HM disables management of the former and selects
 pinentry explicitly in the GPG agent service's `ExecStart`. Tunnel Agent's
 desktop entry uses the absolute FHS wrapper path; host-specific scaling lives
 in `home.sessionVariables.AVALONIA_SCREEN_SCALE_FACTORS`.
-Desktop sets DankGreeter's `configHome` to `config.users.users.mikel.home`.
+Desktop sets Dux Greeter's `configHome` to `config.users.users.mikel.home`.
 The native nixpkgs `preStart` imports Mikel's DMS settings, colors, custom theme
 and referenced wallpapers into `/var/lib/dms-greeter` when greetd starts.
 This is one common login appearance for all accounts, not per-user profiles or
@@ -196,7 +198,7 @@ watchers.
 
 After an approved temporary activation, manually check:
 
-- Fresh user without HM: DankGreeter's `Hyprland (uwsm-managed)` session starts;
+- Fresh user without HM: Dux Greeter's `Hyprland (uwsm-managed)` session starts;
   DMS, terminal, launcher, monitor layout, audio, portals, and locking work.
 - Partial DMS profile: existing fragments remain unchanged; initialization adds
   missing defaults as writable user files. Check live DMS edits/watchers. Use a

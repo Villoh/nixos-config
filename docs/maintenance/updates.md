@@ -4,26 +4,41 @@ Packages declared in NixOS or Home Manager change when you update the flake
 inputs and rebuild the configuration. Do not update those packages manually:
 change their version in the configuration when needed.
 
-## Update flake inputs
+Updates go through [nixup](https://github.com/Villoh/nixup), itself a flake input. It
+covers four sources: flake inputs, the packages in `packages/`, Flatpak and `nix profile`.
 
-From the repository root, first check which inputs will change:
-
-```bash
-cd /path/to/nixos-config
-git status --short
-nix flake update
-git diff --stat
-git diff -- flake.lock
-```
-
-`nix flake update` updates all inputs and saves the new versions in
-`flake.lock`. To update only `nixpkgs`:
+## See what is pending
 
 ```bash
-nix flake lock --update-input nixpkgs
+nixup check            # everything outdated, one table
+nixup check --all      # up-to-date rows too
+nixup check nixpkgs    # one name
 ```
 
-Then validate and activate temporarily with [nh](nh.md):
+Rows marked `major` are likely breaking jumps: read the upstream notes first. A weekly
+GitHub issue (`.github/workflows/updates.yml`) lists the same table and opens a new
+issue only when a name appears that was not pending before.
+
+## Update
+
+```bash
+nixup update                        # everything, asking before each step
+nixup update nixpkgs home-manager   # only these names
+nixup update --test                 # then nh os test on the host
+```
+
+For each input that moved, `update` shows the upstream commits and release notes, asks,
+and writes `flake.lock`. For each package it shows the same review, asks, runs nix-update
+pinned to that version and builds the package; a failed build restores its files.
+nixup never commits.
+
+- `--build` also builds the host in a scratch copy before writing `flake.lock`, with nh's
+  diff of what changes. `--test`, `--switch` and `--boot` imply it, then run `nh os
+  <verb>`. Without them, a `flake.lock` that does not build is only found at `nh os test`.
+- `--source input,package` leaves Flatpak and `nix profile` alone (both install on yes).
+- `--report <file>` writes the review as Markdown.
+
+Then validate and activate with [nh](nh.md), unless `--test` already did:
 
 ```bash
 nix flake check
@@ -31,48 +46,70 @@ nh os test . -H desktop
 ```
 
 Verify graphical session, network, audio, Bluetooth, and Wayland portals. Only
-after testing the result, apply it as the default generation:
+after testing the result, apply it as the default generation. When the kernel or the
+NVIDIA driver changes, use `boot` and reboot instead of `switch`: a running system would
+keep the old module next to the new libraries.
 
 ```bash
-nh os switch . -H desktop
+nh os switch . -H desktop   # or: nh os boot . -H desktop && reboot
 ```
 
 Do not use `switch` to skip validation or testing. Review the diff before
 applying changes; do not discard local changes that are not yours.
+
+## Flake inputs
+
+Inputs that publish releases are pinned to their tag in `flake.nix`
+(`github:owner/repo/v1.2.1`): `nixup check` shows their version, and `nixup update <name>`
+moves the tag and asks first when the jump is likely breaking. The rest follow a
+branch, and the table shows the locked commit and its age.
+
+- `goopdl`, `holded-tt`, `masamune`, `nixup`, `omarchy`, `omarchy-dms`, `sonora`, `strata`,
+  `ytm-player`, `dms` (Dux Shell's HM module, kept at the release nixpkgs packages) and
+  `lanzaboote` are tags.
+- `himalaya-tui` keeps its own nixpkgs (nixos-25.11), the one upstream tests: with unstable's
+  `cargoSetupHook` its `-sys` crates need libraries its derivation does not list.
+- Noctalia's plugin inputs are trusted Luau code: review their diff before updating them.
 
 ## Own packages (`packages/`)
 
 Packages that are not in nixpkgs (or run ahead of it) live in `packages/<name>/package.nix`.
 The flake exposes them as `packages.<system>.*` and, through `overlays.default`, as
 `pkgs.<name>`. `nix flake update` does not touch them: their version is written in the
-file. Update one with `nix-update`:
+file, and `passthru.updateScript` says how nix-update finds the next one. nixup reads
+those flags, so `nixup update <name>` follows the same rules:
 
-```bash
-nix run nixpkgs#nix-update -- --flake tunnel-agent --build
-git diff packages/
-```
+- `--url https://github.com/<owner>/<repo>`: versions come from that repository's tags
+  (herdr-app, herdr-core and the prebuilt releases hosted outside GitHub).
+- `--use-github-releases`: published releases instead of tags (google-sans-flex, kopuz-bin).
+- `--version=unstable`: prereleases count (flectar-mail, kopuz-bin, serein-bin).
+- `--version-regex`: one tag series out of several (meiro's `desktop-v*`).
+- `passthru.nixup.versionUrl`: a URL that serves the latest version, for brave-origin,
+  whose GitHub tags mix the Release, Beta and Nightly channels.
+- `passthru.nixup.pinned`: kept where it is on purpose (herdr-agent-icons).
 
-`nix-update` bumps `version` and every hash (source, pnpm, cargo) in one go. It follows
-the newest stable release, even across major versions, so read the upstream
-changelog first.
+A matching hash does not prove the new version runs: build it and try it before `switch`.
+Not covered: `dms-bitwarden` (pinned on purpose, audited by hand).
 
-- `flectar-mail` only has alpha tags: add `--version=unstable`.
-- `nix-update --flake` ignores the `extraArgs` of `passthru.updateScript` (only
-  nixpkgs' own runner reads them), so such flags are never implicit.
-- A matching hash does not prove the new version runs: build it and try it before `switch`.
-- `strata` is not here: upstream ships a flake, so it is the `strata` input and moves with
-  `nix flake update strata`. It tracks `main` until a tagged release includes the flake.
-- Not covered: `dms-bitwarden` (pinned on purpose, audited by hand).
+`brave-origin` is Brave's own `.deb`: nixpkgs removed `brave` and `brave-origin` on
+2026-11-03. Its security updates come only through `nixup update brave-origin`.
+
+## Temporary nixpkgs workarounds
+
+Each one carries a `PENDING` comment where it is applied. Remove it once the fix reaches
+nixos-unstable (the channel moves only after Hydra builds the commit):
+
+- `aube` and `rustdesk-flutter` (Home Manager packages) add the libraries nixpkgs' fixes add
+  ("aube: add missing dependencies", "rustdesk-flutter: fix build"). Since
+  `cargoSetupHook` forces Rust `-sys` crates onto system libraries (nixpkgs 44cddf9,
+  2026-10-12), a package that does not list them fails to build.
 
 ## Prebuilt releases (`packages/prebuilt/`, temporary)
 
 `arca`, `handy`, `hex`, `kopuz`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux`, `yapfast`
 and `zapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
-compile locally (no binary cache yet). They are bumped like the packages above:
-
-```bash
-nix run nixpkgs#nix-update -- --flake workmux-bin --build
-```
+compile locally (no binary cache yet). They are bumped like the packages above, with
+`nixup update workmux-bin`.
 
 Each module line that uses one carries a `PENDING: cache` comment next to the original
 source-built line (the flake input stays in `flake.nix`, so it is still pinned in
@@ -92,16 +129,15 @@ helpers.
 
 `kopuz-bin` is the GPUI nightly (the stable release is still the old WebKit app). It is a
 separate channel (`*-nightly` binaries, `moe.kopuz.kopuz.nightly`, `kopuzd-nightly.sock`), so it
-does not share the stable app's socket. Bump it with `nix-update --flake kopuz-bin
---version=unstable`; the tags are `v0.68.0-nightly.YYYYMMDD[.N]`.
+does not share the stable app's socket. Its tags are `v0.68.0-nightly.YYYYMMDD[.N]`.
 
 `serein-bin` is the nightly Arch package (upstream publishes only pre-releases, tagged
 `v1.0.0-nightly.YYYYMMDD.N`), so it moves with Serein's `main` branch. The Flatpak is
 not an option: its PID namespace makes Serein hand Hyprland a sandbox PID, so the tray hide
 never finds the window. Global shortcuts need a build with ViceVerse-cz/Serein#906; they
-register as `cz.viceverse.serein:toggle-mute` and `:toggle-deafen`. Bump it with
-`nix-update --flake serein-bin --version=unstable`, then log in again only if the profile
-moved: the host build keeps its data in `~/.local/share/serein`, not in the Flatpak's.
+register as `cz.viceverse.serein:toggle-mute` and `:toggle-deafen`. After an update,
+log in again only if the profile moved: the host build keeps its data in
+`~/.local/share/serein`, not in the Flatpak's.
 
 ## Package formats: flake, binary or Flatpak
 
@@ -111,7 +147,7 @@ An app outside nixpkgs reaches the system in one of three ways:
   Pinned by `flake.lock`, patchable, but it compiles here unless a binary cache serves it.
   The flake can also expose a prebuilt output (Sonora's `sonora-bin`).
 - **Binary**: upstream's release repackaged under `packages/` (see above). Nothing compiles;
-  version and hash are bumped by hand.
+  `nixup update` bumps version and hash.
 - **Flatpak**: declared in `services.flatpak.packages` (nix-flatpak). Nothing compiles and
   nothing enters the Nix store or a Nix cache, it installs at activation and updates with
   `flatpak update`. It is as opaque as a binary: no overrides or patches, plus a sandbox.
@@ -133,13 +169,13 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | sonora | yes (`sonora-src`) | yes, `sonora-bin` in the same flake | yes (official repo) | Flake, binary output |
 | meiro | no (Bazel) | yes (minimal tarball, `packages/meiro`; ffmpeg, yt-dlp and Node from nixpkgs) | yes (release bundle; sign-in needs `--talk-name=org.freedesktop.Flatpak`) | Binary |
 | strata | yes (442 crates, `rarSupport = true`) | yes (tar.gz), but the official release omits non-free UnRAR and embeds no Nix store paths | no | Binary (no RAR); its helpers are in `environment.systemPackages` |
-| dankcalendar | yes (Go) | yes (`dcal`) | no | Flake |
+| dux-calendar | nixpkgs module (`programs.dux-calendar`) | yes (`dcal`) | no | nixpkgs |
 | himalaya-tui | yes (482 crates) | no | no | Flake |
 | nixup | yes (own flake) | no | no | Flake |
 | serein | yes (764 derivations; needs a rev with ViceVerse-cz/Serein#906 for global shortcuts) | nightly only (all releases are pre-releases; Arch `pkg.tar.zst`) | yes (own repo), but its PID namespace breaks the tray hide: Serein sends Hyprland its sandbox PID | Binary (nightly) |
 | hylki | no official flake; community `clementpoiret/hylki-flake` builds it from source (186 derivations) | yes (`.deb` 12 MiB, `.rpm`, AppImage; native Rust and GTK4 app), tested and working | yes (own `.flatpakref`, GNOME 50 runtime) | Flatpak: no problems so far; the flake is the goal once a private cache exists, the binary adds nothing over the Flatpak |
 | flectar-mail | no (no flake found, not in nixpkgs) | yes (`.deb` 33 MiB with a native binary and `libpdfium`, AppImage, `.rpm`) | yes (release bundle, `packages/flectar-mail`) | Flatpak |
-| rustdesk | nixpkgs `rustdesk` is the legacy Sciter UI; `rustdesk-flutter` (1.4.9, current UI) is in cache.nixos.org | yes (`.deb`, AppImage 1.5.1) | yes (Flathub) | nixpkgs `rustdesk-flutter` (upstream is at 1.5.x) |
+| rustdesk | nixpkgs `rustdesk` is the legacy Sciter UI; `rustdesk-flutter` is the current UI | yes (`.deb`, AppImage) | yes (Flathub) | nixpkgs `rustdesk-flutter`, with a temporary build fix (it compiles locally until then) |
 | cherry-studio | nixpkgs, 1.9.11 on EOL Electron | ? | yes (Flathub) | Flatpak: Flathub tracks 2.x |
 
 "Crates" is the size of the project's `Cargo.lock`, a rough proxy for compile cost. Only
@@ -154,7 +190,7 @@ official repo, no host integration and no wish to pin it from the flake.
 | Package | Current format | Source |
 |---|---|---|
 | ytm-player | Flake | `ytm-player` input |
-| zen-browser | Flake, upstream tarball repackaged | `zen-browser` input (overridden in `browsers.nix`) |
+| zen-browser | Flake, upstream tarball repackaged | `zen-browser` input (wrapped with prefs in `browsers.nix`) |
 | helium-browser | Flake, `.deb` repackaged | `helium-browser` input |
 | claude-desktop | Flake, official `.deb` repackaged | `llm-agents` input |
 | t3code-desktop | Flake | `llm-agents` input |
@@ -166,7 +202,8 @@ official repo, no host integration and no wish to pin it from the flake.
 | tunnel-agent | Binary, AppImage | `packages/tunnel-agent` |
 | herdr-core, herdr-app | Binary, upstream tarball (hosted outside GitHub) | `packages/herdr-*` |
 | herdr-agent-icons | Binary, a single font file | `packages/herdr-agent-icons` |
-| filen-desktop | nixpkgs source, patched in the overlay | `modules/nixos/core/nix.nix` |
+| filen-desktop | nixpkgs | `modules/home/cloud/packages.nix` |
+| brave-origin | Binary, official `.deb` (removed from nixpkgs) | `packages/brave-origin` |
 
 ## Manual Nix profiles
 
@@ -192,11 +229,13 @@ nix profile install nixpkgs#hello
 ```
 
 If `nix profile list` shows no entries, no apps were installed through that
-profile. Upgrading the profile does not update the system configuration.
+profile. Upgrading the profile does not update the system configuration. `nixup update`
+covers it too, as its last step.
 
 ## Flatpak
 
-Flatpak is updated separately from the flake:
+Flatpak is updated separately from the flake, with `nixup update --source flatpak` (it
+shows what would change and prints how to roll each ref back) or directly:
 
 ```bash
 flatpak update

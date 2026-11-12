@@ -25,11 +25,11 @@
 # separate channel: the binaries are named *-nightly and use their own socket (kopuzd-nightly.sock).
 stdenv.mkDerivation (finalAttrs: {
   pname = "kopuz";
-  version = "0.68.0-nightly.20261111";
+  version = "0.68.0-nightly.20261112.2";
 
   src = fetchurl {
     url = "https://github.com/Kopuz-org/kopuz/releases/download/v${finalAttrs.version}/kopuz-nightly_${finalAttrs.version}_amd64.deb";
-    hash = "sha256-GK4Tw0Kq+T/wwIMfXND05alGDa1avgpItidsnSRpBGY=";
+    hash = "sha256-bMZ/XPC6/2nSIc83slRZpmvN2fEb6PRb38A0dexr4Kg=";
   };
 
   nativeBuildInputs = [

@@ -5,8 +5,10 @@
   runCommandLocal,
 }:
 
-# DMS Bitwarden plugin 1.11.6-dms.6 (coldi1337/dms-bitwarden-cli), audited 2026-11-09
-# (diff vs 1.11.6-dms.2: QML/JS/docs only; the three Rust crates are byte-identical).
+# DMS Bitwarden plugin 1.11.6-dms.7 (coldi1337/dms-bitwarden-cli), audited 2026-11-12
+# (diff vs 1.11.6-dms.6: QML/JS/docs/tests only; the three Rust crates are byte-identical).
+# dms.7 opens pinentry a tick later, which also stops a Dux 2.x crash: hiding the
+# panel while its popout window was being created (quickshell#620).
 #
 # This release ignores bin/ and only runs helpers it finds at <crate>/target/debug/,
 # which cannot be built inside the read-only store. So build the three helpers
@@ -14,8 +16,8 @@
 let
   src = fetchgit {
     url = "https://github.com/coldi1337/dms-bitwarden-cli";
-    rev = "528175fc46ec50a5b8670fdb40553c9fc18da201";
-    hash = "sha256-/cL2DivIE9KPr/P+vnricT/fcb5pngszG5mkaXRYJJ0=";
+    rev = "d449d6575e7f396361b2439cda65f2a70928923c";
+    hash = "sha256-ia9d2XXIGLvThN89f4X3fAitWmdwXEezpwNLwKppB1k=";
   };
 
   helper =
@@ -41,7 +43,7 @@ let
     unlock-key = helper "unlock-key" "qs-bitwarden-unlock-key";
   };
 in
-runCommandLocal "dms-plugin-bitwarden-1.11.6-dms.6" { } ''
+runCommandLocal "dms-plugin-bitwarden-1.11.6-dms.7" { } ''
   cp -r ${src} $out
   chmod -R u+w $out
   # Unattested v1 binary; this release never runs it, so do not ship it.

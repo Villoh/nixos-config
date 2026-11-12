@@ -584,16 +584,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1794432589,
-        "narHash": "sha256-T81DXueVL65WfsPxyro95boJHzm4nDiyuHAl/+c2R04=",
+        "lastModified": 1794476207,
+        "narHash": "sha256-2BpXjTaFhUPoeMt6V68RxCKsxdL1RuLC3MMPR+FHSz8=",
         "owner": "Villoh",
         "repo": "nixup",
-        "rev": "7f571dc8cc06aa2c5c41a2da5c59a8ef67d065f0",
+        "rev": "10a1917ade677b200a5e742afe6bc3d528563f4a",
         "type": "github"
       },
       "original": {
         "owner": "Villoh",
-        "ref": "v0.9.0",
+        "ref": "v0.10.0",
         "repo": "nixup",
         "type": "github"
       }

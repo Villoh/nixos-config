@@ -99,21 +99,23 @@ Not covered: `dms-bitwarden` (pinned on purpose, audited by hand).
 Each one carries a `PENDING` comment where it is applied. Remove it once the fix reaches
 nixos-unstable (the channel moves only after Hydra builds the commit):
 
-- `aube` and `rustdesk-flutter` (Home Manager packages) add the libraries nixpkgs' fixes add
-  ("aube: add missing dependencies", "rustdesk-flutter: fix build"). Since
-  `cargoSetupHook` forces Rust `-sys` crates onto system libraries (nixpkgs 44cddf9,
-  2026-10-12), a package that does not list them fails to build.
+- `rustdesk-flutter` (Home Manager package) adds the library nixpkgs' fix adds
+  ("rustdesk-flutter: fix build"). Since `cargoSetupHook` forces Rust `-sys` crates onto
+  system libraries (nixpkgs 44cddf9, 2026-10-12), a package that does not list them fails
+  to build. An overridden package is never in cache.nixos.org, so it compiles here.
 
 ## Prebuilt releases (`packages/prebuilt/`, temporary)
 
-`arca`, `handy`, `hex`, `kopuz`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux`, `yapfast`
-and `zapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
+`arca`, `aube`, `handy`, `hex`, `kopuz`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux`,
+`yapfast` and `zapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
 compile locally (no binary cache yet). They are bumped like the packages above, with
 `nixup update workmux-bin`.
 
 Each module line that uses one carries a `PENDING: cache` comment next to the original
 source-built line (the flake input stays in `flake.nix`, so it is still pinned in
-`flake.lock`). `handy`, `hex` and `wealthfolio` are swapped in the overlay and in
+`flake.lock`). `aube` and `wealthfolio` also have a source package (`packages/aube`,
+`packages/wealthfolio`, copied from nixpkgs, which runs behind upstream), commented out in
+`packages/default.nix` until then. `handy`, `hex` and `wealthfolio` are swapped in the overlay and in
 `packages/default.nix`, so `pkgs.handy`, `pkgs.hex` and `pkgs.wealthfolio` keep working.
 Once a binary cache serves the source builds, revert those lines and delete
 `packages/prebuilt/`. A release can lag the flake input (it is built from `main`), so
@@ -165,6 +167,7 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | hex | yes (767 crates) | yes (.deb) | no | Binary |
 | handy | nixpkgs, 0.9.6 plus a local patch | yes (.deb) | no | Binary |
 | wealthfolio | nixpkgs, and `packages/wealthfolio` | yes (.deb) | no | Binary |
+| aube | nixpkgs (1.32, behind), and `packages/aube` (2.10, builds with 4 sandbox tests skipped) | yes (static musl tar.gz) | no | Binary |
 | kopuz | yes (about 2,200 derivations) | nightly only (GPUI, same commit as the lock); the stable release is the legacy WebKit app | Flathub 0.67.1 is the legacy Dioxus app (`dx build`), not GPUI | Binary (nightly) |
 | sonora | yes (`sonora-src`) | yes, `sonora-bin` in the same flake | yes (official repo) | Flake, binary output |
 | meiro | no (Bazel) | yes (minimal tarball, `packages/meiro`; ffmpeg, yt-dlp and Node from nixpkgs) | yes (release bundle; sign-in needs `--talk-name=org.freedesktop.Flatpak`) | Binary |

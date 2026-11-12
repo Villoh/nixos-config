@@ -78,15 +78,10 @@ in
     python3
 
     # Version/package managers
-    # PENDING: nixpkgs "aube: add missing dependencies" reaching nixos-unstable; since
-    # cargoSetupHook forces system libraries, aws-lc-sys and zstd-sys need them.
-    (aube.overrideAttrs (old: {
-      buildInputs = (old.buildInputs or [ ]) ++ [
-        aws-lc
-        zstd
-      ];
-      nativeBuildInputs = old.nativeBuildInputs ++ [ pkg-config ];
-    }))
+    # PENDING: cache. Source build (packages/aube, nixpkgs runs behind upstream),
+    # swapped for the prebuilt release meanwhile.
+    # aube
+    aube-bin
     mise
     uv
     pnpm

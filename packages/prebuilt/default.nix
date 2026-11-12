@@ -7,6 +7,7 @@
 # valid `packages.<system>` output).
 pkgs: {
   arca-bin = pkgs.callPackage ./arca/package.nix { };
+  aube-bin = pkgs.callPackage ./aube/package.nix { };
   handy-bin = pkgs.callPackage ./handy/package.nix { };
   hex-bin = pkgs.callPackage ./hex/package.nix { };
   kopuz-bin = pkgs.callPackage ./kopuz/package.nix { };

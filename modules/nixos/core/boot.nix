@@ -3,7 +3,8 @@
 {
   boot = {
     consoleLogLevel = 3;
-    initrd.verbose = false;
+    # The initrd is systemd's (nixpkgs dropped the scripted one and initrd.verbose):
+    # rd.systemd.show_status and rd.udev.log_level below keep it quiet.
     kernelParams = [
       "quiet"
       "rd.systemd.show_status=auto"

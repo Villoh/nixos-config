@@ -39,7 +39,10 @@ in
     nchat
     # `rustdesk` is the legacy Sciter UI, which lacks the third-party login the public server
     # requires; `rustdesk-flutter` is the current one and is in cache.nixos.org.
-    rustdesk-flutter
+    # PENDING: nixpkgs "rustdesk-flutter: fix build" (adds libsodium) reaching nixos-unstable.
+    (rustdesk-flutter.overrideAttrs (old: {
+      buildInputs = old.buildInputs ++ [ libsodium ];
+    }))
     inputs.himalaya-tui.packages.${pkgs.stdenv.hostPlatform.system}.default
     # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
     # inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast

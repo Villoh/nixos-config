@@ -25,19 +25,14 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
-    # Upstream HM module matching the current NixOS DMS release.
+    # Dux Shell's HM module (plugins), at the release nixpkgs' dux-shell packages.
     dms = {
-      url = "github:AvengeMedia/DankMaterialShell/v1.6.2";
+      url = "github:duxlabs-dev/dux-shell/v2.1.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     dms-plugin-registry = {
-      url = "github:AvengeMedia/dms-plugin-registry";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    dankcalendar = {
-      url = "github:AvengeMedia/dankcalendar";
+      url = "github:duxlabs-dev/dux-plugin-registry";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -94,7 +89,7 @@
     };
 
     base46 = {
-      url = "github:AvengeMedia/base46";
+      url = "github:duxlabs-dev/base46";
       flake = false;
     };
 
@@ -171,10 +166,9 @@
     # together with the source-built line next to that package.
     # sheprd.url = "github:sheprd-labs/sheprd";
 
-    himalaya-tui = {
-      url = "github:pimalaya/himalaya-tui";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # Keeps its own nixpkgs (nixos-25.11): with unstable's cargoSetupHook its -sys crates
+    # (onig, libgit2) need system libraries the derivation does not list.
+    himalaya-tui.url = "github:pimalaya/himalaya-tui";
 
     # Upstream flake (added after v1.1.1, so tracked on main until a release has it).
     strata = {

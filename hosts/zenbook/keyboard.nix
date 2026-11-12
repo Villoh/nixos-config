@@ -13,7 +13,7 @@
     })
   '';
 
-  services.displayManager.dms-greeter.compositor.customConfig = lib.mkAfter ''
+  services.displayManager.dux-greeter.compositor.customConfig = lib.mkAfter ''
     require("/etc/xdg/hypr/host")
   '';
 }

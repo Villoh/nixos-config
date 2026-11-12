@@ -1,8 +1,8 @@
 { lib, pkgs, ... }:
 
 {
-  # DankGreeter runs in separate Hyprland; keep its output/focus host-specific.
-  services.displayManager.dms-greeter.compositor.customConfig = lib.mkAfter ''
+  # Dux Greeter runs in separate Hyprland; keep its output/focus host-specific.
+  services.displayManager.dux-greeter.compositor.customConfig = lib.mkAfter ''
     -- Start on DP-1; Wayland has no primary-output setting.
     hl.workspace_rule({
       workspace = "1",

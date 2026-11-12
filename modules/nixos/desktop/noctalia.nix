@@ -25,8 +25,8 @@
   # Two shells would fight over the notification bus name, the layer-shell surfaces and the lock.
   assertions = [
     {
-      assertion = !(config.programs.noctalia.enable && config.programs.dms-shell.enable);
-      message = "Noctalia and DMS cannot run together: set programs.dms-shell.enable = false in the host.";
+      assertion = !(config.programs.noctalia.enable && config.programs.dux-shell.enable);
+      message = "Noctalia and Dux Shell cannot run together: set programs.dux-shell.enable = false in the host.";
     }
   ];
 }

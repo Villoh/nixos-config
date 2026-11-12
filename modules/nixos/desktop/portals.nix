@@ -24,6 +24,8 @@ in
 
       # Files / Nautilus (uses Nautilus' own file chooser)
       # pkgs.xdg-desktop-portal-gnome
+
+      # Dux Files: instead of a package here, set programs.dux-files.portal.enable = true
     ];
 
     config.common."org.freedesktop.impl.portal.FileChooser" = [
@@ -32,5 +34,6 @@ in
     ]; # Strata
     # config.common."org.freedesktop.impl.portal.FileChooser" = [ "kde" "gtk" ]; # Dolphin
     # config.common."org.freedesktop.impl.portal.FileChooser" = [ "gnome" "gtk" ]; # Files / Nautilus
+    # config.common."org.freedesktop.impl.portal.FileChooser" = [ "dfiles" "gtk" ]; # Dux Files
   };
 }

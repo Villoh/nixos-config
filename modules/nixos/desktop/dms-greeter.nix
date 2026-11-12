@@ -6,13 +6,13 @@
 }:
 
 let
-  cfg = config.services.displayManager.dms-greeter;
+  cfg = config.services.displayManager.dux-greeter;
 in
 {
   programs.hyprland.enable = true;
   environment.systemPackages = [ pkgs.bibata-cursors ];
 
-  services.displayManager.dms-greeter = {
+  services.displayManager.dux-greeter = {
     enable = true;
     compositor.name = "hyprland";
   };

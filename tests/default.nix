@@ -60,7 +60,7 @@ let
   n = withNoctalia [
     {
       programs.noctalia.enable = true;
-      programs.dms-shell.enable = false;
+      programs.dux-shell.enable = false;
     }
   ];
   nWithDms = withNoctalia [ { programs.noctalia.enable = true; } ];
@@ -99,8 +99,10 @@ in
       "ghostty"
       "nh"
       "hyprland"
-      "dms-shell"
-      "dsearch"
+      "dux-shell"
+      "dux-search"
+      "dux-calendar"
+      "dux-files"
       "qtengine"
       "dms-hyprland-init"
     ]) "Desktop dependencies must be installed by NixOS";
@@ -132,9 +134,9 @@ in
       && lib.all (a: a.assertion) n.assertions
     ) "Noctalia must replace DMS, never run next to it";
     assert lib.assertMsg (
-      c.services.displayManager.dms-greeter.configHome == null
+      c.services.displayManager.dux-greeter.configHome == null
       && !(c.systemd.user.services.dms.environment ? TERMINAL)
-    ) "DMS/greeter must not read a personal profile";
+    ) "Dux Shell/greeter must not read a personal profile";
     assert lib.assertMsg (
       !(c.environment.etc ? "xdg/hypr/hyprland.lua") && !(c.environment.etc ? "xdg/hypr/dms-base.lua")
     ) "System Lua fallback must not eclipse personal legacy configurations";
@@ -160,28 +162,28 @@ in
       && d.home-manager.users.mikel.wayland.windowManager.hyprland.portalPackage == null
     ) "Compositor packages belong to NixOS";
     assert lib.assertMsg (
-      d.programs.dms-shell.plugins == { }
-      && builtins.hasAttr "DankMaterialShell/plugins/bitwarden" h.xdg.configFile
-      && builtins.hasAttr "DankMaterialShell/plugins/bitwarden" m.home-manager.users.alice.xdg.configFile
-      && !(builtins.hasAttr "DankMaterialShell/plugins/bitwarden" m.home-manager.users.bob.xdg.configFile)
-    ) "Personal DMS plugins must be per-user";
+      d.programs.dux-shell.plugins == { }
+      && builtins.hasAttr "dms/plugins/bitwarden" h.xdg.configFile
+      && builtins.hasAttr "dms/plugins/bitwarden" m.home-manager.users.alice.xdg.configFile
+      && !(builtins.hasAttr "dms/plugins/bitwarden" m.home-manager.users.bob.xdg.configFile)
+    ) "Personal Dux Shell plugins must be per-user";
     assert lib.assertMsg (
       h.programs.dank-material-shell.enable
-      && h.programs.dank-material-shell.package.outPath == d.programs.dms-shell.package.outPath
-      && h.programs.quickshell.package.outPath == d.programs.dms-shell.quickshell.package.outPath
+      && h.programs.dank-material-shell.package.outPath == d.programs.dux-shell.package.outPath
+      && h.programs.quickshell.package.outPath == d.programs.dux-shell.quickshell.package.outPath
       && !h.programs.dank-material-shell.systemd.enable
       && !(h.systemd.user.services ? dms)
       && !(h.systemd.user.services ? quickshell)
     ) "The official HM module must reuse the host runtime without a second shell service";
     assert lib.assertMsg (
       !h.programs.dank-material-shell.managePluginSettings
-      && lib.all (name: !(builtins.hasAttr "DankMaterialShell/${name}" h.xdg.configFile)) [
+      && lib.all (name: !(builtins.hasAttr "dms/${name}" h.xdg.configFile)) [
         "settings.json"
         "clsettings.json"
         "plugin_settings.json"
       ]
-      && !(builtins.hasAttr "DankMaterialShell/session.json" h.xdg.stateFile)
-    ) "DMS/chezmoi must retain ownership of personal settings and session state";
+      && !(builtins.hasAttr "dms/session.json" h.xdg.stateFile)
+    ) "Dux Shell/chezmoi must retain ownership of personal settings and session state";
     assert lib.assertMsg (
       !d.home-manager.users.mikel.home.file."${d.home-manager.users.mikel.programs.gpg.homedir}/gpg-agent.conf".enable
     ) "Home Manager must not take over Mikel's chezmoi-owned GPG configuration";
@@ -213,7 +215,7 @@ in
       syncHook =
         settings:
         (base.extendModules {
-          modules = [ { services.displayManager.dms-greeter = settings; } ];
+          modules = [ { services.displayManager.dux-greeter = settings; } ];
         }).config.systemd.services.greetd.preStart;
       cacheDir = d.systemd.tmpfiles.settings."10-dms-greeter"."/var/lib/dms-greeter".d;
     in
@@ -225,7 +227,7 @@ in
       && cacheDir.mode == "0750"
     ) "Cache-only greeter must skip sync while retaining directory provisioning";
     assert lib.assertMsg (
-      lib.hasInfix "/test-greeter-home/.config/DankMaterialShell/settings.json" (syncHook {
+      lib.hasInfix "/test-greeter-home/.config/dms/settings.json" (syncHook {
         configHome = lib.mkForce "/test-greeter-home";
       })
       && lib.hasInfix "/test-greeter-settings.json" (syncHook {
@@ -233,8 +235,8 @@ in
       })
     ) "Explicit greeter sync sources must retain the upstream preparation hook";
     assert lib.assertMsg (
-      d.services.displayManager.dms-greeter.configHome == d.users.users.mikel.home
-      && lib.hasInfix "${d.users.users.mikel.home}/.config/DankMaterialShell/settings.json" (
+      d.services.displayManager.dux-greeter.configHome == d.users.users.mikel.home
+      && lib.hasInfix "${d.users.users.mikel.home}/.config/dms/settings.json" (
         d.systemd.services.greetd.preStart
       )
       && d.systemd.services.greetd.serviceConfig ? ExecStartPre
@@ -270,15 +272,15 @@ in
 
       # Real desktop hook, with all sources/destinations relocated to fixtures.
       home="$TMPDIR/home"
-      mkdir -p "$home/.config/DankMaterialShell" \
-        "$home/.local/state/DankMaterialShell" "$home/.cache/DankMaterialShell"
+      mkdir -p "$home/.config/dms" \
+        "$home/.local/state/dms" "$home/.cache/dms"
       printf '{"theme":"first"}\n' > "$home/theme.json"
       printf 'personal wallpaper\n' > "$home/wallpaper"
       printf '{"customThemeFile":"%s/theme.json"}\n' "$home" \
-        > "$home/.config/DankMaterialShell/settings.json"
+        > "$home/.config/dms/settings.json"
       printf '{"wallpaperPath":"%s/wallpaper"}\n' "$home" \
-        > "$home/.local/state/DankMaterialShell/session.json"
-      printf '{"color":"first"}\n' > "$home/.cache/DankMaterialShell/dms-colors.json"
+        > "$home/.local/state/dms/session.json"
+      printf '{"color":"first"}\n' > "$home/.cache/dms/dms-colors.json"
       (cd "$home"; find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$TMPDIR/home-before"
       sed "s|/var/lib/dms-greeter|$cache|g;s|${d.users.users.mikel.home}|$home|g" \
         ${syncPrepare} > "$TMPDIR/sync"
@@ -286,7 +288,7 @@ in
       bash -e "$TMPDIR/sync"
       cmp "$home/theme.json" "$cache/custom-theme.json"
       cmp "$home/wallpaper" "$cache/wallpaper"
-      cmp "$home/.cache/DankMaterialShell/dms-colors.json" "$cache/colors.json"
+      cmp "$home/.cache/dms/dms-colors.json" "$cache/colors.json"
       ${lib.getExe pkgs.jq} -e --arg path "$cache/custom-theme.json" \
         '.customThemeFile == $path' "$cache/settings.json"
       ${lib.getExe pkgs.jq} -e --arg path "$cache/wallpaper" \
@@ -337,7 +339,7 @@ in
       {
         nativeBuildInputs = [
           pkgs.jq
-          c.programs.dms-shell.package
+          c.programs.dux-shell.package
           c.programs.hyprland.package
         ];
         PRE_START =

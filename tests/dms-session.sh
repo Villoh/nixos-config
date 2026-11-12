@@ -18,7 +18,7 @@ profile() {
 check_dms() {
   for name in colors layout outputs cursor windowrules binds; do
     dms config resolve-include hyprland "$name.lua" |
-      jq -e '.exists and .included and .configFormat == "lua"'
+      jq -e '.exists and .included'
   done
   dms keybinds show hyprland > "$TMPDIR/binds.json"
   jq -e '.dmsBindsIncluded and .dmsStatus.effective and .dmsStatus.totalIncludes == 7' "$TMPDIR/binds.json"

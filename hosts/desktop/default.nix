@@ -62,7 +62,7 @@
     # };
     defaultSession = "hyprland-uwsm";
     # One shared login appearance, imported by nixpkgs before greetd starts.
-    dms-greeter.configHome = config.users.users.mikel.home;
+    dux-greeter.configHome = config.users.users.mikel.home;
   };
 
   # The Logitech receiver (046d:c547) cut S3 short: with its wake enabled, sleep

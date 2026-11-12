@@ -10,7 +10,7 @@ let
   defaults = pkgs.runCommand "dms-hyprland-defaults" { } ''
     mkdir -p "$out"
     for name in colors layout outputs cursor windowrules binds; do
-      cp ${config.programs.dms-shell.package.src}/core/internal/config/embedded/hypr-$name.lua "$out/$name.lua"
+      cp ${config.programs.dux-shell.package.src}/core/internal/config/embedded/hypr-$name.lua "$out/$name.lua"
     done
     substituteInPlace "$out/binds.lua" \
       --replace-fail '{{TERMINAL_COMMAND}}' 'xdg-terminal-exec'

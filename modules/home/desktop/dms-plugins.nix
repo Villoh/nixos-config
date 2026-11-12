@@ -15,8 +15,8 @@
   programs.dank-material-shell = {
     enable = true;
     # Reuse the host's patched shell and runtime; do not start a second service.
-    package = osConfig.programs.dms-shell.package;
-    quickshell.package = osConfig.programs.dms-shell.quickshell.package;
+    package = osConfig.programs.dux-shell.package;
+    quickshell.package = osConfig.programs.dux-shell.quickshell.package;
     systemd.enable = false;
 
     # DMS/chezmoi retain settings ownership; HM only deploys plugin code.
@@ -56,8 +56,5 @@
 
   # Security/shell/media already supply bw, jq, wl-clipboard and capture tools.
   # KDE Connect (rather than Valent), Docker, Tailscale and Nix are system services/tools.
-  home.packages = [
-    pkgs.curl
-    inputs.dankcalendar.packages.${pkgs.stdenv.hostPlatform.system}.default
-  ];
+  home.packages = [ pkgs.curl ];
 }

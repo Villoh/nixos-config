@@ -21,5 +21,7 @@ rec {
   wealthfolio = prebuilt.wealthfolio-bin;
   # Music player under evaluation: prebuilt release, upstream ships no flake.
   meiro = pkgs.callPackage ./meiro/package.nix { };
+  # nixpkgs removed it (2026-11-03); Brave's own .deb.
+  brave-origin = pkgs.callPackage ./brave-origin/package.nix { };
 }
 // prebuilt

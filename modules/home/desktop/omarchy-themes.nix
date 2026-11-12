@@ -54,7 +54,7 @@ in
       n:
       map
         (f: {
-          name = "DankMaterialShell/themes/omarchy-${n}/${f}";
+          name = "dms/themes/omarchy-${n}/${f}";
           value.source = "${dmsThemes}/omarchy-${n}/${f}";
         })
         [

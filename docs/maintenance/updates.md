@@ -102,7 +102,9 @@ nixos-unstable (the channel moves only after Hydra builds the commit):
 - `rustdesk-flutter` (Home Manager package) adds the library nixpkgs' fix adds
   ("rustdesk-flutter: fix build"). Since `cargoSetupHook` forces Rust `-sys` crates onto
   system libraries (nixpkgs 44cddf9, 2026-10-12), a package that does not list them fails
-  to build. An overridden package is never in cache.nixos.org, so it compiles here.
+  to build. An overridden package is never in cache.nixos.org, so it compiles here. The
+  override applies only while the package lacks libsodium: once the fix arrives, the
+  cached package is used and evaluation warns to delete the override.
 
 ## Prebuilt releases (`packages/prebuilt/`, temporary)
 

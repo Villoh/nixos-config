@@ -1,4 +1,9 @@
-{ inputs, pkgs, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   flectarMail = pkgs.flectar-mail;
@@ -39,10 +44,17 @@ in
     nchat
     # `rustdesk` is the legacy Sciter UI, which lacks the third-party login the public server
     # requires; `rustdesk-flutter` is the current one and is in cache.nixos.org.
-    # PENDING: nixpkgs "rustdesk-flutter: fix build" (adds libsodium) reaching nixos-unstable.
-    (rustdesk-flutter.overrideAttrs (old: {
-      buildInputs = old.buildInputs ++ [ libsodium ];
-    }))
+    # PENDING: nixpkgs "rustdesk-flutter: fix build" reaching nixos-unstable. Applies only
+    # while the package lacks libsodium (an overridden package is never in the binary
+    # cache), then warns to delete these lines.
+    (
+      if lib.any (p: p.pname or "" == "libsodium") rustdesk-flutter.buildInputs then
+        lib.warn "rustdesk-flutter: nixpkgs has the libsodium fix, drop the override in modules/home/communication/packages.nix" rustdesk-flutter
+      else
+        rustdesk-flutter.overrideAttrs (old: {
+          buildInputs = old.buildInputs ++ [ libsodium ];
+        })
+    )
     inputs.himalaya-tui.packages.${pkgs.stdenv.hostPlatform.system}.default
     # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
     # inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.zapfast

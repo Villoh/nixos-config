@@ -66,6 +66,8 @@ let
         barToggle = ipc "bar toggle index 0";
         clipboardHistory = ipc "clipboard toggle";
         powerMenu = ipc "powermenu toggle";
+        lock = ipc "lock lock";
+        idleInhibit = ipc "inhibit toggle";
         miseTools = ipc "mise toggle";
         # dmsProfiles plugin.
         wallpaperPicker = ipc "profiles wallpapers";
@@ -104,6 +106,8 @@ let
         barToggle = msg "bar-toggle";
         clipboardHistory = msg "panel-toggle clipboard";
         powerMenu = msg "panel-toggle session";
+        lock = msg "session lock";
+        idleInhibit = msg "caffeine-toggle";
         # Community plugins listed in ../noctalia/default.nix.
         wallpaperPicker = msg "panel-toggle ishan0121/wallpaper-deck:picker";
         themePicker = msg "panel-toggle theblackdon/theme-switcher:carousel";
@@ -161,6 +165,8 @@ let
     (bind "SUPER + period" "emoji" "Emoji picker")
     (bind "SUPER + CTRL + V" "clipboardHistory" "Clipboard history")
     (bind "SUPER + Escape" "powerMenu" "Power menu")
+    (bind "SUPER + CTRL + L" "lock" "Lock")
+    (bind "SUPER + CTRL + I" "idleInhibit" "Toggle locking on idle")
     (bind "SUPER + CTRL + M" "miseTools" "mise tools panel")
 
     (bind "SUPER + CTRL + comma" "notifyInvoke" "Open latest notification")

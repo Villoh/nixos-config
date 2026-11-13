@@ -153,8 +153,8 @@ let
     })
     # Close like Omarchy (SUPER+Q is the DMS bind); the DMS group toggle moves to G.
     (dsp "SUPER + W" "Close window" "window.close" { })
-    # Monitor focus stays on SUPER+arrows/H/L and CTRL+ALT+Tab.
-    (exec "SUPER + CTRL + L" "Toggle layout dwindle/scrolling" "${layoutToggle}")
+    # Omarchy's layout plane (SUPER+L stays the DMS focus-right; lock is SUPER+CTRL+L).
+    (exec "SUPER + ALT + L" "Toggle layout dwindle/scrolling" "${layoutToggle}")
     (dsp "CTRL + ALT + Tab" "Next monitor" "focus" { monitor = "+1"; })
     (dsp "CTRL + ALT + SHIFT + Tab" "Previous monitor" "focus" { monitor = "-1"; })
     (lua "SUPER + SHIFT + mouse_down" "Next window" "cycle(true)")
@@ -191,8 +191,11 @@ let
     dsp "SUPER + ALT + ${key}" "Move window into group ${key}" "window.move" { into_group = dir; }
   )
   ++ [
-    # Workspaces.
-    (dsp "SUPER + CTRL + Tab" "Previous workspace" "focus" { workspace = "previous"; })
+    # Workspaces. Next/previous stay on the focused monitor, like Omarchy; the DMS
+    # overview keeps SUPER+O.
+    (dsp "SUPER + Tab" "Next workspace" "focus" { workspace = "m+1"; })
+    (dsp "SUPER + SHIFT + Tab" "Previous workspace" "focus" { workspace = "m-1"; })
+    (dsp "SUPER + CTRL + Tab" "Former workspace" "focus" { workspace = "previous"; })
   ]
   ++ forNumbers 9 (
     i:

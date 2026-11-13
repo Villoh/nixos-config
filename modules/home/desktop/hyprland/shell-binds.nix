@@ -49,6 +49,7 @@ let
         screenshot = ipc "quickCapture screenshot region edit";
         screenshotCopy = ipc "quickCapture screenshot region copy";
         screenshotWindow = ipc "quickCapture screenshot window edit";
+        screenshotFull = ipc "quickCapture screenshot full edit";
         captureMenu = ipc "quickCapture toggle";
         # Screen Capture Toolbar plugin.
         captureToolbar = ipc "screenCaptureToolbar toggle";
@@ -171,6 +172,7 @@ let
     (bind "SUPER + CTRL + Print" "captureToolbar" "Capture toolbar")
     (bind "ALT + Print" "record" "Toggle screen recording")
     (bind "SHIFT + Print" "screenshotWindow" "Screenshot window")
+    (bind "CTRL + Print" "screenshotFull" "Screenshot full screen (annotate)")
     (bind "SUPER + Print" "colorPicker" "Color picker")
     (bind "SUPER + CTRL + Print" "ocr" "OCR region")
 

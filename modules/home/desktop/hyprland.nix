@@ -72,6 +72,18 @@ let
     ${pkgs.libnotify}/bin/notify-send -a Hyprland -u low "Workspace layout" "Set to $new"
   '';
 
+  # Control Center section as a toggle: `openWith` only opens, so close it when that
+  # same section is already showing (the last one opened is kept in the runtime dir).
+  ccPanel = pkgs.writeShellScript "cc-panel" ''
+    state="$XDG_RUNTIME_DIR/dms-cc-section"
+    if [ "$(dms ipc call control-center status)" = visible ] && [ "$(cat "$state" 2>/dev/null)" = "$1" ]; then
+      dms ipc call control-center hide
+    else
+      echo "$1" > "$state"
+      dms ipc call control-center openWith "$1"
+    fi
+  '';
+
   # Quake console: spawn the terminal (the window rule shows its special workspace)
   # or toggle it when it already exists.
   quakeToggle = pkgs.writeShellScript "quake-toggle" ''
@@ -240,10 +252,10 @@ in
       hl.bind("SUPER + Print", hl.dsp.exec_cmd("dms ipc call color-picker toggle"))
 
       -- Panels (SUPER+CTRL+key). Control Center sections are its widget ids.
-      hl.bind("SUPER + CTRL + A", hl.dsp.exec_cmd(dms .. "control-center openWith audioOutput"))
-      hl.bind("SUPER + CTRL + B", hl.dsp.exec_cmd(dms .. "control-center openWith bluetooth"))
-      hl.bind("SUPER + CTRL + N", hl.dsp.exec_cmd(dms .. "control-center openWith wifi"))
-      hl.bind("SUPER + CTRL + D", hl.dsp.exec_cmd(dms .. "settings openWith displays"))
+      hl.bind("SUPER + CTRL + A", hl.dsp.exec_cmd("${ccPanel} audioOutput"))
+      hl.bind("SUPER + CTRL + B", hl.dsp.exec_cmd("${ccPanel} bluetooth"))
+      hl.bind("SUPER + CTRL + N", hl.dsp.exec_cmd("${ccPanel} wifi"))
+      hl.bind("SUPER + CTRL + D", hl.dsp.exec_cmd(dms .. "settings toggleWith displays"))
       hl.bind("SUPER + CTRL + P", hl.dsp.exec_cmd(dms .. "powerprofile toggle"))
       hl.bind("SUPER + CTRL + E", hl.dsp.exec_cmd(dms .. "emojiPicker toggle"))
 

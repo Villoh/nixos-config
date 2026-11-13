@@ -75,9 +75,9 @@ Gaming requires both host gaming support and that user's explicit HM import.
 
 ## Noctalia (alternative shell)
 
-Noctalia is prepared but off: `modules/nixos/desktop/noctalia.nix` (package,
+Noctalia is prepared but off: `modules/nixos/desktop/noctalia/default.nix` (package,
 user service, recommended services, binary cache) and
-`modules/home/desktop/noctalia.nix` (settings, plugins, Hyprland rules) change
+`modules/home/desktop/noctalia/default.nix` (settings, plugins, Hyprland rules) change
 nothing until a host sets `programs.noctalia.enable = true`. The HM side follows
 that one switch. NixOS asserts that DMS is disabled at the same time.
 
@@ -91,7 +91,7 @@ programs.dux-shell.enable = false;
 Then `nh os test .#desktop`. The personal keybinds that call the shell (apps by
 role, captures, panels, notifications, pickers) switch on their own: their keys
 are written once and each shell only supplies the commands, see
-`modules/home/desktop/shell-binds.nix` (Noctalia's own launcher, settings, Alt+Tab
+`modules/home/desktop/hyprland/shell-binds.nix` (Noctalia's own launcher, settings, Alt+Tab
 and media-key binds live there too). Actions Noctalia has no command for are
 skipped, and the Noctalia commands come from its IPC docs and are untested. Not
 covered, decide when switching: the Hyprland main still imports `dms.*` (including
@@ -112,7 +112,7 @@ the `cachix` branch so the build comes from `noctalia.cachix.org` instead of com
 ## Ownership and smoke checks
 
 NixOS owns `/etc/xdg/hypr/host.lua`, not a global `hyprland.lua` or
-`dms-base.lua`. `modules/nixos/desktop/hyprland-base.lua` contains only six
+`dms-base.lua`. `modules/nixos/desktop/dms/hyprland-base.lua` contains only six
 literal imports: `dms.colors`, `dms.layout`, `dms.outputs`, `dms.cursor`,
 `dms.windowrules`, and `dms.binds`. Nix embeds them with `builtins.readFile` in
 both the shared main template and HM's personal main, not a runtime loader.

@@ -16,7 +16,7 @@ let
       --replace-fail '{{TERMINAL_COMMAND}}' 'xdg-terminal-exec'
   '';
   mainConfig = pkgs.writeText "hyprland.lua" (
-    builtins.readFile ./hyprland-base.lua
+    builtins.readFile ./dms/hyprland-base.lua
     + ''
       require("/etc/xdg/hypr/host")
     ''

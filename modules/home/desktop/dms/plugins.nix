@@ -32,7 +32,7 @@
       bitwarden = {
         enable = true;
         # Pinned on purpose (1.11.6-dms.2, audited 2026-10-14); registry bumps are ignored.
-        src = lib.mkForce (pkgs.callPackage ./dms-bitwarden.nix { });
+        src = lib.mkForce (pkgs.callPackage ./bitwarden.nix { });
       };
       dankKDEConnect.enable = true;
       quickCapture.enable = true;

@@ -309,7 +309,7 @@ in
     # Inline the literal imports so DMS can discover them in the personal main.
     # Host-specific defaults go last, after the personal settings (e.g. keyboard).
     extraConfig = lib.concatStrings [
-      (builtins.readFile ../../nixos/desktop/hyprland-base.lua)
+      (builtins.readFile ../../../nixos/desktop/dms/hyprland-base.lua)
       (builtins.readFile ./hyprland.lua)
       keybinds
       ''

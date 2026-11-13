@@ -41,7 +41,7 @@ let
             alice = {
               imports = [
                 ../modules/home/shell/zsh.nix
-                ../modules/home/desktop/dms-plugins.nix
+                ../modules/home/desktop/dms/plugins.nix
                 ../modules/home/gaming
               ];
               home.stateVersion = "26.05";

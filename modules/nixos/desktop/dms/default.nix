@@ -87,6 +87,8 @@ let
   });
 in
 {
+  imports = [ ./greeter.nix ];
+
   # Shared AT-SPI2 accessibility bus, available without a personal profile.
   services.gnome.at-spi2-core.enable = true;
   services.gnome.gnome-keyring.enable = true;
@@ -112,7 +114,7 @@ in
 
   # Standalone suite apps. Neither starts with the session: dux-calendar's
   # systemd.enable keeps it syncing with reminders, and dux-files' portal.enable
-  # registers its file chooser (selected in portals.nix).
+  # registers its file chooser (selected in ../portals.nix).
   programs.dux-calendar.enable = true;
   programs.dux-files.enable = true;
 

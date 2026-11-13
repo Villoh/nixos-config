@@ -45,7 +45,7 @@
       flake = false;
     };
 
-    # Alternative shell to DMS, see modules/nixos/desktop/noctalia.nix. The `cachix` branch is the
+    # Alternative shell to DMS, see modules/nixos/desktop/noctalia/default.nix. The `cachix` branch is the
     # latest commit CI has built. No nixpkgs.follows: overriding it changes the derivation hash
     # and misses the binary cache, so Noctalia would compile locally.
     noctalia.url = "github:noctalia-dev/noctalia/cachix";

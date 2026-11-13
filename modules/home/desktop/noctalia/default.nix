@@ -15,16 +15,16 @@ let
     "screen_recorder" # gpu-screen-recorder: recording and replay buffer
   ];
   community = [
-    "audio-switcher" # Cycle audio outputs/inputs from a keybind (shell-binds.nix)
-    "emoji-picker" # Emoji and symbol picker (shell-binds.nix)
-    "screen-toolkit" # Color picker, OCR, QR, annotate (shell-binds.nix); recording stays with screen_recorder
+    "audio-switcher" # Cycle audio outputs/inputs from a keybind (../hyprland/shell-binds.nix)
+    "emoji-picker" # Emoji and symbol picker (../hyprland/shell-binds.nix)
+    "screen-toolkit" # Color picker, OCR, QR, annotate (../hyprland/shell-binds.nix); recording stays with screen_recorder
     "herdr" # Herdr sessions and coding agents in the bar
     "mini-docker" # Docker containers
     "nix-search" # nixpkgs / NixOS / Home Manager search in the launcher (nix-search-tv)
     "phone-connect" # KDE Connect (NixOS enables it)
     "tailscale" # Tailscale peers and exit nodes (NixOS enables it)
-    "theme-switcher" # Saved themes carousel (SUPER+CTRL+T, shell-binds.nix)
-    "wallpaper-deck" # Wallpaper picker with Wallhaven (SUPER+CTRL+W, shell-binds.nix)
+    "theme-switcher" # Saved themes carousel (SUPER+CTRL+T, ../hyprland/shell-binds.nix)
+    "wallpaper-deck" # Wallpaper picker with Wallhaven (SUPER+CTRL+W, ../hyprland/shell-binds.nix)
   ];
 
   entries =
@@ -85,7 +85,7 @@ in
 
   # Surface rules from the Noctalia Hyprland guide (no autostart: the user service starts
   # it). Its binds (launcher, settings, Alt+Tab, media keys) and the shell-dependent binds
-  # of hyprland.nix are in shell-binds.nix and replace the DMS ones on the same keys; the
+  # of ../hyprland are in ../hyprland/shell-binds.nix and replace the DMS ones on the same keys; the
   # other `dms ipc` binds in dms.binds stay until DMS is dropped for good and only fail to
   # run once DMS is disabled. SUPER+S is the scratchpad there, and the Control Center
   # opens through SUPER+CTRL+A/B/N/D/P.

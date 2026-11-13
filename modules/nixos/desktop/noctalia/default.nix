@@ -2,7 +2,7 @@
 
 # Noctalia, the alternative to DMS. Inert until a host sets
 # `programs.noctalia.enable = true`; the settings and plugins live in
-# modules/home/desktop/noctalia.nix. Switching shells, see docs/architecture.md.
+# modules/home/desktop/noctalia/default.nix. Switching shells, see docs/architecture.md.
 {
   imports = [ inputs.noctalia.nixosModules.default ];
 

@@ -64,7 +64,7 @@ If legacy `hyprland.conf` exists without a Lua main, initialization does nothing
 Outside UWSM, run `dms-hyprland-init` explicitly if needed.
 
 Nix inlines six literal DMS imports from
-`modules/nixos/desktop/hyprland-base.lua` into both the shared main template and
+`modules/nixos/desktop/dms/hyprland-base.lua` into both the shared main template and
 Home Manager's personal main; this is not a runtime loader. Each requires
 `/etc/xdg/hypr/host` once, after DMS imports and personal preferences where
 present. No global `hyprland.lua` or `dms-base.lua` is installed under
@@ -73,7 +73,7 @@ existing HM/DMS/chezmoi configuration or adds `binds-user.lua`. See
 [ownership and smoke checks](docs/architecture.md#ownership-and-smoke-checks).
 
 DMS is bound to UWSM's `graphical-session.target` in
-`modules/nixos/desktop/dms.nix`, so it starts with the logged-in Hyprland
+`modules/nixos/desktop/dms/default.nix`, so it starts with the logged-in Hyprland
 session. DankGreeter runs a separate temporary compositor for the login screen;
 the selected `Hyprland (uwsm-managed)` session launches the desktop through
 UWSM. We deliberately do not also run `dms run` from `hyprland.lua`, because

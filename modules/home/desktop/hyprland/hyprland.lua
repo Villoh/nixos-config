@@ -1,4 +1,4 @@
--- Static part of the personal Hyprland main. hyprland.nix inlines it after the dms.*
+-- Static part of the personal Hyprland main. default.nix inlines it after the dms.*
 -- imports and before the keybinds, which call the helpers defined here.
 
 hl.config({
@@ -8,7 +8,7 @@ hl.config({
   },
 })
 
--- Keys freed from dms/binds.lua without a replacement (the keys hyprland.nix binds
+-- Keys freed from dms/binds.lua without a replacement (the keys default.nix binds
 -- are unbound there automatically): Ctrl+Shift+R stays the hard reload in browsers
 -- (DMS: workspace rename), and SUPER+CTRL+H goes with SUPER+CTRL+L, the layout toggle.
 hl.unbind("CTRL + SHIFT + R")

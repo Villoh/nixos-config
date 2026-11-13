@@ -2,7 +2,7 @@
 # once in `binds`; each shell only supplies the commands in `shells.<shell>`. An action
 # the active shell has no command for is skipped, and the app actions fall back to
 # xdg-open / gtk-launch, which work with any shell. Returns bind entries for
-# hyprland.nix, which renders them.
+# default.nix, which renders them.
 {
   lib,
   pkgs,
@@ -104,7 +104,7 @@ let
         barToggle = msg "bar-toggle";
         clipboardHistory = msg "panel-toggle clipboard";
         powerMenu = msg "panel-toggle session";
-        # Community plugins listed in noctalia.nix.
+        # Community plugins listed in ../noctalia/default.nix.
         wallpaperPicker = msg "panel-toggle ishan0121/wallpaper-deck:picker";
         themePicker = msg "panel-toggle theblackdon/theme-switcher:carousel";
         # From the Noctalia Hyprland guide; DMS has these in dms/binds.lua.

@@ -11,9 +11,8 @@
 
   imports = [
     ./packages.nix
-    ./dms-greeter.nix
-    ./dms.nix
-    ./noctalia.nix
+    ./dms
+    ./noctalia
     ./hyprland.nix
     ./portals.nix
   ];

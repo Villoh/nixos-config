@@ -125,7 +125,6 @@ in
       hl.unbind("SUPER + SHIFT + T")
       hl.unbind("SUPER + F")
       hl.unbind("SUPER + SHIFT + F")
-      hl.unbind("SUPER + SHIFT + N")
       hl.unbind("SUPER + SHIFT + E")
       hl.unbind("SUPER + W")
       hl.unbind("SUPER + V")
@@ -137,6 +136,9 @@ in
 
       -- Windows: terminal, float, fullscreen, and maximize.
       hl.bind("SUPER + Return", hl.dsp.exec_cmd("${config.home.sessionVariables.TERMINAL}"))
+      -- Terminal with tmux, and Herdr (agent manager).
+      hl.bind("SUPER + ALT + Return", hl.dsp.exec_cmd("${config.home.sessionVariables.TERMINAL} -e tmux"))
+      hl.bind("SUPER + CTRL + Return", hl.dsp.exec_cmd("herdr-app"))
       hl.bind("SUPER + T", hl.dsp.window.float({ action = "toggle" }))
       hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
       hl.bind("SUPER + ALT + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
@@ -206,9 +208,10 @@ in
       hl.bind("SUPER + SHIFT + B", hl.dsp.exec_cmd(dms .. "defaultApp browser"))
       hl.bind("SUPER + SHIFT + ALT + B", hl.dsp.exec_cmd("${config.home.sessionVariables.BROWSER} --private-window"))
       hl.bind("SUPER + SHIFT + F", hl.dsp.exec_cmd(dms .. "defaultApp fileManager"))
-      hl.bind("SUPER + SHIFT + N", hl.dsp.exec_cmd(dms .. "defaultApp textEditor"))
-      hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd(dms .. "defaultApp mail"))
-      hl.bind("SUPER + SHIFT + ALT + E", hl.dsp.exec_cmd("xdg-open mailto:"))
+      hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd(dms .. "defaultApp textEditor"))
+      hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd(dms .. "defaultApp mail"))
+      hl.bind("SUPER + SHIFT + ALT + M", hl.dsp.exec_cmd("xdg-open mailto:"))
+      -- SUPER+SHIFT+N stays the DMS notepad toggle.
       hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd(dms .. "defaultApp calendar"))
       hl.bind("SUPER + SHIFT + Q", hl.dsp.exec_cmd("qalculate-qt"))
       hl.bind("SUPER + SHIFT + T", hl.dsp.exec_cmd("${config.home.sessionVariables.TERMINAL} -e btop"))
@@ -301,9 +304,8 @@ in
       hl.bind("SUPER + CTRL + V", hl.dsp.exec_cmd(dms .. "clipboard toggle"))
       hl.bind("SUPER + Escape", hl.dsp.exec_cmd(dms .. "powermenu toggle"))
 
-      -- Quick actions (SUPER+CTRL+ALT+key): calendar panel and notepad.
+      -- Quick actions (SUPER+CTRL+ALT+key): calendar panel.
       hl.bind("SUPER + CTRL + ALT + D", hl.dsp.exec_cmd(dms .. "dash toggle overview"))
-      hl.bind("SUPER + CTRL + ALT + N", hl.dsp.exec_cmd(dms .. "notepad toggle"))
 
       -- Toggle the mise tools panel (DMS plugin).
       hl.bind("SUPER + CTRL + M", hl.dsp.exec_cmd("dms ipc call mise toggle"))

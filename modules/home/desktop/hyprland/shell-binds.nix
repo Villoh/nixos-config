@@ -62,6 +62,7 @@ let
         notifyDismiss = ipc "notifications dismiss";
         notifyDismissAll = ipc "notifications dismissAllPopups";
         notifyDnd = ipc "notifications toggleDoNotDisturb";
+        notifyCenter = ipc "notifications toggle";
         audioOutputCycle = ipc "audio cycleoutput";
         barToggle = ipc "bar toggle index 0";
         clipboardHistory = ipc "clipboard toggle";
@@ -103,6 +104,7 @@ let
         notifyDismiss = msg "notification-clear-active";
         notifyDismissAll = msg "notification-clear-active";
         notifyDnd = msg "notification-dnd-toggle";
+        notifyCenter = cc "notifications";
         barToggle = msg "bar-toggle";
         clipboardHistory = msg "panel-toggle clipboard";
         powerMenu = msg "panel-toggle session";
@@ -173,6 +175,8 @@ let
     (bind "SUPER + ALT + comma" "notifyDismiss" "Dismiss latest notification")
     (bind "SUPER + SHIFT + comma" "notifyDismissAll" "Dismiss all notifications")
     (bind "SUPER + CTRL + ALT + comma" "notifyDnd" "Toggle Do Not Disturb")
+    # Omarchy's notification history; SUPER+N (dms/binds.lua) opens the same center.
+    (bind "SUPER + SHIFT + ALT + comma" "notifyCenter" "Notification center")
 
     (locked (bind "SHIFT + XF86AudioMute" "audioOutputCycle" "Next audio output"))
     (bind "SUPER + SHIFT + space" "barToggle" "Toggle bar")

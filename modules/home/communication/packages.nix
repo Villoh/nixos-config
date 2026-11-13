@@ -14,6 +14,8 @@ in
     # update.auto = { enable = true; onCalendar = "weekly"; }; # on its own, once a week
     # Flatpak on NixOS can't resolve /etc/localtime, so the sandbox falls back to UTC.
     overrides."co.hyprlab.Hylki".Environment.TZ = "Europe/Madrid";
+    # Hylki (GTK4/libadwaita) reads DMS/Matugen colours from the host's gtk-4.0 dir.
+    overrides."co.hyprlab.Hylki".Context.filesystems = [ "xdg-config/gtk-4.0:ro" ];
     overrides."com.flectar.mail".Environment.TZ = "Europe/Madrid";
     overrides."com.cherry_ai.CherryStudio".Environment.TZ = "Europe/Madrid";
     packages = [

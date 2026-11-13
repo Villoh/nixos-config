@@ -1,4 +1,10 @@
-{ inputs, pkgs, ... }:
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   nixIcon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
@@ -9,6 +15,17 @@ let
 in
 {
   imports = [ inputs.zen-browser.homeModules.beta ];
+
+  # Upstream uses Exec=zen-beta, which Claude's reduced PATH cannot resolve.
+  # Keep its desktop entry and actions, but point all of them at the configured wrapper.
+  # Remove when zen-browser-flake ships absolute Exec paths.
+  xdg.dataFile."applications/zen-beta.desktop".source =
+    pkgs.runCommand "zen-beta-desktop-absolute-exec" { }
+      ''
+        cp ${config.programs.zen-browser.package}/share/applications/zen-beta.desktop "$out"
+        substituteInPlace "$out" \
+          --replace-fail 'Exec=zen-beta ' 'Exec=${lib.getExe config.programs.zen-browser.package} '
+      '';
 
   programs.zen-browser = {
     enable = true;

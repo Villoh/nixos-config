@@ -36,6 +36,113 @@ local function clip(key, terminal_mods)
   end
 end
 
+-- Omarchy window tools (omarchy-hyprland-window-* scripts, ported to Lua).
+local function window_selector(w)
+  return "address:" .. w.address
+end
+
+-- Pop the window out: float it at 1300x900, centered, pinned to every workspace and on
+-- top. Again: unpin and tile it back.
+local function pop()
+  local w = hl.get_active_window()
+  if not w then return end
+  local window = window_selector(w)
+  if w.pinned then
+    hl.dispatch(hl.dsp.window.pin({ window = window, action = "off" }))
+    hl.dispatch(hl.dsp.window.float({ window = window, action = "off" }))
+    return
+  end
+  hl.dispatch(hl.dsp.window.float({ window = window, action = "on" }))
+  hl.dispatch(hl.dsp.window.resize({ window = window, x = 1300, y = 900 }))
+  hl.dispatch(hl.dsp.window.center({ window = window }))
+  hl.dispatch(hl.dsp.window.pin({ window = window, action = "on" }))
+  hl.dispatch(hl.dsp.window.alter_zorder({ window = window, mode = "top" }))
+end
+
+-- Tell the app it is fullscreen (a video hides its controls) while it keeps its tile.
+local function tiled_fullscreen()
+  local w = hl.get_active_window()
+  if not w then return end
+  local client = w.fullscreen_client == 2 and 0 or 2
+  hl.dispatch(hl.dsp.window.fullscreen_state({ window = window_selector(w), internal = 0, client = client }))
+end
+
+-- Save and restore a window width per workspace and app (mostly for the scrolling
+-- layout). Kept in a state file: Hyprland reloads this config, and with it the Lua
+-- state, every time DMS rewrites a dms/*.lua fragment.
+local widths_file = (os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state"))
+  .. "/hypr-window-widths"
+
+local function read_widths()
+  local widths = {}
+  local f = io.open(widths_file, "r")
+  if f then
+    for line in f:lines() do
+      local key, width = line:match("^(.-)\t(%d+)$")
+      if key then widths[key] = tonumber(width) end
+    end
+    f:close()
+  end
+  return widths
+end
+
+local function width_key(w)
+  local app = (w.class ~= "" and w.class) or (w.initial_class ~= "" and w.initial_class) or w.title
+  return w.workspace.id .. ":" .. app
+end
+
+local function notify(text)
+  hl.notification.create({ text = text, duration = 2500 })
+end
+
+local function save_width()
+  local w = hl.get_active_window()
+  if not w then return end
+  local widths = read_widths()
+  widths[width_key(w)] = w.size.x
+  local f = io.open(widths_file, "w")
+  if not f then return notify("Could not write " .. widths_file) end
+  for key, width in pairs(widths) do
+    f:write(key, "\t", width, "\n")
+  end
+  f:close()
+  notify("Saved width " .. w.size.x .. " for " .. width_key(w))
+end
+
+-- A relative resize can grow the window to either side, and in some layouts a positive
+-- step shrinks it: probe the sign first, then converge in a few steps (like Omarchy).
+local function restore_width()
+  local w = hl.get_active_window()
+  if not w then return end
+  local target = read_widths()[width_key(w)]
+  if not target then return notify("No saved width for " .. width_key(w)) end
+  local window = window_selector(w)
+  local function resize_by(dx)
+    hl.dispatch(hl.dsp.window.resize({ window = window, x = dx, y = 0, relative = true }))
+  end
+  local current = w.size.x
+  if current == target then return end
+  local direction
+  for _, probe in ipairs({ 10, -10 }) do
+    resize_by(probe)
+    local now = w.size.x
+    if now ~= current then
+      direction = ((now - current) * probe > 0) and 1 or -1
+      current = now
+      break
+    end
+  end
+  if not direction then return end
+  for _ = 1, 6 do
+    local delta = target - current
+    if delta == 0 then break end
+    resize_by(delta * direction)
+    local now = w.size.x
+    if now == current then break end
+    current = now
+  end
+end
+
 -- Quake console: a ghostty with its own class on special:quake, dropped under the bar.
 hl.window_rule({
   match = { class = "^mikel\\.quake$" },

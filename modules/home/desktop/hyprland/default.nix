@@ -157,6 +157,13 @@ let
     (exec "SUPER + ALT + L" "Toggle layout dwindle/scrolling" "${layoutToggle}")
     (dsp "CTRL + ALT + Tab" "Next monitor" "focus" { monitor = "+1"; })
     (dsp "CTRL + ALT + SHIFT + Tab" "Previous monitor" "focus" { monitor = "-1"; })
+    # Omarchy window tools (Lua functions in hyprland.lua). Omarchy has them on SUPER+O/P
+    # and SUPER+Home, which DMS uses for the overview, monitor profiles and focus.
+    (lua "SUPER + ALT + T" "Pop window out (float & pin)" "pop")
+    (dsp "SUPER + ALT + P" "Pseudo window" "window.pseudo" { })
+    (lua "SUPER + CTRL + F" "Tiled fullscreen" "tiled_fullscreen")
+    (lua "SUPER + ALT + Home" "Save window width" "save_width")
+    (lua "SUPER + CTRL + Home" "Restore window width" "restore_width")
     (lua "SUPER + SHIFT + mouse_down" "Next window" "cycle(true)")
     (lua "SUPER + SHIFT + mouse_up" "Previous window" "cycle(false)")
 

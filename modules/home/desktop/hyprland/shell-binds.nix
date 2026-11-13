@@ -67,6 +67,7 @@ let
         barToggle = ipc "bar toggle index 0";
         clipboardHistory = ipc "clipboard toggle";
         powerMenu = ipc "powermenu toggle";
+        launcherBar = ipc "spotlight-bar toggle";
         lock = ipc "lock lock";
         idleInhibit = ipc "inhibit toggle";
         miseTools = ipc "mise toggle";
@@ -168,6 +169,8 @@ let
     (bind "SUPER + period" "emoji" "Emoji picker")
     (bind "SUPER + CTRL + V" "clipboardHistory" "Clipboard history")
     (bind "SUPER + Escape" "powerMenu" "Power menu")
+    # Compact launcher, an ALT variant of SUPER+SPACE (DMS has it on ALT+SPACE, now dictation).
+    (bind "SUPER + ALT + SPACE" "launcherBar" "Launcher bar")
     (bind "SUPER + CTRL + L" "lock" "Lock")
     (bind "SUPER + CTRL + I" "idleInhibit" "Toggle locking on idle")
     (bind "SUPER + CTRL + M" "miseTools" "mise tools panel")

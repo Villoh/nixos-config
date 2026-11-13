@@ -78,15 +78,17 @@ let
   };
   discord = discordClients.${config.home.sessionVariables.DISCORD};
 
-  # Push-to-talk commands run on key press and key release.
+  # Push-to-talk commands run on key press and key release; `toggle` starts or stops.
   # Pick the client with DICTATION in modules/home/core/defaults.nix.
   # Handy only has a toggle, so it runs the same command on both edges.
   dictationClients = {
     handy = rec {
-      press = "${pkgs.handy}/bin/handy --toggle-transcription";
-      release = press;
+      toggle = "${pkgs.handy}/bin/handy --toggle-transcription";
+      press = toggle;
+      release = toggle;
     };
     hex = {
+      toggle = "hex dictation toggle";
       press = "hex dictation start";
       release = "hex dictation stop";
     };
@@ -247,6 +249,9 @@ let
     # Audio and voice. Push-to-talk dictation with the client selected by DICTATION.
     (exec "CTRL + SHIFT + SPACE" "Dictation (hold)" dictation.press)
     (exec "CTRL + SHIFT + SPACE" "Dictation (release)" dictation.release // { opts.release = true; })
+    # Omarchy's tap-to-dictate. Not its hold-Right-Alt: with us-intl that key is AltGr,
+    # which types the accents. The DMS spotlight bar moves to SUPER+ALT+SPACE.
+    (exec "ALT + SPACE" "Dictation (start/stop)" dictation.toggle)
     # I = input, O = output, independent of the hardware media keys.
     (exec "SUPER + ALT + I" "Toggle microphone mute" "${wpctl} set-mute @DEFAULT_AUDIO_SOURCE@ toggle")
     (exec "SUPER + ALT + O" "Toggle speaker mute" "${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle")

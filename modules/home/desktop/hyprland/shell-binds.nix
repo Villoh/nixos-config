@@ -68,6 +68,8 @@ let
         clipboardHistory = ipc "clipboard toggle";
         powerMenu = ipc "powermenu toggle";
         launcherBar = ipc "spotlight-bar toggle";
+        mediaNext = ipc "mpris next";
+        mediaPrevious = ipc "mpris previous";
         lock = ipc "lock lock";
         idleInhibit = ipc "inhibit toggle";
         miseTools = ipc "mise toggle";
@@ -110,6 +112,8 @@ let
         clipboardHistory = msg "panel-toggle clipboard";
         powerMenu = msg "panel-toggle session";
         lock = msg "session lock";
+        mediaNext = msg "media next";
+        mediaPrevious = msg "media previous";
         idleInhibit = msg "caffeine-toggle";
         # Community plugins listed in ../noctalia/default.nix.
         wallpaperPicker = msg "panel-toggle ishan0121/wallpaper-deck:picker";
@@ -183,6 +187,9 @@ let
     (bind "SUPER + SHIFT + ALT + comma" "notifyCenter" "Notification center")
 
     (locked (bind "SHIFT + XF86AudioMute" "audioOutputCycle" "Next audio output"))
+    # Omarchy's track keys for keyboards without Next/Prev.
+    (locked (bind "ALT + XF86AudioPlay" "mediaNext" "Next track"))
+    (locked (bind "ALT + SHIFT + XF86AudioPlay" "mediaPrevious" "Previous track"))
     (bind "SUPER + SHIFT + space" "barToggle" "Toggle bar")
 
     (bind "SUPER + CTRL + SPACE" "wallpaperPicker" "Wallpaper picker")

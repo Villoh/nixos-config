@@ -1,5 +1,7 @@
 -- Static part of the personal Hyprland main. default.nix inlines it after the dms.*
 -- imports and before the keybinds, which call the helpers defined here.
+-- The callers live in that generated part, so the helpers look unused from this file.
+---@diagnostic disable: unused-local, unused-function
 
 hl.config({
   input = {
@@ -57,6 +59,14 @@ local function pop()
   hl.dispatch(hl.dsp.window.center({ window = window }))
   hl.dispatch(hl.dsp.window.pin({ window = window, action = "on" }))
   hl.dispatch(hl.dsp.window.alter_zorder({ window = window, mode = "top" }))
+end
+
+-- Close every window (a polite close: apps can still ask to save) and go to workspace 1.
+local function close_all()
+  for _, w in ipairs(hl.get_windows()) do
+    hl.dispatch(hl.dsp.window.close({ window = window_selector(w) }))
+  end
+  hl.dispatch(hl.dsp.focus({ workspace = "1" }))
 end
 
 -- Tell the app it is fullscreen (a video hides its controls) while it keeps its tile.

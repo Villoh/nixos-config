@@ -155,6 +155,8 @@ let
     })
     # Close like Omarchy (SUPER+Q is the DMS bind); the DMS group toggle moves to G.
     (dsp "SUPER + W" "Close window" "window.close" { })
+    # Omarchy has it on CTRL+ALT+Delete, which stays the DMS process list.
+    (lua "CTRL + ALT + SHIFT + Delete" "Close all windows" "close_all")
     # Omarchy's layout plane (SUPER+L stays the DMS focus-right; lock is SUPER+CTRL+L).
     (exec "SUPER + ALT + L" "Toggle layout dwindle/scrolling" "${layoutToggle}")
     (dsp "CTRL + ALT + Tab" "Next monitor" "focus" { monitor = "+1"; })
@@ -204,7 +206,7 @@ let
     # overview keeps SUPER+O.
     (dsp "SUPER + Tab" "Next workspace" "focus" { workspace = "m+1"; })
     (dsp "SUPER + SHIFT + Tab" "Previous workspace" "focus" { workspace = "m-1"; })
-    (dsp "SUPER + CTRL + Tab" "Former workspace" "focus" { workspace = "previous"; })
+    (dsp "SUPER + CTRL + Tab" "Former workspace" "focus" { workspace = "previous_per_monitor"; })
   ]
   ++ forNumbers 9 (
     i:

@@ -9,6 +9,10 @@
     settings.default = [ "com.mitchellh.ghostty.desktop" ];
   };
 
+  # setcap wrapper for gsr-kms-server: without it, DMS recording (ALT+Print) asks for
+  # pkexec, fails, and falls back to wf-recorder. Also installs gpu-screen-recorder.
+  programs.gpu-screen-recorder.enable = true;
+
   imports = [
     ./packages.nix
     ./dms

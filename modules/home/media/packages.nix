@@ -12,7 +12,6 @@
     pkgs.imv
     pkgs.mpv
     pkgs.obs-studio
-    pkgs.gpu-screen-recorder
     pkgs.wf-recorder
     pkgs.ffmpeg
     pkgs.yt-dlp
@@ -20,5 +19,10 @@
     pkgs.img2pdf
     pkgs.tesseract
     pkgs.zbar
+    # DMS Screen Capture Toolbar: capture, region selection, editor and notifications.
+    pkgs.grim
+    pkgs.slurp
+    pkgs.satty
+    pkgs.libnotify
   ];
 }

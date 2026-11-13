@@ -36,6 +36,7 @@
       };
       dankKDEConnect.enable = true;
       quickCapture.enable = true;
+      screenCaptureToolbar.enable = true;
       dockerManager.enable = true;
       dankscale.enable = true;
       dmsProfiles = {
@@ -51,10 +52,13 @@
       emojiPicker.enable = true;
       mise.enable = true;
       calculator.enable = true;
+      # Audited 2026-11-13: local credentials only go to their provider's API.
+      aiOverviewControl.enable = true;
+      wallhavenCarousel.enable = true;
+      orbitBluetooth.enable = true;
     };
   };
 
   # Security/shell/media already supply bw, jq, wl-clipboard and capture tools.
   # KDE Connect (rather than Valent), Docker, Tailscale and Nix are system services/tools.
-  home.packages = [ pkgs.curl ];
 }

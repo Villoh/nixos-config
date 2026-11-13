@@ -48,8 +48,10 @@ let
         # Quick Capture plugin.
         screenshot = ipc "quickCapture screenshot region edit";
         screenshotCopy = ipc "quickCapture screenshot region copy";
-        screenshotWindow = "dms screenshot window";
+        screenshotWindow = ipc "quickCapture screenshot window edit";
         captureMenu = ipc "quickCapture toggle";
+        # Screen Capture Toolbar plugin.
+        captureToolbar = ipc "screenCaptureToolbar toggle";
         record = ipc "quickCapture recordToggle region";
         colorPicker = ipc "color-picker toggle";
         audioPanel = "${ccPanel} audioOutput";
@@ -79,6 +81,8 @@ let
         # dmsProfiles plugin.
         wallpaperPicker = ipc "profiles wallpapers";
         themePicker = ipc "profiles toggle";
+        # wallhavenCarousel plugin.
+        wallhavenCarousel = ipc "wallhavenCarousel toggle";
         # launcher, settings and the media keys come with dms/binds.lua.
       };
 
@@ -164,6 +168,7 @@ let
     (bind "SUPER + CTRL + ALT + C" "screenshot" "Screenshot region (annotate)")
     (bind "SUPER + SHIFT + S" "screenshotCopy" "Screenshot region to clipboard")
     (bind "SUPER + CTRL + C" "captureMenu" "Capture menu")
+    (bind "SUPER + CTRL + Print" "captureToolbar" "Capture toolbar")
     (bind "ALT + Print" "record" "Toggle screen recording")
     (bind "SHIFT + Print" "screenshotWindow" "Screenshot window")
     (bind "SUPER + Print" "colorPicker" "Color picker")
@@ -205,6 +210,7 @@ let
 
     (bind "SUPER + CTRL + SPACE" "wallpaperPicker" "Wallpaper picker")
     (bind "SUPER + CTRL + W" "wallpaperPicker" "Wallpaper picker")
+    (bind "SUPER + CTRL + ALT + W" "wallhavenCarousel" "Wallhaven carousel")
     (bind "SUPER + CTRL + SHIFT + SPACE" "themePicker" "Theme picker")
     (bind "SUPER + CTRL + T" "themePicker" "Theme picker")
 

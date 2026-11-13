@@ -223,6 +223,9 @@ let
     (exec "SUPER + SHIFT + ALT + A" "Codex" (launch "codex-desktop"))
     (exec "SUPER + SHIFT + G" "Telegram" (launch "org.telegram.desktop"))
     (exec "SUPER + SHIFT + Z" "WhatsApp (ZapFast)" "zapfast")
+    (exec "SUPER + SHIFT + ALT + G" "WhatsApp (ZapFast)" "zapfast")
+    # YouTube Music; Omarchy's music key (SUPER+SHIFT+M) is mail here.
+    (exec "SUPER + SHIFT + Y" "Music (Meiro)" (launch "meiro"))
     # V for vault; Omarchy's SUPER+SHIFT+/ stays the DMS cheatsheet.
     (exec "SUPER + SHIFT + V" "Password manager (Bitwarden)" (launch "bitwarden"))
     (exec "SUPER + SHIFT + D" "Discord" discord.launch)

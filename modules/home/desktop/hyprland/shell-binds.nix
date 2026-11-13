@@ -144,6 +144,7 @@ let
   # SUPER+CTRL+ALT quick actions, SUPER+ALT variants.
   binds = [
     (bind "SUPER + SHIFT + B" "browser" "Browser")
+    (bind "SUPER + SHIFT + Return" "browser" "Browser")
     (bind "SUPER + SHIFT + F" "files" "File manager")
     (bind "SUPER + SHIFT + E" "editor" "Text editor")
     (bind "SUPER + SHIFT + M" "mail" "Mail")

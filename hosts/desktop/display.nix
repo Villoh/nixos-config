@@ -40,9 +40,10 @@
     -- Mixed-DPI XWayland apps handle their own scale on this host.
     hl.config({ xwayland = { force_zero_scaling = true } })
 
-    -- Electron apps (Codex, Claude) request wide gamut on fullscreen, but the
-    -- outputs run 8-bit sRGB, which triggers a warning. Remove this to use HDR.
-    hl.config({ render = { cm_enabled = false } })
+    -- Electron apps (Codex, Claude) trigger auto HDR on fullscreen, which turns on
+    -- wide gamut while the outputs run 8-bit and shows a warning. Set to 1 or 2
+    -- (and enable 10-bit) to use HDR.
+    hl.config({ render = { cm_auto_hdr = 0 } })
 
     -- XWayland marks no primary output, so Wine/Proton games pick HDMI-A-1.
     hl.on("hyprland.start", function()

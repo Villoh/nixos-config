@@ -223,6 +223,8 @@ let
     (exec "SUPER + SHIFT + ALT + A" "Codex" (launch "codex-desktop"))
     (exec "SUPER + SHIFT + G" "Telegram" (launch "org.telegram.desktop"))
     (exec "SUPER + SHIFT + Z" "WhatsApp (ZapFast)" "zapfast")
+    # V for vault; Omarchy's SUPER+SHIFT+/ stays the DMS cheatsheet.
+    (exec "SUPER + SHIFT + V" "Password manager (Bitwarden)" (launch "bitwarden"))
     (exec "SUPER + SHIFT + D" "Discord" discord.launch)
     # Claude Quick Entry through the GlobalShortcuts portal: Hyprland only forwards it
     # with an explicit bind. The id is stable across restarts and ends with the

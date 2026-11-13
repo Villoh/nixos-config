@@ -48,6 +48,7 @@ let
         # Quick Capture plugin.
         screenshot = ipc "quickCapture screenshot region edit";
         screenshotCopy = ipc "quickCapture screenshot region copy";
+        screenshotWindow = "dms screenshot window";
         captureMenu = ipc "quickCapture toggle";
         record = ipc "quickCapture recordToggle region";
         colorPicker = ipc "color-picker toggle";
@@ -67,6 +68,8 @@ let
         barToggle = ipc "bar toggle index 0";
         clipboardHistory = ipc "clipboard toggle";
         powerMenu = ipc "powermenu toggle";
+        controlCenter = ipc "control-center toggle";
+        renameWorkspace = ipc "workspace-rename open";
         launcherBar = ipc "spotlight-bar toggle";
         mediaNext = ipc "mpris next";
         mediaPrevious = ipc "mpris previous";
@@ -89,6 +92,8 @@ let
       {
         screenshot = msg "screenshot-region --annotate";
         screenshotCopy = msg "screenshot-region --copy-to-clipboard --no-save-to-file --no-annotate";
+        screenshotWindow = msg "screenshot-window";
+        controlCenter = msg "panel-toggle control-center";
         record = msg "plugin noctalia/screen_recorder:service all toggle";
         # screen-toolkit: its panel is the capture menu.
         captureMenu = msg "plugin alexander/screen-toolkit:service all toggle";
@@ -160,6 +165,7 @@ let
     (bind "SUPER + SHIFT + S" "screenshotCopy" "Screenshot region to clipboard")
     (bind "SUPER + CTRL + C" "captureMenu" "Capture menu")
     (bind "ALT + Print" "record" "Toggle screen recording")
+    (bind "SHIFT + Print" "screenshotWindow" "Screenshot window")
     (bind "SUPER + Print" "colorPicker" "Color picker")
     (bind "SUPER + CTRL + Print" "ocr" "OCR region")
 
@@ -173,6 +179,10 @@ let
     (bind "SUPER + period" "emoji" "Emoji picker")
     (bind "SUPER + CTRL + V" "clipboardHistory" "Clipboard history")
     (bind "SUPER + Escape" "powerMenu" "Power menu")
+    # Omarchy's toggle menu; the Control Center sections have their own keys above.
+    (bind "SUPER + CTRL + O" "controlCenter" "Control Center")
+    # The current DMS key (older dms/binds.lua had CTRL+SHIFT+R, the browsers' hard reload).
+    (bind "SUPER + ALT + R" "renameWorkspace" "Rename workspace")
     # Compact launcher, an ALT variant of SUPER+SPACE (DMS has it on ALT+SPACE, now dictation).
     (bind "SUPER + ALT + SPACE" "launcherBar" "Launcher bar")
     (bind "SUPER + CTRL + L" "lock" "Lock")
@@ -183,7 +193,8 @@ let
     (bind "SUPER + ALT + comma" "notifyDismiss" "Dismiss latest notification")
     (bind "SUPER + SHIFT + comma" "notifyDismissAll" "Dismiss all notifications")
     (bind "SUPER + CTRL + ALT + comma" "notifyDnd" "Toggle Do Not Disturb")
-    # Omarchy's notification history; SUPER+N (dms/binds.lua) opens the same center.
+    # Omarchy's notification history. The current dms/binds.lua has SUPER+N on the notepad
+    # and the center on SUPER+CTRL+N, the network panel here, so this is its key.
     (bind "SUPER + SHIFT + ALT + comma" "notifyCenter" "Notification center")
 
     (locked (bind "SHIFT + XF86AudioMute" "audioOutputCycle" "Next audio output"))

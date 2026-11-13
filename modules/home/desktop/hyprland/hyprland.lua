@@ -11,11 +11,11 @@ hl.config({
 })
 
 -- Keys freed from dms/binds.lua without a replacement (the keys default.nix binds
--- are unbound there automatically): Ctrl+Shift+R stays the hard reload in browsers
--- (DMS: workspace rename), and SUPER+CTRL+H goes with SUPER+CTRL+L, now the lock (DMS:
--- focus the monitor on the left/right).
-hl.unbind("CTRL + SHIFT + R")
+-- are unbound there automatically): the rest of DMS's SUPER+CTRL+H/J/K/L monitor focus,
+-- which moves to SUPER+CTRL+ALT (L is the lock).
 hl.unbind("SUPER + CTRL + H")
+hl.unbind("SUPER + CTRL + J")
+hl.unbind("SUPER + CTRL + K")
 
 -- Cycle through the windows of the workspace and raise the focused one.
 local function cycle(forward)

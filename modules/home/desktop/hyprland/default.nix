@@ -126,6 +126,12 @@ let
     up = "u";
     down = "d";
   };
+  vimDirections = {
+    h = "l";
+    l = "r";
+    k = "u";
+    j = "d";
+  };
   forDirections = f: lib.mapAttrsToList f directions;
   forNumbers = n: f: map f (lib.range 1 n);
 
@@ -223,6 +229,11 @@ let
       monitor = dir;
     }
   )
+  # Focus the monitor in that direction, arrows and vim keys. DMS has it on SUPER+CTRL,
+  # where the Omarchy group keys and the lock sit now.
+  ++ lib.mapAttrsToList (
+    key: dir: dsp "SUPER + CTRL + ALT + ${key}" "Focus monitor ${key}" "focus" { monitor = dir; }
+  ) (directions // vimDirections)
   ++ [
     # Apps by desktop id or command; the ones with a role are in shell-binds.nix.
     # SUPER+SHIFT+N stays the DMS notepad toggle.

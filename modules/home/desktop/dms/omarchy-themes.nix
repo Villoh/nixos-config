@@ -65,8 +65,12 @@ in
     ) names
   );
 
+  # `recursive`: a real folder holding links to the pictures, not a link to the read-only
+  # store folder, so it stays writable (the Wallhaven carousel downloads into the folder of
+  # the active profile). find -L, Qt and omarchy-dms read the links as files.
   home.file = lib.genAttrs (map (n: "Pictures/Wallpapers/omarchy/${n}") names) (path: {
     source = "${wallpapers}/${baseNameOf path}";
+    recursive = true;
   });
 
   home.packages = [ omarchy-dms ];

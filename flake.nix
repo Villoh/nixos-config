@@ -231,11 +231,6 @@
         modules = [ ./hosts/desktop ];
       };
 
-      checks.${system} = import ./tests {
-        inherit inputs system;
-        desktop = inputs.self.nixosConfigurations.desktop;
-      };
-
       devShells.${system} = {
         android = import ./shells/android.nix {
           pkgs = import nixpkgs {

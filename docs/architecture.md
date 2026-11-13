@@ -183,23 +183,9 @@ and [greeter cache format](https://danklinux.com/docs/dankgreeter/configuration)
 Do not delete the cache to work around startup errors. UWSM starts DMS through
 `graphical-session.target`; do not also run `dms run` from Hyprland Lua.
 
-`nix flake check` includes [tests/default.nix](../tests/default.nix) for base
-evaluation without HM, two-user isolation, no implicit NVIDIA, separation of
-system capabilities and personal apps/gaming, and Gamescope's use of the user's
-Steam and the system wrapper. Its `greeter-cache` check covers an empty cache,
-repeated preparation with cached theme/wallpapers, unchanged file contents,
-and preservation of explicit sync opt-ins. It also exercises the desktop's
-native import against disposable HOME/cache fixtures, including updated theme
-and wallpaper sources without modifying the originals.
-[tests/dms-session.sh](../tests/dms-session.sh)
-uses the real DMS CLI (`config resolve-include` and `keybinds`) for fresh and
-HM-plus-partial profiles, and real `Hyprland --verify-config` without starting
-a compositor. It checks empty/malformed files, dangling links, legacy profiles,
-custom/default XDG paths, non-Hyprland gating, and idempotence.
-
-These checks use disposable profiles, not the real HOME, and do not activate
-the system. Parser/CLI checks do not verify login, GPU behavior, or live DMS
-watchers.
+`nix flake check` validates the flake outputs, including evaluation of the
+desktop configuration. There is no custom test suite; this command does not
+activate the system or verify login, GPU behavior, or live DMS watchers.
 
 After an approved temporary activation, manually check:
 

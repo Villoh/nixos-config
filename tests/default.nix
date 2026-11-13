@@ -334,6 +334,11 @@ in
       touch "$out"
     '';
 
+  hyprland-config = pkgs.runCommand "hyprland-config" { nativeBuildInputs = [ pkgs.lua ]; } ''
+    lua ${./hyprland-config.lua} ${../modules/home/desktop/hyprland/config.lua}
+    touch "$out"
+  '';
+
   dms-session =
     pkgs.runCommand "dms-session"
       {

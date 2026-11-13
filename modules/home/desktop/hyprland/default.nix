@@ -95,29 +95,6 @@ let
   };
   dictation = dictationClients.${config.home.sessionVariables.DICTATION};
 
-  # Toggle the active workspace between dwindle and scrolling (Omarchy's
-  # omarchy-hyprland-workspace-layout-toggle, through the Lua workspace rule).
-  layoutToggle = pkgs.writeShellScript "workspace-layout-toggle" ''
-    info=$(hyprctl activeworkspace -j)
-    ws=$(${pkgs.jq}/bin/jq -r .id <<<"$info")
-    case $(${pkgs.jq}/bin/jq -r .tiledLayout <<<"$info") in
-      dwindle) new=scrolling ;;
-      *) new=dwindle ;;
-    esac
-    hyprctl eval "hl.workspace_rule({ workspace = \"$ws\", layout = \"$new\" })" >/dev/null
-    ${pkgs.libnotify}/bin/notify-send -a Hyprland -u low "Workspace layout" "Set to $new"
-  '';
-
-  # Quake console: spawn the terminal (the window rule in hyprland.lua shows its
-  # special workspace) or toggle it when it already exists.
-  quakeToggle = pkgs.writeShellScript "quake-toggle" ''
-    if hyprctl clients | grep -q 'class: mikel.quake'; then
-      hyprctl eval 'hl.dispatch(hl.dsp.workspace.toggle_special("quake"))' >/dev/null
-    else
-      exec ${TERMINAL} --class=mikel.quake
-    fi
-  '';
-
   launch = id: "${pkgs.gtk3}/bin/gtk-launch ${id}";
   wpctl = "${pkgs.wireplumber}/bin/wpctl";
   directions = {
@@ -164,10 +141,10 @@ let
     # Omarchy has it on CTRL+ALT+Delete, which stays the DMS process list.
     (lua "CTRL + ALT + SHIFT + Delete" "Close all windows" "close_all")
     # Omarchy's layout plane (SUPER+L stays the DMS focus-right; lock is SUPER+CTRL+L).
-    (exec "SUPER + ALT + L" "Toggle layout dwindle/scrolling" "${layoutToggle}")
+    (lua "SUPER + ALT + L" "Toggle layout dwindle/scrolling" "layout_toggle")
     (dsp "CTRL + ALT + Tab" "Next monitor" "focus" { monitor = "+1"; })
     (dsp "CTRL + ALT + SHIFT + Tab" "Previous monitor" "focus" { monitor = "-1"; })
-    # Omarchy window tools (Lua functions in hyprland.lua). Omarchy has them on SUPER+O/P
+    # Omarchy window tools (Lua functions in config.lua). Omarchy has them on SUPER+O/P
     # and SUPER+Home, which DMS uses for the overview, monitor profiles and focus.
     (lua "SUPER + ALT + T" "Pop window out (float & pin)" "pop")
     (dsp "SUPER + ALT + P" "Pseudo window" "window.pseudo" { })
@@ -185,7 +162,7 @@ let
 
     # Quake console. code:49 is the grave key; with the us-intl variant its keysym is
     # dead_grave, so a bind on "grave" never fires.
-    (exec "SUPER + code:49" "Quake terminal" "${quakeToggle}")
+    (lua "SUPER + code:49" "Quake terminal" "quake(${toLua TERMINAL})")
     (dsp "SUPER + SHIFT + code:49" "Move window to quake" "window.move" {
       workspace = "special:quake";
     })
@@ -271,7 +248,7 @@ let
     (action "SUPER + ALT + M" "Discord: toggle mute" (discord.mute or { }))
     (action "SUPER + ALT + D" "Discord: toggle deafen" (discord.deafen or { }))
 
-    # Universal clipboard (clip() in hyprland.lua).
+    # Universal clipboard (clip() in config.lua).
     (lua "SUPER + C" "Copy" ''clip("c", "CTRL_SHIFT")'')
     (lua "SUPER + V" "Paste" ''clip("v", "CTRL_SHIFT")'')
     (lua "SUPER + X" "Cut" ''clip("x")'')
@@ -343,7 +320,7 @@ in
     # Host-specific defaults go last, after the personal settings (e.g. keyboard).
     extraConfig = lib.concatStrings [
       (builtins.readFile ../../../nixos/desktop/dms/hyprland-base.lua)
-      (builtins.readFile ./hyprland.lua)
+      (builtins.readFile ./config.lua)
       keybinds
       ''
         require("/etc/xdg/hypr/host")

@@ -153,7 +153,29 @@ local function restore_width()
   end
 end
 
--- Quake console: a ghostty with its own class on special:quake, dropped under the bar.
+-- Toggle the active workspace between dwindle and scrolling, like Omarchy.
+local function layout_toggle()
+  local ws = hl.get_active_workspace()
+  if not ws then return end
+  local layout = ws.tiled_layout == "dwindle" and "scrolling" or "dwindle"
+  hl.workspace_rule({ workspace = tostring(ws.id), layout = layout })
+  notify("Workspace layout: Set to " .. layout)
+end
+
+-- Spawn the configured terminal or toggle its special workspace when it already exists.
+local function quake(terminal)
+  return function()
+    for _, w in ipairs(hl.get_windows()) do
+      if w.class == "mikel.quake" then
+        hl.dispatch(hl.dsp.workspace.toggle_special("quake"))
+        return
+      end
+    end
+    hl.dispatch(hl.dsp.exec_cmd(terminal .. " --class=mikel.quake"))
+  end
+end
+
+-- Quake console: a terminal with its own class on special:quake, dropped under the bar.
 hl.window_rule({
   match = { class = "^mikel\\.quake$" },
   float = true,

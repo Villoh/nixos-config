@@ -83,7 +83,7 @@ let
     "winetricks"
     "brave-origin"
     "helium"
-    "zen-browser"
+    "zen-beta"
   ];
   hasNoPersonalPackages =
     cfg: lib.intersectLists personalPackages (names cfg.environment.systemPackages) == [ ];

@@ -193,7 +193,7 @@ official repo, no host integration and no wish to pin it from the flake.
 | Package | Current format | Source |
 |---|---|---|
 | ytm-player | Flake | `ytm-player` input |
-| zen-browser | Flake, upstream tarball repackaged | `zen-browser` input (wrapped with prefs in `browsers.nix`) |
+| zen-browser | Flake, upstream tarball repackaged (Home Manager module) | `zen-browser` input (`modules/home/desktop/zen.nix`) |
 | helium-browser | Flake, `.deb` repackaged | `helium-browser` input |
 | claude-desktop | Flake, official `.deb` repackaged | `llm-agents` input |
 | t3code-desktop | Flake | `llm-agents` input |

@@ -4,7 +4,7 @@ let
   sessionVariables = {
     EDITOR = "zeditor";
     VISUAL = "zeditor";
-    BROWSER = "zen";
+    BROWSER = "zen-beta";
     TERMINAL = "ghostty";
     EXPLORER = "strata";
     PAGER = "less";

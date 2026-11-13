@@ -23,22 +23,22 @@
       # Strata browses trash:/// but its .desktop doesn't declare the scheme.
       "x-scheme-handler/trash" = [ "io.github.lgse.Strata.desktop" ];
       "application/pdf" = [ "okularApplication_pdf.desktop" ];
-      "x-scheme-handler/http" = [ "zen.desktop" ];
-      "x-scheme-handler/https" = [ "zen.desktop" ];
-      "x-scheme-handler/chrome" = [ "zen.desktop" ];
-      "text/html" = [ "zen.desktop" ];
+      "x-scheme-handler/http" = [ "zen-beta.desktop" ];
+      "x-scheme-handler/https" = [ "zen-beta.desktop" ];
+      "x-scheme-handler/chrome" = [ "zen-beta.desktop" ];
+      "text/html" = [ "zen-beta.desktop" ];
       "text/plain" = [ "dev.zed.Zed.desktop" ];
-      "application/xhtml+xml" = [ "zen.desktop" ];
+      "application/xhtml+xml" = [ "zen-beta.desktop" ];
       "x-scheme-handler/codex" = [ "chatgpt.desktop" ];
-      "x-scheme-handler/about" = [ "zen.desktop" ];
-      "x-scheme-handler/unknown" = [ "zen.desktop" ];
+      "x-scheme-handler/about" = [ "zen-beta.desktop" ];
+      "x-scheme-handler/unknown" = [ "zen-beta.desktop" ];
     };
 
     associations.added = {
-      "x-scheme-handler/http" = [ "zen.desktop" ];
-      "x-scheme-handler/https" = [ "zen.desktop" ];
-      "text/html" = [ "zen.desktop" ];
-      "x-scheme-handler/chrome" = [ "zen.desktop" ];
+      "x-scheme-handler/http" = [ "zen-beta.desktop" ];
+      "x-scheme-handler/https" = [ "zen-beta.desktop" ];
+      "text/html" = [ "zen-beta.desktop" ];
+      "x-scheme-handler/chrome" = [ "zen-beta.desktop" ];
     };
   };
 }

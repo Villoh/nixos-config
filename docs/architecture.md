@@ -77,7 +77,7 @@ Gaming requires both host gaming support and that user's explicit HM import.
 
 Noctalia is prepared but off: `modules/nixos/desktop/noctalia.nix` (package,
 user service, recommended services, binary cache) and
-`modules/home/desktop/noctalia.nix` (settings, plugins, Hyprland binds) change
+`modules/home/desktop/noctalia.nix` (settings, plugins, Hyprland rules) change
 nothing until a host sets `programs.noctalia.enable = true`. The HM side follows
 that one switch. NixOS asserts that DMS is disabled at the same time.
 
@@ -88,9 +88,14 @@ programs.noctalia.enable = true;
 programs.dux-shell.enable = false;
 ```
 
-Then `nh os test .#desktop`. Not covered, decide when switching: the Hyprland
-main still imports `dms.*` (including the `dms ipc` binds, which fail once DMS is
-disabled), `dms-hyprland-init` keeps seeding `~/.config/hypr/dms/`, Dux Greeter
+Then `nh os test .#desktop`. The personal keybinds that call the shell (apps by
+role, captures, panels, notifications, pickers) switch on their own: their keys
+are written once and each shell only supplies the commands, see
+`modules/home/desktop/shell-binds.nix` (Noctalia's own launcher, settings, Alt+Tab
+and media-key binds live there too). Actions Noctalia has no command for are
+skipped, and the Noctalia commands come from its IPC docs and are untested. Not
+covered, decide when switching: the Hyprland main still imports `dms.*` (including
+the default `dms ipc` binds of `dms/binds.lua`, which fail once DMS is disabled), `dms-hyprland-init` keeps seeding `~/.config/hypr/dms/`, Dux Greeter
 stays as the login screen, and `programs.dux-search` and the DMS HM plugins stay on.
 
 Hand-written settings are generated into `~/.config/noctalia/config.toml`

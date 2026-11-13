@@ -15,6 +15,7 @@ profile() {
   chmod 700 "$XDG_RUNTIME_DIR"
 }
 
+# $1: the SUPER+Return action DMS should report (the seeded one, or the personal override).
 check_dms() {
   for name in colors layout outputs cursor windowrules binds; do
     dms config resolve-include hyprland "$name.lua" |
@@ -22,7 +23,7 @@ check_dms() {
   done
   dms keybinds show hyprland > "$TMPDIR/binds.json"
   jq -e '.dmsBindsIncluded and .dmsStatus.effective and .dmsStatus.totalIncludes == 7' "$TMPDIR/binds.json"
-  jq -e '[.binds[][] | .action] | index("exec xdg-terminal-exec") != null' "$TMPDIR/binds.json"
+  jq -e --arg action "$1" '[.binds[][] | select(.key == "SUPER+Return") | .action] == [$action]' "$TMPDIR/binds.json"
 }
 
 check_hyprland() {
@@ -41,7 +42,7 @@ test ! -e "$XDG_CONFIG_HOME"
 profile fresh
 export XDG_CURRENT_DESKTOP=Hyprland
 "$PRE_START"
-check_dms
+check_dms "exec xdg-terminal-exec"
 for name in colors layout outputs cursor windowrules binds; do
   test -w "$XDG_CONFIG_HOME/hypr/dms/$name.lua"
 done
@@ -58,7 +59,7 @@ printf 'hl.config({ general = { gaps_in = 19 } })\n' > "$XDG_CONFIG_HOME/hypr/dm
 "$PRE_START"
 test "$(readlink "$XDG_CONFIG_HOME/hypr/hyprland.lua")" = "$PERSONAL_CONFIG"
 grep -Fx 'hl.config({ general = { gaps_in = 19 } })' "$XDG_CONFIG_HOME/hypr/dms/layout.lua"
-check_dms
+check_dms "exec ghostty"
 check_hyprland
 
 profile existing
@@ -95,4 +96,4 @@ profile default-xdg
 unset XDG_CONFIG_HOME
 "$PRE_START"
 test -f "$HOME/.config/hypr/hyprland.lua"
-check_dms
+check_dms "exec xdg-terminal-exec"

@@ -1,36 +1,70 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  osConfig,
+  pkgs,
+  ...
+}:
 
 let
-  # Per-client launch command and mute/deafen Hyprland dispatchers (Lua).
+  inherit (config.home.sessionVariables) BROWSER TERMINAL;
+
+  # Bind entries: { key; desc; exec | dsp + args | lua; opts? }, built with these helpers.
+  # `exec` runs a command, `dsp` is an hl.dsp dispatcher with its argument (a table as a
+  # Nix attrset, a string, or { } for none), `lua` is a raw Lua expression. Entries
+  # without an action are dropped, so a client without some command just loses the bind.
+  exec = key: desc: cmd: {
+    inherit key desc;
+    exec = cmd;
+  };
+  dsp = key: desc: name: args: {
+    inherit key desc args;
+    dsp = name;
+  };
+  lua = key: desc: expr: {
+    inherit key desc;
+    lua = expr;
+  };
+  action =
+    key: desc: a:
+    { inherit key desc; } // a;
+
+  # Per-client launch command and mute/deafen actions.
   # Pick the client with DISCORD in modules/home/core/defaults.nix.
   # Clients with a CLI act on the running instance, even hidden in the tray.
   # Concord and Vesktop have no CLI, so they get the keybind forwarded to
   # their window (Vesktop only works while its window is mapped, not in tray).
-  cli = cmd: ''hl.dsp.exec_cmd("${cmd}")'';
+  shortcut = mods: key: window: {
+    dsp = "send_shortcut";
+    args = { inherit mods key window; };
+  };
+  cli = cmd: { exec = cmd; };
   discordClients = {
     concord = {
       launch = "ghostty -e concord";
-      mute = ''hl.dsp.send_shortcut({ mods = "ALT", key = "m", window = "title:^(concord)$" })'';
-      deafen = ''hl.dsp.send_shortcut({ mods = "ALT", key = "d", window = "title:^(concord)$" })'';
+      mute = shortcut "ALT" "m" "title:^(concord)$";
+      deafen = shortcut "ALT" "d" "title:^(concord)$";
     };
     vesktop = {
       launch = "vesktop";
-      mute = ''hl.dsp.send_shortcut({ mods = "CTRL_SHIFT", key = "m", window = "class:^(vesktop)$" })'';
-      deafen = ''hl.dsp.send_shortcut({ mods = "CTRL_SHIFT", key = "d", window = "class:^(vesktop)$" })'';
+      mute = shortcut "CTRL_SHIFT" "m" "class:^(vesktop)$";
+      deafen = shortcut "CTRL_SHIFT" "d" "class:^(vesktop)$";
     };
     # Serein registers its global shortcuts with the portal under a stable id per action
     # (see `hyprctl globalshortcuts`); the Nix build needs ViceVerse-cz/Serein#906 for that.
     serein = {
       launch = "serein";
-      mute = ''hl.dsp.global("cz.viceverse.serein:toggle-mute")'';
-      deafen = ''hl.dsp.global("cz.viceverse.serein:toggle-deafen")'';
+      mute = {
+        dsp = "global";
+        args = "cz.viceverse.serein:toggle-mute";
+      };
+      deafen = {
+        dsp = "global";
+        args = "cz.viceverse.serein:toggle-deafen";
+      };
     };
-    # Yapfast has no CLI nor mute/deafen keys (only push-to-talk), so those binds do nothing.
-    yapfast = {
-      launch = "yapfast";
-      mute = cli "true";
-      deafen = cli "true";
-    };
+    # Yapfast has no CLI nor mute/deafen keys (only push-to-talk): no binds.
+    yapfast.launch = "yapfast";
     equibop = {
       launch = "equibop";
       mute = cli "equibop --toggle-mic";
@@ -72,27 +106,195 @@ let
     ${pkgs.libnotify}/bin/notify-send -a Hyprland -u low "Workspace layout" "Set to $new"
   '';
 
-  # Control Center section as a toggle: `openWith` only opens, so close it when that
-  # same section is already showing (the last one opened is kept in the runtime dir).
-  ccPanel = pkgs.writeShellScript "cc-panel" ''
-    state="$XDG_RUNTIME_DIR/dms-cc-section"
-    if [ "$(dms ipc call control-center status)" = visible ] && [ "$(cat "$state" 2>/dev/null)" = "$1" ]; then
-      dms ipc call control-center hide
-    else
-      echo "$1" > "$state"
-      dms ipc call control-center openWith "$1"
-    fi
-  '';
-
-  # Quake console: spawn the terminal (the window rule shows its special workspace)
-  # or toggle it when it already exists.
+  # Quake console: spawn the terminal (the window rule in hyprland.lua shows its
+  # special workspace) or toggle it when it already exists.
   quakeToggle = pkgs.writeShellScript "quake-toggle" ''
     if hyprctl clients | grep -q 'class: mikel.quake'; then
       hyprctl eval 'hl.dispatch(hl.dsp.workspace.toggle_special("quake"))' >/dev/null
     else
-      exec ${config.home.sessionVariables.TERMINAL} --class=mikel.quake
+      exec ${TERMINAL} --class=mikel.quake
     fi
   '';
+
+  launch = id: "${pkgs.gtk3}/bin/gtk-launch ${id}";
+  wpctl = "${pkgs.wireplumber}/bin/wpctl";
+  directions = {
+    left = "l";
+    right = "r";
+    up = "u";
+    down = "d";
+  };
+  forDirections = f: lib.mapAttrsToList f directions;
+  forNumbers = n: f: map f (lib.range 1 n);
+
+  # Binds that call the desktop shell (apps by role, captures, panels, notifications,
+  # pickers...): keys once, commands per shell. See shell-binds.nix.
+  noctalia = osConfig.programs.noctalia.enable;
+  shellBinds = import ./shell-binds.nix {
+    inherit lib pkgs;
+    shell = if noctalia then "noctalia" else "dms";
+  };
+
+  # Omarchy-style key planes: SUPER = windows, SUPER+SHIFT = apps, SUPER+CTRL = panels,
+  # SUPER+CTRL+ALT = quick actions, SUPER+ALT = variants.
+  binds = [
+    # Windows.
+    (exec "SUPER + Return" "Terminal" TERMINAL)
+    (exec "SUPER + ALT + Return" "Terminal with tmux" "${TERMINAL} -e tmux")
+    (exec "SUPER + CTRL + Return" "Herdr" "herdr-app")
+    (dsp "SUPER + T" "Toggle floating" "window.float" { action = "toggle"; })
+    (dsp "SUPER + F" "Fullscreen" "window.fullscreen" {
+      mode = "fullscreen";
+      action = "toggle";
+    })
+    (dsp "SUPER + ALT + F" "Maximize" "window.fullscreen" {
+      mode = "maximized";
+      action = "toggle";
+    })
+    # Close like Omarchy (SUPER+Q is the DMS bind); the DMS group toggle moves to G.
+    (dsp "SUPER + W" "Close window" "window.close" { })
+    # Monitor focus stays on SUPER+arrows/H/L and CTRL+ALT+Tab.
+    (exec "SUPER + CTRL + L" "Toggle layout dwindle/scrolling" "${layoutToggle}")
+    (dsp "CTRL + ALT + Tab" "Next monitor" "focus" { monitor = "+1"; })
+    (dsp "CTRL + ALT + SHIFT + Tab" "Previous monitor" "focus" { monitor = "-1"; })
+    (lua "SUPER + SHIFT + mouse_down" "Next window" "cycle(true)")
+    (lua "SUPER + SHIFT + mouse_up" "Previous window" "cycle(false)")
+
+    # Scratchpad: a named special workspace.
+    (dsp "SUPER + S" "Scratchpad" "workspace.toggle_special" "scratchpad")
+    (dsp "SUPER + ALT + S" "Move window to scratchpad" "window.move" {
+      workspace = "special:scratchpad";
+    })
+
+    # Quake console. code:49 is the grave key; with the us-intl variant its keysym is
+    # dead_grave, so a bind on "grave" never fires.
+    (exec "SUPER + code:49" "Quake terminal" "${quakeToggle}")
+    (dsp "SUPER + SHIFT + code:49" "Move window to quake" "window.move" {
+      workspace = "special:quake";
+    })
+
+    # Groups (tabbed windows).
+    (dsp "SUPER + G" "Toggle group" "group.toggle" { })
+    (dsp "SUPER + ALT + G" "Move window out of group" "window.move" { out_of_group = true; })
+    (dsp "SUPER + ALT + Tab" "Next window in group" "group.next" { })
+    (dsp "SUPER + ALT + SHIFT + Tab" "Previous window in group" "group.prev" { })
+    (dsp "SUPER + ALT + mouse_down" "Next window in group" "group.next" { })
+    (dsp "SUPER + ALT + mouse_up" "Previous window in group" "group.prev" { })
+    (dsp "SUPER + CTRL + right" "Next window in group" "group.next" { })
+    (dsp "SUPER + CTRL + left" "Previous window in group" "group.prev" { })
+  ]
+  ++ forNumbers 5 (
+    i: dsp "SUPER + ALT + ${toString i}" "Group window ${toString i}" "group.active" { index = i; }
+  )
+  ++ forDirections (
+    key: dir:
+    dsp "SUPER + ALT + ${key}" "Move window into group ${key}" "window.move" { into_group = dir; }
+  )
+  ++ [
+    # Workspaces.
+    (dsp "SUPER + CTRL + Tab" "Previous workspace" "focus" { workspace = "previous"; })
+  ]
+  ++ forNumbers 9 (
+    i:
+    dsp "SUPER + SHIFT + ALT + ${toString i}" "Move window to workspace ${toString i} silently"
+      "window.move"
+      {
+        workspace = toString i;
+        follow = false;
+      }
+  )
+  ++ forDirections (
+    key: dir:
+    dsp "SUPER + SHIFT + ALT + ${key}" "Move workspace to monitor ${key}" "workspace.move" {
+      monitor = dir;
+    }
+  )
+  ++ [
+    # Apps by desktop id or command; the ones with a role are in shell-binds.nix.
+    # SUPER+SHIFT+N stays the DMS notepad toggle.
+    (exec "SUPER + SHIFT + ALT + B" "Private browser window" "${BROWSER} --private-window")
+    (exec "SUPER + SHIFT + ALT + M" "New mail" "xdg-open mailto:")
+    (exec "SUPER + SHIFT + Q" "Calculator" "qalculate-qt")
+    (exec "SUPER + SHIFT + T" "System monitor" "${TERMINAL} -e btop")
+    (exec "SUPER + SHIFT + A" "Claude" (launch "com.anthropic.Claude"))
+    (exec "SUPER + SHIFT + ALT + A" "Codex" (launch "codex-desktop"))
+    (exec "SUPER + SHIFT + G" "Telegram" (launch "org.telegram.desktop"))
+    (exec "SUPER + SHIFT + Z" "WhatsApp (ZapFast)" "zapfast")
+    (exec "SUPER + SHIFT + D" "Discord" discord.launch)
+    # Claude Quick Entry through the GlobalShortcuts portal: Hyprland only forwards it
+    # with an explicit bind. The id is stable across restarts and ends with the
+    # accelerator set in the app (Command+Shift+C); changing it there changes the id,
+    # see `hyprctl globalshortcuts`.
+    (dsp "SUPER + ALT + C" "Claude Quick Entry" "global"
+      "com.anthropic.Claude:FCF51C952DD85146214EE0EF1DBF3B2F-Command+Shift+C"
+    )
+
+    # Audio and voice. Push-to-talk dictation with the client selected by DICTATION.
+    (exec "CTRL + SHIFT + SPACE" "Dictation (hold)" dictation.press)
+    (exec "CTRL + SHIFT + SPACE" "Dictation (release)" dictation.release // { opts.release = true; })
+    # I = input, O = output, independent of the hardware media keys.
+    (exec "SUPER + ALT + I" "Toggle microphone mute" "${wpctl} set-mute @DEFAULT_AUDIO_SOURCE@ toggle")
+    (exec "SUPER + ALT + O" "Toggle speaker mute" "${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle")
+    (action "SUPER + ALT + M" "Discord: toggle mute" (discord.mute or { }))
+    (action "SUPER + ALT + D" "Discord: toggle deafen" (discord.deafen or { }))
+
+    # Universal clipboard (clip() in hyprland.lua).
+    (lua "SUPER + C" "Copy" ''clip("c", "CTRL_SHIFT")'')
+    (lua "SUPER + V" "Paste" ''clip("v", "CTRL_SHIFT")'')
+    (lua "SUPER + X" "Cut" ''clip("x")'')
+    (lua "SUPER + A" "Select all" ''clip("a")'')
+  ]
+  # Noctalia has its own Alt+Tab window switcher (shell-binds.nix).
+  ++ lib.optionals (!noctalia) [
+    (lua "ALT + Tab" "Next window" "cycle(true)")
+    (lua "ALT + SHIFT + Tab" "Previous window" "cycle(false)")
+  ]
+  ++ shellBinds;
+
+  active = lib.filter (b: b ? exec || b ? dsp || b ? lua) binds;
+
+  # Lua rendering. Tables keep bare keys so DMS's keybind viewer reads `description`.
+  toLua = lib.generators.toLua { };
+  luaValue =
+    v:
+    if lib.isAttrs v then
+      "{ ${lib.concatStringsSep ", " (lib.mapAttrsToList (k: x: "${k} = ${luaValue x}") v)} }"
+    else
+      toLua v;
+  luaAction =
+    b:
+    if b ? exec then
+      "hl.dsp.exec_cmd(${toLua b.exec})"
+    else if b ? dsp then
+      "hl.dsp.${b.dsp}(${lib.optionalString (b.args != { }) (luaValue b.args)})"
+    else
+      b.lua;
+  renderBind =
+    b:
+    "hl.bind(${toLua b.key}, ${luaAction b}, ${
+      luaValue ({ description = b.desc; } // b.opts or { })
+    })\n";
+
+  # The same keystroke bound twice fires both actions; fail the build instead.
+  # Modifier order and case do not matter to Hyprland, so neither do they here.
+  keystroke =
+    b:
+    let
+      parts = lib.splitString "+" (lib.toLower (lib.replaceStrings [ " " ] [ "" ] b.key));
+    in
+    lib.concatStringsSep "+" (lib.sort lib.lessThan (lib.init parts) ++ [ (lib.last parts) ])
+    + lib.optionalString (b.opts.release or false) " (release)";
+  duplicates = lib.attrNames (
+    lib.filterAttrs (_: bs: lib.length bs > 1) (lib.groupBy keystroke active)
+  );
+
+  # Unbind every key first: dms/binds.lua (seeded by DMS, user-writable) may bind any of
+  # them, and a second bind would fire both. Hyprland matches unbinds by the key string
+  # ignoring case and spaces, so a DMS bind with the modifiers in another order survives.
+  keybinds =
+    assert lib.assertMsg (duplicates == [ ]) "Duplicate Hyprland binds: ${toString duplicates}";
+    lib.concatMapStrings (key: "hl.unbind(${toLua key})\n") (lib.unique (map (b: b.key) active))
+    + lib.concatMapStrings renderBind active;
 in
 {
   wayland.windowManager.hyprland = {
@@ -105,240 +307,15 @@ in
     systemd.enable = false;
 
     # Inline the literal imports so DMS can discover them in the personal main.
-    extraConfig = builtins.readFile ../../nixos/desktop/hyprland-base.lua + ''
-      hl.config({
-        input = {
-          kb_layout = "us",
-          kb_variant = "intl",
-        },
-      })
-
-      -- Free Ctrl+Shift+R for apps (hard reload in browsers); DMS binds it to
-      -- workspace rename. Case must match the DMS bind exactly.
-      hl.unbind("CTRL + SHIFT + R")
-
-      -- Omarchy-style key planes: SUPER = windows, SUPER+SHIFT = apps,
-      -- SUPER+CTRL = panels, SUPER+CTRL+ALT = quick actions. Free the DMS
-      -- binds that sit on keys of another plane (the SUPER+T terminal, float,
-      -- fullscreen and the exit-Hyprland bind, which is also in the power menu).
-      hl.unbind("SUPER + T")
-      hl.unbind("SUPER + SHIFT + T")
-      hl.unbind("SUPER + F")
-      hl.unbind("SUPER + SHIFT + F")
-      hl.unbind("SUPER + SHIFT + E")
-      hl.unbind("SUPER + W")
-      hl.unbind("SUPER + V")
-      hl.unbind("SUPER + X")
-      hl.unbind("SUPER + CTRL + H")
-      hl.unbind("SUPER + CTRL + L")
-      hl.unbind("SUPER + CTRL + left")
-      hl.unbind("SUPER + CTRL + right")
-
-      -- Windows: terminal, float, fullscreen, and maximize.
-      hl.bind("SUPER + Return", hl.dsp.exec_cmd("${config.home.sessionVariables.TERMINAL}"))
-      -- Terminal with tmux, and Herdr (agent manager).
-      hl.bind("SUPER + ALT + Return", hl.dsp.exec_cmd("${config.home.sessionVariables.TERMINAL} -e tmux"))
-      hl.bind("SUPER + CTRL + Return", hl.dsp.exec_cmd("herdr-app"))
-      hl.bind("SUPER + T", hl.dsp.window.float({ action = "toggle" }))
-      hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
-      hl.bind("SUPER + ALT + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
-      -- Close like Omarchy (SUPER+Q is the DMS bind); the DMS group toggle moves to G.
-      hl.bind("SUPER + W", hl.dsp.window.close())
-
-      -- Layout of the active workspace: dwindle <-> scrolling. Monitor focus
-      -- stays on SUPER+arrows/H/L and CTRL+ALT+Tab, so SUPER+CTRL+H/L are free.
-      hl.bind("SUPER + CTRL + L", hl.dsp.exec_cmd("${layoutToggle}"))
-
-      -- Cycle focus through monitors (Omarchy).
-      hl.bind("CTRL + ALT + Tab", hl.dsp.focus({ monitor = "+1" }))
-      hl.bind("CTRL + ALT + SHIFT + Tab", hl.dsp.focus({ monitor = "-1" }))
-
-      -- Cycle through the windows of the workspace and raise the focused one:
-      -- Alt+Tab (Omarchy) and SUPER+SHIFT+wheel for the mouse.
-      local function cycle(forward)
-        return function()
-          hl.dispatch(hl.dsp.window.cycle_next({ next = forward }))
-          hl.dispatch(hl.dsp.window.bring_to_top())
-        end
-      end
-      hl.bind("ALT + Tab", cycle(true))
-      hl.bind("ALT + SHIFT + Tab", cycle(false))
-      hl.bind("SUPER + SHIFT + mouse_down", cycle(true))
-      hl.bind("SUPER + SHIFT + mouse_up", cycle(false))
-
-      -- Scratchpad: a named special workspace.
-      hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("scratchpad"))
-      hl.bind("SUPER + ALT + S", hl.dsp.window.move({ workspace = "special:scratchpad" }))
-
-      -- Groups (tabbed windows): toggle, leave, cycle, jump, and absorb a neighbor.
-      hl.bind("SUPER + G", hl.dsp.group.toggle())
-      hl.bind("SUPER + ALT + G", hl.dsp.window.move({ out_of_group = true }))
-      hl.bind("SUPER + ALT + Tab", hl.dsp.group.next())
-      hl.bind("SUPER + ALT + SHIFT + Tab", hl.dsp.group.prev())
-      hl.bind("SUPER + ALT + mouse_down", hl.dsp.group.next())
-      hl.bind("SUPER + ALT + mouse_up", hl.dsp.group.prev())
-      for i = 1, 5 do
-        hl.bind("SUPER + ALT + " .. i, hl.dsp.group.active({ index = i }))
-      end
-      for key, dir in pairs({ left = "l", right = "r", up = "u", down = "d" }) do
-        hl.bind("SUPER + ALT + " .. key, hl.dsp.window.move({ into_group = dir }))
-      end
-      -- Move inside a group.
-      hl.bind("SUPER + CTRL + left", hl.dsp.group.prev())
-      hl.bind("SUPER + CTRL + right", hl.dsp.group.next())
-
-      -- Quake console: a ghostty with its own class on special:quake, dropped
-      -- under the bar. The first press spawns it, later ones toggle it.
-      hl.window_rule({
-        match = { class = "^mikel\\.quake$" },
-        float = true,
-        workspace = "special:quake",
-        size = { "monitor_w * 0.8", "monitor_h * 0.45" },
-        move = { "monitor_w * 0.1", 48 },
-      })
-      -- code:49 is the grave key; with the us-intl variant its keysym is dead_grave,
-      -- so a bind on "grave" never fires.
-      hl.bind("SUPER + code:49", hl.dsp.exec_cmd("${quakeToggle}"))
-      hl.bind("SUPER + SHIFT + code:49", hl.dsp.window.move({ workspace = "special:quake" }))
-
-      -- Apps with a role use the defaults (DMS Settings > Default Apps); the
-      -- rest launch by desktop id.
-      local dms = "dms ipc call "
-      local launch = "${pkgs.gtk3}/bin/gtk-launch "
-      hl.bind("SUPER + SHIFT + B", hl.dsp.exec_cmd(dms .. "defaultApp browser"))
-      hl.bind("SUPER + SHIFT + ALT + B", hl.dsp.exec_cmd("${config.home.sessionVariables.BROWSER} --private-window"))
-      hl.bind("SUPER + SHIFT + F", hl.dsp.exec_cmd(dms .. "defaultApp fileManager"))
-      hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd(dms .. "defaultApp textEditor"))
-      hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd(dms .. "defaultApp mail"))
-      hl.bind("SUPER + SHIFT + ALT + M", hl.dsp.exec_cmd("xdg-open mailto:"))
-      -- SUPER+SHIFT+N stays the DMS notepad toggle.
-      hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd(dms .. "defaultApp calendar"))
-      hl.bind("SUPER + SHIFT + Q", hl.dsp.exec_cmd("qalculate-qt"))
-      hl.bind("SUPER + SHIFT + T", hl.dsp.exec_cmd("${config.home.sessionVariables.TERMINAL} -e btop"))
-      hl.bind("SUPER + SHIFT + A", hl.dsp.exec_cmd(launch .. "com.anthropic.Claude"))
-      hl.bind("SUPER + SHIFT + ALT + A", hl.dsp.exec_cmd(launch .. "codex-desktop"))
-      hl.bind("SUPER + SHIFT + G", hl.dsp.exec_cmd(launch .. "org.telegram.desktop"))
-      -- WhatsApp in ZapFast.
-      hl.bind("SUPER + SHIFT + Z", hl.dsp.exec_cmd("zapfast"))
-      -- The configured Discord client.
-      hl.bind("SUPER + SHIFT + D", hl.dsp.exec_cmd("${discord.launch}"))
-
-      -- Push-to-talk dictation with the client selected by DICTATION. The CLI
-      -- works reliably with the running instance.
-      hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${dictation.press}"))
-      hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${dictation.release}"), { release = true })
-      -- Alternative: tap Super+D to start, tap again to stop. The delay lets Super
-      -- be released before wtype types, otherwise letters fire as Super shortcuts.
-      -- hl.bind("SUPER + D", hl.dsp.exec_cmd("${pkgs.handy}/bin/handy --toggle-transcription"))
-
-      -- Toggle microphone (I = input) and speaker (O = output) mute, independent of hardware media keys.
-      hl.bind("SUPER + ALT + I", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
-      hl.bind("SUPER + ALT + O", hl.dsp.exec_cmd("${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
-
-      -- Send mute/deafen to the selected Discord client.
-      hl.bind("SUPER + ALT + M", ${discord.mute})
-      hl.bind("SUPER + ALT + D", ${discord.deafen})
-
-      -- Omarchy-style capture binds via the Quick Capture plugin. Print and
-      -- ALT+Print are also bound by DMS (dms/binds.lua), so free them first.
-      hl.unbind("Print")
-      hl.unbind("ALT + Print")
-      local qc = "dms ipc call quickCapture "
-      -- Region screenshot opened in the annotator (Print or SUPER+CTRL+ALT+C).
-      hl.bind("Print", hl.dsp.exec_cmd(qc .. "screenshot region edit"))
-      hl.bind("SUPER + CTRL + ALT + C", hl.dsp.exec_cmd(qc .. "screenshot region edit"))
-      -- Windows-style: region straight to the clipboard, nothing saved.
-      hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd(qc .. "screenshot region copy"))
-      -- Capture menu, screenrecord toggle, and color picker.
-      hl.bind("SUPER + CTRL + C", hl.dsp.exec_cmd(qc .. "toggle"))
-      hl.bind("ALT + Print", hl.dsp.exec_cmd(qc .. "recordToggle region"))
-      hl.bind("SUPER + Print", hl.dsp.exec_cmd("dms ipc call color-picker toggle"))
-
-      -- Panels (SUPER+CTRL+key). Control Center sections are its widget ids.
-      hl.bind("SUPER + CTRL + A", hl.dsp.exec_cmd("${ccPanel} audioOutput"))
-      hl.bind("SUPER + CTRL + B", hl.dsp.exec_cmd("${ccPanel} bluetooth"))
-      hl.bind("SUPER + CTRL + N", hl.dsp.exec_cmd("${ccPanel} wifi"))
-      hl.bind("SUPER + CTRL + D", hl.dsp.exec_cmd(dms .. "settings toggleWith displays"))
-      hl.bind("SUPER + CTRL + P", hl.dsp.exec_cmd(dms .. "powerprofile toggle"))
-      hl.bind("SUPER + CTRL + E", hl.dsp.exec_cmd(dms .. "emojiPicker toggle"))
-
-      -- Notifications (SUPER+, stays the DMS settings): act on the latest (open it
-      -- or press its button), dismiss the latest, dismiss all popups, toggle Do Not
-      -- Disturb.
-      hl.bind("SUPER + CTRL + comma", hl.dsp.exec_cmd(dms .. "notifications invokeLast"))
-      hl.bind("SUPER + ALT + comma", hl.dsp.exec_cmd(dms .. "notifications dismiss"))
-      hl.bind("SUPER + SHIFT + comma", hl.dsp.exec_cmd(dms .. "notifications dismissAllPopups"))
-      hl.bind("SUPER + CTRL + ALT + comma", hl.dsp.exec_cmd(dms .. "notifications toggleDoNotDisturb"))
-
-      -- Next audio output, and show/hide the top bar.
-      hl.bind("SHIFT + XF86AudioMute", hl.dsp.exec_cmd(dms .. "audio cycleoutput"), { locked = true })
-      hl.bind("SUPER + SHIFT + space", hl.dsp.exec_cmd(dms .. "bar toggle index 0"))
-
-      -- Workspaces: back to the previous one, move a window without following it,
-      -- and send the workspace to the monitor in that direction.
-      hl.bind("SUPER + CTRL + Tab", hl.dsp.focus({ workspace = "previous" }))
-      for i = 1, 9 do
-        hl.bind("SUPER + SHIFT + ALT + " .. i, hl.dsp.window.move({ workspace = tostring(i), follow = false }))
-      end
-      for key, dir in pairs({ left = "l", right = "r", up = "u", down = "d" }) do
-        hl.bind("SUPER + SHIFT + ALT + " .. key, hl.dsp.workspace.move({ monitor = dir }))
-      end
-
-      -- Universal clipboard (Omarchy): SUPER+C/V/X/A work in any app. Terminals take
-      -- CTRL+SHIFT for copy/paste and ignore cut and select-all, since CTRL+X/A would
-      -- reach the shell. The clipboard history and the power menu move to SUPER+CTRL+V
-      -- and SUPER+Escape.
-      local terminals = { ["com.mitchellh.ghostty"] = true, ["mikel.quake"] = true, ["kitty"] = true }
-      local function clip(key, terminal_mods)
-        return function()
-          local w = hl.get_active_window()
-          local term = w and terminals[w.class]
-          if term and not terminal_mods then return end
-          hl.dispatch(hl.dsp.send_shortcut({ mods = term and terminal_mods or "CTRL", key = key }))
-        end
-      end
-      hl.bind("SUPER + C", clip("c", "CTRL_SHIFT"))
-      hl.bind("SUPER + V", clip("v", "CTRL_SHIFT"))
-      hl.bind("SUPER + X", clip("x"))
-      hl.bind("SUPER + A", clip("a"))
-      hl.bind("SUPER + CTRL + V", hl.dsp.exec_cmd(dms .. "clipboard toggle"))
-      hl.bind("SUPER + Escape", hl.dsp.exec_cmd(dms .. "powermenu toggle"))
-
-      -- Quick actions (SUPER+CTRL+ALT+key): calendar panel.
-      hl.bind("SUPER + CTRL + ALT + D", hl.dsp.exec_cmd(dms .. "dash toggle overview"))
-
-      -- Toggle the mise tools panel (DMS plugin).
-      hl.bind("SUPER + CTRL + M", hl.dsp.exec_cmd("dms ipc call mise toggle"))
-
-      -- Omarchy-style pickers (dmsProfiles): wallpapers of the current folder
-      -- (the frequent one, so the plain key) and the theme profile.
-      hl.bind("SUPER + CTRL + SPACE", hl.dsp.exec_cmd("dms ipc call profiles wallpapers"))
-      hl.bind("SUPER + CTRL + W", hl.dsp.exec_cmd("dms ipc call profiles wallpapers"))
-      hl.bind("SUPER + CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("dms ipc call profiles toggle"))
-      hl.bind("SUPER + CTRL + T", hl.dsp.exec_cmd("dms ipc call profiles toggle"))
-
-      -- Toggle the DMS emoji picker.
-      hl.bind("SUPER + period", hl.dsp.exec_cmd("dms ipc call emojiPicker toggle"))
-
-      -- Claude Quick Entry via the GlobalShortcuts portal: Hyprland only forwards
-      -- it with an explicit bind. The id is stable across restarts and ends with
-      -- the accelerator set in the app (Command+Shift+Space); changing it there
-      -- changes the id, see `hyprctl globalshortcuts`.
-      hl.bind("SUPER + ALT + C", hl.dsp.global("com.anthropic.Claude:FCF51C952DD85146214EE0EF1DBF3B2F-Command+Shift+C"))
-
-      -- Claude Quick Entry is a 606x470 transparent floating window with only a
-      -- bar drawn at the top; skip blur, shadow and border over the empty area.
-      hl.window_rule({
-        match = { class = "^com\\.anthropic\\.Claude$", float = true },
-        no_blur = true,
-        no_shadow = true,
-        no_dim = true,
-        border_size = 0,
-      })
-
-      -- Apply host-specific defaults after personal settings (e.g. keyboard).
-      require("/etc/xdg/hypr/host")
-    '';
+    # Host-specific defaults go last, after the personal settings (e.g. keyboard).
+    extraConfig = lib.concatStrings [
+      (builtins.readFile ../../nixos/desktop/hyprland-base.lua)
+      (builtins.readFile ./hyprland.lua)
+      keybinds
+      ''
+        require("/etc/xdg/hypr/host")
+      ''
+    ];
   };
 
   # Chromium/Electron open a second ScreenCast portal dialog for the actual

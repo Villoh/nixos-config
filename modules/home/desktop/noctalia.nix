@@ -15,11 +15,16 @@ let
     "screen_recorder" # gpu-screen-recorder: recording and replay buffer
   ];
   community = [
+    "audio-switcher" # Cycle audio outputs/inputs from a keybind (shell-binds.nix)
+    "emoji-picker" # Emoji and symbol picker (shell-binds.nix)
+    "screen-toolkit" # Color picker, OCR, QR, annotate (shell-binds.nix); recording stays with screen_recorder
     "herdr" # Herdr sessions and coding agents in the bar
     "mini-docker" # Docker containers
     "nix-search" # nixpkgs / NixOS / Home Manager search in the launcher (nix-search-tv)
     "phone-connect" # KDE Connect (NixOS enables it)
     "tailscale" # Tailscale peers and exit nodes (NixOS enables it)
+    "theme-switcher" # Saved themes carousel (SUPER+CTRL+T, shell-binds.nix)
+    "wallpaper-deck" # Wallpaper picker with Wallhaven (SUPER+CTRL+W, shell-binds.nix)
   ];
 
   entries =
@@ -72,28 +77,22 @@ in
   # Runtime tools of the plugins above that nothing else installs. bw, jq, fzf, docker,
   # herdr, tailscale, gpu-screen-recorder and xdg-open already come from other modules.
   home.packages = lib.mkIf enable [
+    pkgs.hyprpicker # screen-toolkit color picker (tesseract, magick, zbar, ffmpeg come from elsewhere)
     pkgs.nix-search-tv
     pkgs.slurp
     pkgs.sshfs
   ];
 
-  # Binds and surface rules from the Noctalia Hyprland guide (no autostart: the user service
-  # starts it). The `dms ipc` binds in hyprland.nix and dms.binds stay until DMS is dropped
-  # for good; they only fail to run once DMS is disabled.
+  # Surface rules from the Noctalia Hyprland guide (no autostart: the user service starts
+  # it). Its binds (launcher, settings, Alt+Tab, media keys) and the shell-dependent binds
+  # of hyprland.nix are in shell-binds.nix and replace the DMS ones on the same keys; the
+  # other `dms ipc` binds in dms.binds stay until DMS is dropped for good and only fail to
+  # run once DMS is disabled. SUPER+S is the scratchpad there, and the Control Center
+  # opens through SUPER+CTRL+A/B/N/D/P.
   wayland.windowManager.hyprland.extraConfig = lib.mkIf enable (
     lib.mkAfter ''
 
       -- Noctalia (programs.noctalia).
-      hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"))
-      hl.bind("SUPER + S", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center"))
-      hl.bind("SUPER + comma", hl.dsp.exec_cmd("noctalia msg settings-toggle"))
-      hl.bind("ALT + Tab", hl.dsp.exec_cmd("noctalia msg window-switcher hold"))
-      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("noctalia msg volume-up"))
-      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("noctalia msg volume-down"))
-      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("noctalia msg volume-mute"))
-      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("noctalia msg brightness-up"))
-      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("noctalia msg brightness-down"))
-
       hl.window_rule({
         match = { class = "dev.noctalia.Noctalia" },
         float = true,

@@ -74,7 +74,7 @@
     };
 
     goopdl = {
-      url = "github:Villoh/goopdl/v2.0.1";
+      url = "github:Villoh/goopdl/v2.0.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -115,17 +115,25 @@
     };
 
     # Music players under evaluation; both ship their own flake.
+    # No nixpkgs follows on purpose: its CI cache (sonora.cachix.org, see modules/nixos/core/nix.nix)
+    # only matches the build against the nixpkgs its own flake.lock pins.
     sonora = {
-      url = "github:sonorahq/sonora/v0.48.1";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:sonorahq/sonora/v0.50.0";
     };
 
-    # PENDING: cache. Off while the modules use kopuz-bin (packages/prebuilt): uncomment it
-    # together with the source-built line next to that package.
-    # kopuz = {
-    #   url = "github:Kopuz-org/kopuz";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    # Kopuz (GPUI), following master: its tags are no use here, nixup would offer the stray v2.0
+    # tag. No nixpkgs follows on purpose: its Cachix cache (kopuz.cachix.org, see
+    # modules/nixos/core/nix.nix) only holds the build against the nixpkgs its own flake.lock pins,
+    # and only for some commits. Before `nixup update kopuz`, check that the new head is cached
+    # (narinfo of the kopuz output at kopuz.cachix.org), or it compiles about 2,200 derivations.
+    kopuz = {
+      url = "github:Kopuz-org/kopuz";
+    };
+
+    # Dictation. Same rule: the handy-computer.cachix.org cache matches its own nixpkgs.
+    handy = {
+      url = "github:cjpais/Handy/v0.10.1";
+    };
 
     # Local voice dictation. Must follow our nixpkgs: its own pinned glibc can be older than the
     # graphics drivers need, and the window then finds no Vulkan adapter.
@@ -177,7 +185,7 @@
 
     # Update checker for this repo (nixup check / update); activates only with --test, --switch or --boot.
     nixup = {
-      url = "github:Villoh/nixup/v0.11.1";
+      url = "github:Villoh/nixup/v0.12.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

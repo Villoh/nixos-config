@@ -106,8 +106,7 @@ libraries (nixpkgs 44cddf9, 2026-10-12).
 
 ## Prebuilt releases (`packages/prebuilt/`, temporary)
 
-`arca`, `aube`, `handy`, `hex`, `kopuz`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux`
-and `yapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
+`arca`, `aube`, `hex`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux` and `yapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
 compile locally (no binary cache yet). They are bumped like the packages above, with
 `nixup update workmux-bin`.
 
@@ -115,8 +114,8 @@ Each module line that uses one carries a `PENDING: cache` comment next to the or
 source-built line (the flake input stays in `flake.nix`, so it is still pinned in
 `flake.lock`). `aube` and `wealthfolio` also have a source package (`packages/aube`,
 `packages/wealthfolio`, copied from nixpkgs, which runs behind upstream), commented out in
-`packages/default.nix` until then. `handy` and `hex` are swapped in the overlay, so `pkgs.handy`
-and `pkgs.hex` keep working; the modules use the other `-bin` packages by their own name.
+`packages/default.nix` until then. `hex` is swapped in the overlay, so `pkgs.hex`
+keeps working; the modules use the other `-bin` packages by their own name.
 Once a binary cache serves the source builds, revert those lines and delete
 `packages/prebuilt/`. A release can lag the flake input (it is built from `main`), so
 check the version before assuming they match.
@@ -129,9 +128,14 @@ switches that stay on. Reverting to the source build means restoring the `callPa
 `modules/home/desktop/packages.nix` and `modules/nixos/desktop/portals.nix` and removing the
 helpers.
 
-`kopuz-bin` is the GPUI nightly (the stable release is still the old WebKit app). It is a
-separate channel (`*-nightly` binaries, `moe.kopuz.kopuz.nightly`, `kopuzd-nightly.sock`), so it
-does not share the stable app's socket. Its tags are `v0.68.0-nightly.YYYYMMDD[.N]`.
+`kopuz` and `handy` left this folder: their upstream flakes now have a Cachix cache
+(`kopuz.cachix.org`, `handy-computer.cachix.org`, trusted in `modules/nixos/core/nix.nix`), so
+they are flake inputs again, without `nixpkgs.follows` (the cache only matches the nixpkgs their
+own `flake.lock` pins). `packages/prebuilt/{kopuz,handy}` are unused and can be deleted. Kopuz is
+the GPUI app, following `master` (its tags are no use: nixup would offer the stray `v2.0`). Its
+binaries are `kopuz`/`kopuzd` (the old `.deb` nightly used `*-nightly` names and
+`kopuzd-nightly.sock`). The cache only holds some commits: before `nixup update kopuz`, check the
+new head's output in `kopuz.cachix.org`, or it compiles about 2,200 derivations.
 
 `serein-bin` is the nightly Arch package (upstream publishes only pre-releases, tagged
 `v1.0.0-nightly.YYYYMMDD.N`), so it moves with Serein's `main` branch. The Flatpak is
@@ -165,10 +169,10 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | yapfast | yes (about 10 min measured) | yes (pkg.tar.zst) | no | Binary |
 | sheprd | yes (1,177 crates) | yes (tar.gz) | no | Binary |
 | hex | yes (767 crates) | yes (.deb) | no | Binary |
-| handy | nixpkgs, 0.9.6 plus a local patch | yes (.deb) | no | Binary |
+| handy | yes (own flake, handy-computer.cachix.org) | yes (.deb) | no | Flake (cached) |
 | wealthfolio | nixpkgs, and `packages/wealthfolio` | yes (.deb) | no | Binary |
 | aube | nixpkgs (1.32, behind), and `packages/aube` (2.10, builds with 4 sandbox tests skipped) | yes (static musl tar.gz) | no | Binary |
-| kopuz | yes (about 2,200 derivations) | nightly only (GPUI, same commit as the lock); the stable release is the legacy WebKit app | Flathub 0.67.1 is the legacy Dioxus app (`dx build`), not GPUI | Binary (nightly) |
+| kopuz | yes (about 2,200 derivations) | nightly only (GPUI, same commit as the lock); the stable release is the legacy WebKit app | Flathub 0.67.1 is the legacy Dioxus app (`dx build`), not GPUI | Flake (cached, master) |
 | sonora | yes (`sonora-src`) | yes, `sonora-bin` in the same flake | yes (official repo) | Flake, binary output |
 | meiro | no (Bazel) | yes (minimal tarball, `packages/meiro`; ffmpeg, yt-dlp and Node from nixpkgs) | yes (release bundle; sign-in needs `--talk-name=org.freedesktop.Flatpak`) | Binary |
 | strata | yes (442 crates, `rarSupport = true`) | yes (tar.gz), but the official release omits non-free UnRAR and embeds no Nix store paths | no | Binary (no RAR); its helpers are in `environment.systemPackages` |

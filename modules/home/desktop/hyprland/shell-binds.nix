@@ -170,6 +170,7 @@ let
     (bind "Print" "screenshot" "Screenshot region (annotate)")
     (bind "SUPER + CTRL + ALT + C" "screenshot" "Screenshot region (annotate)")
     (bind "SUPER + SHIFT + S" "screenshotCopy" "Screenshot region to clipboard")
+    (bind "SUPER + SHIFT + ALT + S" "screenshot" "Screenshot region (annotate)")
     (bind "SUPER + CTRL + C" "captureMenu" "Capture menu")
     (bind "SUPER + CTRL + Print" "captureToolbar" "Capture toolbar")
     (bind "ALT + Print" "record" "Toggle screen recording")

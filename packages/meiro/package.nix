@@ -33,11 +33,11 @@
 # the .flatpak/<id>/xdg-run copies, and this build has no sandbox.
 stdenv.mkDerivation (finalAttrs: {
   pname = "meiro";
-  version = "0.6.2";
+  version = "0.7.1";
 
   src = fetchurl {
     url = "https://github.com/elianiva/meiro/releases/download/desktop-v${finalAttrs.version}/meiro-${finalAttrs.version}-linux-amd64-minimal.tar.gz";
-    hash = "sha256-gEjvWgeH8IFAKIu8JFgj/LYxL8FAgIJzuI7XIDneghw=";
+    hash = "sha256-E1tordWp0UxjP5eg1+Y7wP6LSwchpEas6zaVWao3DkY=";
   };
 
   sourceRoot = ".";

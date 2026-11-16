@@ -33,11 +33,11 @@
 # The Arch package (a plain tar.zst), used as an archive: the AppImage would need an FHS env.
 stdenv.mkDerivation (finalAttrs: {
   pname = "yapfast";
-  version = "0.3.0";
+  version = "0.4.1";
 
   src = fetchurl {
     url = "https://github.com/yapfast/yapfast/releases/download/v${finalAttrs.version}/yapfast-${finalAttrs.version}-1-x86_64.pkg.tar.zst";
-    hash = "sha256-CegeJRYKJiXVojxAs9lLxxJvjbuPBxS0MrsMYsOnORQ=";
+    hash = "sha256-E+7XhmBphR8//V7PmMfizuuWfKzNWx5enNBYJ5si0xA=";
   };
 
   sourceRoot = ".";

@@ -36,11 +36,11 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "handy";
-  version = "0.10.0";
+  version = "0.10.1";
 
   src = fetchurl {
     url = "https://github.com/cjpais/Handy/releases/download/v${finalAttrs.version}/Handy_${finalAttrs.version}_amd64.deb";
-    hash = "sha256-zZHw60RaGyCg7XORp3yxF00eXIPRaWSR4SKNE+I2RoQ=";
+    hash = "sha256-pZx0HlLd9xSPLsAVkMJnWBO63BJhKbu9QGQmmuIU6SQ=";
   };
 
   nativeBuildInputs = [

@@ -23,11 +23,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "sheprd";
-  version = "20261109.1";
+  version = "20261115.1";
 
   src = fetchurl {
     url = "https://github.com/sheprd-labs/sheprd/releases/download/v${finalAttrs.version}/Sheprd-${finalAttrs.version}-x86_64-unknown-linux-gnu.tar.gz";
-    hash = "sha256-HgmDNojmR8gpmkJhaA1dLrKnD13dekmqjK2qcpd7WSw=";
+    hash = "sha256-9J6rWjSj7rLtQznLX0Yi4L9Pnfs5G8Hw7C9qDhokwjY=";
   };
 
   sourceRoot = "Sheprd-${finalAttrs.version}-x86_64-unknown-linux-gnu";

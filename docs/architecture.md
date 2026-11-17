@@ -1,39 +1,50 @@
 # Architecture and ownership
 
+How the repository is layered, who owns which files, and how to extend it.
+
+- [Layers](#layers)
+- [Opt-ins and groups](#opt-ins-and-groups)
+- [Add a minimal user](#add-a-minimal-user)
+- [New host checklist](#new-host-checklist)
+- [Noctalia (alternative shell)](#noctalia-alternative-shell)
+- [Ownership and smoke checks](#ownership-and-smoke-checks)
+
 ## Layers
 
-- `hosts/<host>/`: hardware, hostname, bootloader, system state version, physical
-  display/keyboard settings, optional services, and user/profile selection.
-  `desktop` retains hostname `nixos`; its bootloader values are unchanged.
-- `profiles/`: reusable compositions of NixOS capabilities, not personal apps.
-- `modules/nixos/`: shared system services and session infrastructure. Core
-  enables `nh`; desktop supplies Hyprland/UWSM, Dux Shell (DMS), Dux Greeter, portals,
-  Ghostty, and Qt/Breeze/qtengine without requiring Home Manager or an account.
-- `modules/home/`: Home Manager modules using per-user options directly, not
-  NixOS wrappers around `home-manager.users.mikel`. Browsers, application
-  preferences, the GPG agent, and personal DMS plugins belong here. The gaming
-  module uses `osConfig` to consume host support, not to install a global client.
-- `users/mikel/default.nix`: NixOS composition importing `account.nix` and
-  assigning `home.nix` to `home-manager.users.mikel`. `account.nix` owns identity,
-  shell, and baseline groups; `home.nix` selects personal HM modules/state version.
+```text
+flake.nix ─► hosts/<host> ─► profiles/ ─► modules/nixos/
+                  │
+                  └─► users/<user> ─► modules/home/
+packages/ ─► overlays.default ─► every host's pkgs
+```
 
-The former `modules/nixos/core/users.nix` account now lives in
-`users/mikel/account.nix`; the former core `state.nix` is now
-`hosts/desktop/state.nix`. State versions describe installation compatibility,
-not the current package release; do not bump them as part of routine updates.
+| Layer | Contents |
+| --- | --- |
+| `flake.nix` | Inputs, `overlays.default`, `packages.<system>`, hosts and dev shells (`default`, `android`). Only `desktop` is exposed. |
+| `hosts/<host>/` | Hardware, hostname, bootloader, state version, physical display and keyboard settings, optional services, and the users and profiles the host selects. `desktop` keeps hostname `nixos`. |
+| `profiles/` | Reusable compositions of NixOS capabilities, not personal apps: `desktop`, `laptop` (adds zswap and UPower), `gaming`. |
+| `modules/nixos/` | Shared system modules: `core` (boot, fonts, locale, networking, Nix, `nh`, nixup), `hardware`, `desktop` (Hyprland/UWSM, Dux Shell, Dux Greeter, portals, Ghostty, Qt/Breeze/qtengine, Noctalia), `gaming`, `services`. None needs Home Manager or an account. |
+| `modules/home/` | Home Manager modules using per-user options directly: `cloud`, `communication`, `core`, `desktop`, `development`, `gaming`, `media`, `security`, `shell`, `terminals`. Browsers, app preferences, the GPG agent and DMS plugins live here. `gaming` reads `osConfig` to consume host support. |
+| `users/<user>/` | `default.nix` imports `account.nix` (identity, shell, baseline groups) and assigns `home.nix` (HM modules, state version) to `home-manager.users.<user>`. |
+| `packages/` | Packages that are not in nixpkgs or run ahead of it, plus temporary prebuilt releases. See [updates](maintenance/updates.md#own-packages-packages). |
+| `shells/` | Extra dev shells (`nix develop .#android`). |
 
-NVIDIA is an explicit desktop import, not a generic desktop assumption.
-Docker, Tailscale, CUPS, Flatpak, and KDE Connect are host opt-ins. Each host
-that imports the Docker module adds Mikel to `docker` itself; `al68` (YUNZII AL68 WebHID access) comes from
-`users/mikel/al68.nix`, which a host imports where that keyboard is used. Both
-sit beside baseline `wheel` and `networkmanager`; another user must not inherit
-these groups. Home Manager's system-wide options (including `.bak` backups) live in
-`modules/nixos/home-manager.nix`, which each host imports; the base does not
-need Home Manager. GameMode remains
-a host opt-in, without adding `gamemode` or expanding Mikel's permissions.
-Desktop selects NixOS gaming support separately from Mikel's
-`modules/home/gaming` import. `programs.steam.enable` remains false; the
-Gamescope session resolves Steam from the logged-in user's profile.
+State versions describe installation compatibility, not the current package
+release. Do not bump them as part of routine updates.
+
+## Opt-ins and groups
+
+- NVIDIA is an explicit host import, not a desktop assumption: `nvidia.nix` on
+  `desktop`, `egpu-nvidia.nix` on `zenbook`.
+- Docker, Tailscale, CUPS, Flatpak and KDE Connect are host opt-ins, selected in
+  `hosts/<host>/default.nix` rather than the profile.
+- A host that imports the Docker module adds Mikel to `docker` itself. `al68`
+  (YUNZII AL68 WebHID access) comes from `users/mikel/al68.nix`, which a host
+  imports where that keyboard is used. Both sit beside the baseline `wheel` and
+  `networkmanager`; another user must not inherit them.
+- Home Manager's system-wide options (including `.bak` backups) live in
+  `modules/nixos/home-manager.nix`, which each host imports.
+- Gaming support is host-level and Steam is user-level, see [gaming](gaming.md).
 
 ## Add a minimal user
 

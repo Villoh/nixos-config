@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 
 {
   # Generate this host's hardware-configuration.nix on the Zenbook before
@@ -32,4 +32,11 @@
   };
 
   users.users.mikel.extraGroups = [ "docker" ];
+
+  # Intel thermal daemon (Core Ultra); works alongside power-profiles-daemon.
+  services.thermald.enable = true;
+
+  # One shared login appearance, imported by nixpkgs before greetd starts. Missing
+  # source files (fresh home) are skipped, so the greeter keeps its defaults.
+  services.displayManager.dux-greeter.configHome = config.users.users.mikel.home;
 }

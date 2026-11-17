@@ -239,6 +239,16 @@
         modules = [ ./hosts/desktop ];
       };
 
+      # Zenbook laptop. Ready but off: hosts/zenbook imports ./hardware-configuration.nix, which
+      # must be generated on the laptop first, and an output that cannot evaluate would break
+      # `nix flake check` for every host. Uncomment it once that file exists (see
+      # docs/installation-laptop.md). Never copy desktop's hardware file.
+      # nixosConfigurations.zenbook = nixpkgs.lib.nixosSystem {
+      #   inherit system;
+      #   specialArgs = { inherit inputs; };
+      #   modules = [ ./hosts/zenbook ];
+      # };
+
       devShells.${system} = {
         android = import ./shells/android.nix {
           pkgs = import nixpkgs {

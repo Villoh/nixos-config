@@ -1,112 +1,73 @@
-# NixOS + Hyprland + DMS
+# nixos-config
 
-Reproducible NixOS configuration for `desktop`, with a prepared `zenbook` host.
-Only `desktop` is exposed by the flake; Zenbook's output is commented out until
-its own generated hardware configuration exists. Never reuse one host's hardware
-file on another machine.
-Hyprland, DMS, and DankGreeter provide a shared session without requiring a
-personal Home Manager profile.
+Reproducible NixOS configuration built on flakes: Hyprland (UWSM) with
+[Dux Shell](https://danklinux.com) (DMS) and Dux Greeter, Home Manager for personal
+settings, and a handful of own packages.
 
-## Installation guides
+| Host | State | Notes |
+| --- | --- | --- |
+| `desktop` | Active, exposed by the flake | Ryzen + NVIDIA, Lanzaboote Secure Boot, Windows dual boot, gaming. Hostname `nixos`. |
+| `zenbook` | Written, **off** until its hardware file exists | Intel laptop with Thunderbolt NVIDIA eGPU. Its flake output is commented out in `flake.nix`. |
 
-- [Desktop](docs/installation-desktop.md)
-- [Zenbook laptop](docs/installation-laptop.md)
-- [Windows dual boot](docs/dual-boot-windows.md)
-- [Secure Boot](docs/secure-boot.md)
-- [Maintenance and updates](docs/maintenance.md)
-- [Architecture, users, and ownership](docs/architecture.md)
+Never reuse one host's `hardware-configuration.nix` on another machine.
 
-## Development shell
-
-Enter the reproducible repository environment instead of installing temporary
-host tools:
+## Quick start
 
 ```bash
-nix develop
+nix develop                   # git, gh, Node.js 24, nixfmt, nil, statix
+nix flake check               # evaluate every exposed host
+nh os test . -H desktop       # activate temporarily; boot default is untouched
 ```
 
-It provides Git, GitHub CLI, Node.js 24, `nixfmt`, `nil`, and `statix`.
+Review `git diff` first. `switch` and `boot` are manual decisions: see
+[maintenance](docs/maintenance.md). An Android emulator shell is also available with
+`nix develop .#android`.
 
-## Validation
+## Repository layout
 
-```bash
-nix flake check
-nh os test . -H desktop
+```text
+flake.nix            inputs, overlay, hosts and dev shells
+hosts/<host>/        hardware, hostname, bootloader, display, optional services
+profiles/            reusable NixOS compositions (desktop, laptop, gaming)
+modules/nixos/       system modules: core, hardware, desktop, gaming, services
+modules/home/        Home Manager modules: cloud, communication, core, desktop,
+                     development, gaming, media, security, shell, terminals
+users/<user>/        account (NixOS) and home (Home Manager) composition
+packages/            own packages and temporary prebuilt releases
+shells/              extra dev shells (Android emulator)
+docs/                guides, see below
 ```
 
-Review `git diff` before activation. `test` activates the generation temporarily
-and does not change the boot configuration. Verify that DankGreeter offers the
-Hyprland session, DMS starts inside Hyprland, and networking, audio, Bluetooth,
-notifications, locking, and Wayland portals work. Swap policy is host-specific:
-desktop uses compressed zram swap with no disk-backed swap; Zenbook's zswap
-requires persistent swap in its future generated hardware configuration.
+See [architecture](docs/architecture.md) for how the layers fit and who owns what.
 
-Check desktop zram with:
+## What the desktop session is
 
-```bash
-zramctl
-swapon --show
-```
+- **Compositor**: Hyprland, started by UWSM, configured in Lua.
+- **Shell**: Dux Shell (DMS), bound to `graphical-session.target`. Noctalia is an
+  alternative shell, prepared but off.
+- **Login**: Dux Greeter with the `Hyprland (uwsm-managed)` session.
+- **First login needs no setup**: `dms-hyprland-init` seeds missing files in
+  `~/.config/hypr/` and never overwrites existing ones. Details in
+  [architecture](docs/architecture.md#ownership-and-smoke-checks).
 
-zram should be present, with no disk or file-backed swap. zswap requires a
-persistent swap device to cache into; hibernation additionally needs real
-persistent swap and matching resume configuration.
+## Documentation
 
-## DMS compositor startup
+| Topic | Guide |
+| --- | --- |
+| Install or update the desktop | [installation-desktop](docs/installation-desktop.md) |
+| Install the Zenbook | [installation-laptop](docs/installation-laptop.md) |
+| Layers, users, new hosts, Noctalia | [architecture](docs/architecture.md) |
+| Updates, `nh`, recovery, cleanup | [maintenance](docs/maintenance.md) |
+| Secure Boot (Lanzaboote) | [secure-boot](docs/secure-boot.md) |
+| Windows dual boot | [dual-boot-windows](docs/dual-boot-windows.md) |
+| Gaming (Steam, Proton, Gamescope) | [gaming](docs/gaming.md) |
 
-No `dms setup` step is required after login. NixOS provides
-`dms-hyprland-init`, run as the user by UWSM's `wayland-wm@` `ExecStartPre`
-after environment preparation, only for Hyprland sessions and before the
-compositor and DMS. It copies pinned DMS defaults into missing fragments under
-`$XDG_CONFIG_HOME/hypr/dms/` (default `~/.config/hypr/dms/`), private and
-writable, and creates a personal Lua main only if absent. Existing files,
-including empty files, malformed Lua, and dangling symlinks, are not replaced.
-If legacy `hyprland.conf` exists without a Lua main, initialization does nothing.
-Outside UWSM, run `dms-hyprland-init` explicitly if needed.
+Agent and contribution rules live in [AGENTS.md](AGENTS.md).
 
-Nix inlines six literal DMS imports from
-`modules/nixos/desktop/dms/hyprland-base.lua` into both the shared main template and
-Home Manager's personal main; this is not a runtime loader. Each requires
-`/etc/xdg/hypr/host` once, after DMS imports and personal preferences where
-present. No global `hyprland.lua` or `dms-base.lua` is installed under
-`/etc/xdg/hypr/`. Initialization creates new user files, but never replaces
-existing HM/DMS/chezmoi configuration or adds `binds-user.lua`. See
-[ownership and smoke checks](docs/architecture.md#ownership-and-smoke-checks).
+## Conventions
 
-DMS is bound to UWSM's `graphical-session.target` in
-`modules/nixos/desktop/dms/default.nix`, so it starts with the logged-in Hyprland
-session. DankGreeter runs a separate temporary compositor for the login screen;
-the selected `Hyprland (uwsm-managed)` session launches the desktop through
-UWSM. We deliberately do not also run `dms run` from `hyprland.lua`, because
-DMS documents that using both startup methods can launch two instances.
-
-References:
-
-- [DMS Hyprland compositor setup](https://danklinux.com/docs/dankmaterialshell/compositors/)
-- [DMS Hyprland systemd integration](https://danklinux.com/docs/dankmaterialshell/installation/#hyprland)
-- [DMS setup CLI](https://danklinux.com/docs/dankmaterialshell/cli-setup/)
-
-## Gaming
-
-The desktop host opts into NixOS gaming support: 32-bit graphics/audio,
-controller udev rules, GameMode, and a Gamescope session. `programs.steam.enable`
-stays false, so this does not install Steam globally. GameMode remains a host
-opt-in; Mikel's groups stay `wheel`, `networkmanager`, `docker`, and `al68`,
-without adding `gamemode` or expanding his permissions.
-
-Only Mikel's desktop Home Manager profile imports `modules/home/gaming`,
-providing Steam, Proton-GE, Lutris, Heroic, Wine/Winetricks, ProtonUp-Qt,
-ProtonPlus, MangoHud, and GOverlay. Its Steam wrapper discovers Proton-GE.
-The `Steam (user profile)` Gamescope session launches the logged-in user's
-Steam and reports an error if that user has no Steam installed. Other users
-and the Zenbook do not inherit these clients.
-
-Additional Proton versions, including Proton-CachyOS when available through
-the selected compatibility-tool manager, Wine runners, and per-launcher
-settings should be managed from ProtonUp-Qt, ProtonPlus, Lutris, or Heroic in
-the user session. These are user
-environment settings and are not pinned in NixOS.
-
-Do not modify or copy the desktop `hardware-configuration.nix` to another
-machine. The future `zenbook` host must have its own hardware configuration and
-persistent encrypted swap if hibernation is required.
+- Conventional Commits; `flake.lock` stays committed.
+- Dotfiles, scripts and secrets belong to chezmoi, not to this repository.
+- Updates go through [nixup](https://github.com/Villoh/nixup), reported weekly by the
+  `updates` GitHub workflow.
+- No secrets, keys or machine-local state in the repository.

@@ -1,6 +1,12 @@
 # Desktop installation
 
-Install or update the existing `desktop` host from a checkout of this repository. Its generated hardware file is already at `hosts/desktop/hardware-configuration.nix`; do not use it on another machine.
+Install or update the existing `desktop` host from a checkout of this repository.
+Its generated hardware file is already at `hosts/desktop/hardware-configuration.nix`;
+do not use it on another machine.
+
+The host boots through Lanzaboote with Secure Boot enabled and keeps the copied
+Windows boot files on its ESP. Do not change either without reading
+[Secure Boot](secure-boot.md) and [Windows dual boot](dual-boot-windows.md) first.
 
 ## Validate and test
 
@@ -13,8 +19,8 @@ nh os test . -H desktop
 
 `test` activates the generation temporarily without changing the boot default. Verify:
 
-- DankGreeter offers Hyprland and the session starts.
-- DMS, networking, audio, Bluetooth, notifications, locking, and Wayland portals work.
+- Dux Greeter offers `Hyprland (uwsm-managed)` and the session starts.
+- DMS (Dux Shell), networking, audio, Bluetooth, notifications, locking, and Wayland portals work.
 - zram is active and no disk- or file-backed swap is enabled:
 
 ```bash
@@ -48,16 +54,15 @@ There is no global `/etc/xdg/hypr/hyprland.lua` fallback. Outside UWSM, run
 [architecture and smoke checks](architecture.md#ownership-and-smoke-checks).
 
 DMS starts through UWSM's `graphical-session.target`. Select
-`Hyprland (uwsm-managed)` in DankGreeter. Do not also add `dms run` to
+`Hyprland (uwsm-managed)` in Dux Greeter. Do not also add `dms run` to
 Hyprland startup: that can launch two DMS instances.
 
 ## Recovery
 
-If Hyprland or DankGreeter fails:
+If Hyprland or Dux Greeter fails:
 
 1. Select an earlier generation from the boot menu.
-2. If available, select an older SDDM/Plasma generation.
-3. From a TTY, fix the checkout and test again before switching:
+2. From a TTY, fix the checkout and test again before switching:
 
 ```bash
 nh os test . -H desktop

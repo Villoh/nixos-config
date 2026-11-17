@@ -212,7 +212,7 @@ Zenbook: an output that cannot evaluate breaks `nix flake check` for every host.
 - hostname `nixos-zenbook`, state version `26.05`, `systemd-boot` (no Secure Boot, no
   Lanzaboote, no Acid Boot: those are desktop-only);
 - the `laptop` profile: audio, Bluetooth, zswap, the desktop session (Hyprland, DMS,
-  DankGreeter), power-profiles-daemon and UPower (battery in the shell);
+  Dux Greeter), power-profiles-daemon and UPower (battery in the shell);
 - Intel `thermald`, the NVIDIA eGPU module (see below), and the optional services Docker,
   Flatpak, printing, Tailscale and KDE Connect;
 - user `mikel` with Home Manager, plus the Dux Greeter appearance synced from his home. On a
@@ -310,7 +310,7 @@ nh os test . -H zenbook
 
 ## 8. Checks after the temporary test
 
-General: networking, audio, Bluetooth, Hyprland, DankGreeter, DMS, keyboard layout, locking,
+General: networking, audio, Bluetooth, Hyprland, Dux Greeter, DMS, keyboard layout, locking,
 notifications and Wayland portals. Then the laptop-specific ones. None of these has been run on
 the hardware yet:
 

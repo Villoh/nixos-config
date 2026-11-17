@@ -24,5 +24,5 @@ this NixOS system. Each guide covers a separate workflow:
 
 - [Desktop installation](installation-desktop.md): existing `desktop` host.
 - [Laptop installation](installation-laptop.md): guide to add `zenbook`.
-  Requires generating its own hardware file and registering the host in
+  Requires generating its own hardware file and enabling the prepared output in
   `flake.nix` before it can be built or maintained with commands like `nh os`.

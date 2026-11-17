@@ -65,9 +65,11 @@ Gaming requires both host gaming support and that user's explicit HM import.
    settings, profiles, optional services, and accounts under `hosts/<host>/`.
    Do not infer NVIDIA or gaming from the generic desktop profile.
 3. Supply shared physical settings through `/etc/xdg/hypr/host.lua`, as desktop's
-   `display.nix` and Zenbook's `keyboard.nix` do. Keep preferences in HM.
-4. Add a flake output only after the host has its own hardware file. Zenbook
-   currently has neither that file nor an output; its GPU is not assumed.
+   `display.nix` and Zenbook's `display.nix` and `keyboard.nix` do. Keep
+   preferences in HM.
+4. Add a flake output only after the host has its own hardware file. Zenbook's
+   output is prepared as a comment in `flake.nix` and has no hardware file yet;
+   its GPU is not assumed.
 5. Review `git diff`, run `nix flake check`, and plan a temporary `nh os test`
    for the selected host. Permanent activation and bootloader changes require
    explicit approval; see [installation](installation-laptop.md) and

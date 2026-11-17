@@ -1,10 +1,45 @@
 # Laptop installation (`zenbook`)
 
-Prepare this repository for machine-level host `zenbook`. It has no generated
-hardware file or flake output yet, so it cannot currently be built. Generate
-hardware data on that laptop; never copy `hosts/desktop/hardware-configuration.nix`.
+Install this repository's `zenbook` host on the Zenbook. The host is fully written
+(`hosts/zenbook/`), but it needs two things that only exist on the laptop itself: its
+generated hardware file, and the flake output, which is prepared as a comment in
+`flake.nix` and cannot be enabled before that file exists. Until then it cannot be built.
+Never copy `hosts/desktop/hardware-configuration.nix`.
 
-## Generate unique hardware configuration
+The laptop is used in two modes, and the configuration handles both without a rebuild:
+
+- **Docked**: the desktop's two monitors (ASUS VG259QM, Acer VG280K), through the eGPU or
+  any port. The internal panel is switched off.
+- **Undocked**: the laptop alone. The internal panel is on.
+
+See [Docked and undocked](#docked-and-undocked) for the rules.
+
+## Before you start
+
+- **SSH access to GitHub.** `flake.nix` has a private input over SSH
+  (`git+ssh://git@github.com/Villoh/nix-ttf-ms-win11-auto`), so the first build needs an SSH
+  key on the laptop that can read it. Without it, evaluation fails when fetching that input.
+- **dotfiles.** chezmoi owns dotfiles, scripts and secret templates; they are not part of this
+  configuration. Apply them separately after the first login.
+- **Partitions, LUKS and swap** are decided when installing NixOS, not by this repository. The
+  Zenbook profile enables zswap, which needs persistent swap (see step 2).
+
+## 1. Install NixOS and get the repository
+
+Install NixOS from the installer with the layout you want (encrypted root, persistent swap)
+and boot into it. A minimal install has neither flakes nor `nh`, so on the first run:
+
+```bash
+export NIX_CONFIG="experimental-features = nix-command flakes"
+nix shell nixpkgs#git nixpkgs#nh
+git clone git@github.com:Villoh/nixos-config.git
+cd nixos-config
+```
+
+`nh` is installed by the configuration itself (`programs.nh.enable`), so the `nix shell` is
+only needed until the first switch.
+
+## 2. Generate the hardware configuration
 
 Generate this file on the Zenbook. Never copy `hosts/desktop/hardware-configuration.nix`.
 
@@ -16,7 +51,7 @@ cp /etc/nixos/hardware-configuration.nix \
 test -s hosts/zenbook/hardware-configuration.nix
 ```
 
-If using the NixOS installer before the first configuration:
+If you are still in the installer, before the first configuration:
 
 ```bash
 sudo nixos-generate-config --root /mnt
@@ -27,6 +62,72 @@ test -s hosts/zenbook/hardware-configuration.nix
 ```
 
 The generated file contains this laptop's filesystems, boot devices, kernel modules, and UUIDs. Review encrypted-root and swap settings for the actual machine. The Zenbook profile enables zswap, which requires persistent swap declared by this generated hardware file. If hibernation is required, configure real persistent encrypted swap and matching resume settings; zswap alone cannot provide hibernation storage.
+
+Flakes only see files tracked by Git, so add it before evaluating:
+
+```bash
+git add hosts/zenbook/hardware-configuration.nix
+```
+
+## 3. Enable the flake output
+
+In `flake.nix`, uncomment the prepared block beside `desktop`:
+
+```nix
+nixosConfigurations.zenbook = nixpkgs.lib.nixosSystem {
+  inherit system;
+  specialArgs = { inherit inputs; };
+  modules = [ ./hosts/zenbook ];
+};
+```
+
+Do not enable it before `hosts/zenbook/hardware-configuration.nix` exists and belongs to this
+Zenbook: an output that cannot evaluate breaks `nix flake check` for every host.
+
+## 4. Review the host
+
+`hosts/zenbook/default.nix` selects:
+
+- hostname `nixos-zenbook`, state version `26.05`, `systemd-boot` (no Secure Boot, no
+  Lanzaboote, no Acid Boot: those are desktop-only);
+- the `laptop` profile: audio, Bluetooth, zswap, the desktop session (Hyprland, DMS,
+  DankGreeter), power-profiles-daemon and UPower (battery in the shell);
+- Intel `thermald`, the NVIDIA eGPU module (see below), and the optional services Docker,
+  Flatpak, printing, Tailscale and KDE Connect;
+- user `mikel` with Home Manager, plus the Dux Greeter appearance synced from his home. On a
+  fresh home the missing files are skipped and the greeter keeps its defaults.
+
+NVIDIA and gaming are not inherited from desktop: there is no `profiles/gaming.nix` and no
+`modules/home/gaming` import here. Add them deliberately if you want games on the eGPU. Check
+the [host checklist](architecture.md#new-host-checklist) for anything else machine-specific.
+
+## Docked and undocked
+
+`hosts/zenbook/display.nix` writes the shared Hyprland rules to `/etc/xdg/hypr/host.lua`,
+which the session and the greeter both load. Desk monitors are matched by EDID description
+(`desc:`), so the layout follows them through any port, dock or eGPU. To change the monitors,
+edit the `ASUS` and `ACER` strings there (`hyprctl monitors` shows each `description`).
+
+| Situation | Internal panel `eDP-1` |
+| --- | --- |
+| A desk monitor is connected | off |
+| Lid closed with any other monitor connected (clamshell) | off |
+| Another monitor (work), lid open | on: the laptop is a second screen |
+| Laptop alone | on |
+| Lid closed, no monitor | on, but logind suspends the machine |
+
+- Layout, scale and workspace pinning are the desktop's: ASUS on the left, Acer on the right,
+  bottoms aligned; workspace 1 on the ASUS and 6 on the Acer. Without those monitors the rules
+  match nothing.
+- The panel state is recomputed in one function (`sync_panel`) on start, on monitor
+  hot-plug and on lid events, with a 500 ms debounce. Turning the panel back on runs
+  `hyprctl reload`, because `hl.monitor` cannot enable an output when no monitor is active.
+- The lid is read from `/proc/acpi/button/lid/*/state`, not from the bind callback (which can
+  report the old state in Hyprland 0.57.2). If that file is missing the lid counts as open and
+  only the desk rule works.
+- `xwayland.force_zero_scaling = true` and `render.cm_auto_hdr = 0` are the same as desktop's
+  (mixed-DPI XWayland apps handle their own scale; no auto HDR for fullscreen Electron apps).
+  `force_zero_scaling` also applies with the panel alone.
 
 ## NVIDIA eGPU
 
@@ -76,24 +177,7 @@ The eGPU is meant for monitors, games and LLMs, so it is Hyprland's primary rend
   device appears. OCuLink needs no enrolment, so only this note changes.
 - Check the S3 resume fix from `nvidia.nix` (VRAM preservation) with the eGPU attached.
 
-Do not add `nixosConfigurations.zenbook` to `flake.nix` until `hosts/zenbook/hardware-configuration.nix` exists and belongs to this Zenbook.
-
-## Add host and validate
-
-After the hardware file exists, add a `zenbook` output beside `desktop` in `flake.nix`, using the existing `hosts/zenbook` module:
-
-```nix
-nixosConfigurations.zenbook = nixpkgs.lib.nixosSystem {
-  inherit system;
-  specialArgs = { inherit inputs; };
-  modules = [ ./hosts/zenbook ];
-};
-```
-
-Review GPU drivers, bootloader, hostname, state version, and optional services
-for this machine using the [host checklist](architecture.md#new-host-checklist).
-NVIDIA and gaming are not inherited from desktop. Then validate and test the
-machine-level target:
+## 5. Validate and test
 
 ```bash
 nix flake check
@@ -101,9 +185,48 @@ git diff
 nh os test . -H zenbook
 ```
 
-`test` is temporary and does not change the boot default. Confirm networking, audio, Bluetooth, Hyprland, DankGreeter, DMS, keyboard layout, locking, notifications, and Wayland portals before applying the generation.
+`test` is temporary and does not change the boot default.
 
-## Switch only after testing
+## 6. Checks after the temporary test
+
+General: networking, audio, Bluetooth, Hyprland, DankGreeter, DMS, keyboard layout, locking,
+notifications and Wayland portals. Then the laptop-specific ones. None of these has been run on
+the hardware yet:
+
+### Undocked
+
+- `hyprctl monitors all`: the panel is called `eDP-1` (`display.nix` hard-codes that name).
+  If it is not, change it there.
+- The UI scale is right and X11 apps are not tiny. If they are, `force_zero_scaling` is the
+  cause; set it only while docked (changing it at runtime is untested).
+- `ls /proc/acpi/button/lid/`: a `LID0`, `LID` or `LID1` directory exists.
+- Closing the lid with nothing attached suspends and resumes.
+- The battery shows in DMS (UPower), `powerprofilesctl` works, and
+  `systemctl status thermald` is active.
+
+### Docked
+
+Attach the eGPU and monitors *before* logging in.
+
+- Layout, scales (1 and 1.5) and workspaces 1 and 6 match the desktop.
+- `eDP-1` is off. Unplugging the monitors brings the panel back; if it stays off, run
+  `hyprctl reload`, and report it: the fallback is a `systemd --user` service that watches the
+  lid and calls `hyprctl eval`.
+- The lid binds work. Reports say `switch:*` binds may stop working when they sit in the same
+  Lua file as the `hl.monitor` rules, which is the case here. Test closing and opening the lid.
+- Note the connector names (`hyprctl monitors`, `xrandr`). Desktop's `DP-1`/`HDMI-A-1` values
+  (`AVALONIA_SCREEN_SCALE_FACTORS`, `xrandr --primary`, the greeter's cursor monitor) are not
+  copied to Zenbook because the names depend on the port; add them only if needed.
+
+### Work monitor
+
+- Lid open: the panel stays on beside the other monitor. Lid closed: the panel turns off.
+
+### eGPU
+
+Follow the notes above; nothing about it is verified.
+
+## 7. Switch only after testing
 
 Review the diff, especially the generated hardware file, before switching:
 
@@ -114,3 +237,10 @@ nh os switch . -H zenbook
 ```
 
 Do not copy desktop hardware or run `switch` before `nix flake check` and the temporary test succeed. Permanent activation requires explicit approval. The Zenbook profile uses a Spanish keyboard by default; `Alt+Shift` switches to US International for an external US keyboard.
+
+Then apply your dotfiles with chezmoi and commit the new hardware file and the enabled output.
+
+## Recovery
+
+If something fails, select an earlier generation from the boot menu and fix the checkout from a
+TTY. See [Maintenance: recovery](maintenance/recovery.md).

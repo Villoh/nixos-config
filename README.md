@@ -1,8 +1,9 @@
 # NixOS + Hyprland + DMS
 
-Reproducible NixOS configuration for `desktop`, with a future `zenbook` host.
-Only `desktop` is exposed by the flake; Zenbook still needs its own generated
-hardware configuration. Never reuse one host's hardware file on another machine.
+Reproducible NixOS configuration for `desktop`, with a prepared `zenbook` host.
+Only `desktop` is exposed by the flake; Zenbook's output is commented out until
+its own generated hardware configuration exists. Never reuse one host's hardware
+file on another machine.
 Hyprland, DMS, and DankGreeter provide a shared session without requiring a
 personal Home Manager profile.
 

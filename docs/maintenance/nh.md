@@ -13,8 +13,9 @@ packages declared by the repository.
 ## Select this flake and host
 
 The package is installed, but this repository does not set a default flake for
-`nh`. Currently `flake.nix` declares only `desktop`; Zenbook is not a build
-target until its hardware file is generated and the host is added to the flake.
+`nh`. Currently `flake.nix` exposes only `desktop`; Zenbook is not a build
+target until its hardware file is generated and its prepared (commented) output
+in `flake.nix` is enabled.
 Run commands from the checkout root and pass the path and host explicitly:
 
 ```bash

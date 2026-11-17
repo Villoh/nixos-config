@@ -3,7 +3,8 @@
 NixOS keeps system generations so you can boot a previous version. This host
 uses Lanzaboote (systemd-boot menu) and keeps at most five entries, per
 `boot.lanzaboote.configurationLimit` in
-`hosts/desktop/default.nix`. Store cleanup can remove old configurations:
+`hosts/desktop/default.nix` (the Zenbook uses plain systemd-boot with the same limit).
+Store cleanup can remove old configurations:
 do not run it while you depend on a generation to recover the system.
 
 ## Before activating a change
@@ -20,6 +21,12 @@ Check at least graphical login, network, audio, Bluetooth, and Wayland portals.
 `test` helps detect activation failures; rebooting returns to the previous
 generation. When tests pass, `nh os switch . -H desktop` activates the change
 and sets the new boot generation. More detail in the [nh guide](nh.md).
+
+## Boot fails with Secure Boot
+
+If nothing boots after a bootloader or key change, disable Secure Boot in the firmware:
+the signed entries still boot with it off. Do not clear the enrolled keys or `dbx`. See
+[Secure Boot](../secure-boot.md#desktop-procedure-asus-rog-strix-x570-e) for the rollback.
 
 ## Graphical environment does not start
 

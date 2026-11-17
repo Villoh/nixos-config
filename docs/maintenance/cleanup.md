@@ -57,7 +57,9 @@ nh clean all --keep 10 --keep-since 30d --no-direnv --dry
 ```
 
 `--no-gcroots` disables cleanup of all GC roots. Use that option if you want to
-collect generations and the store without touching temporary roots. See
+collect generations and the store without touching temporary roots. `--keep-one` keeps at
+least one root per direnv project, and `--no-gc` cleans profiles without collecting the
+store. See
 `nh clean all --help` for available flags and use dry-run before making
 changes.
 
@@ -72,9 +74,6 @@ include optimisation:
 nh clean all --keep 10 --keep-since 30d --optimise --dry
 nh clean all --keep 10 --keep-since 30d --optimise
 ```
-
-Do not use `--delete-current` as routine cleanup: it allows removing the
-selected generation and can leave the profile link dangling.
 
 ## Flatpak
 

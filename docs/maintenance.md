@@ -3,8 +3,9 @@
 Practical guides for updating, validating, deploying, recovering, and cleaning
 this NixOS system. Each guide covers a separate workflow:
 
-- [Update system and applications](maintenance/updates.md): update flake
-  inputs, declarative apps, Tunnel Agent, manual profiles, and Flatpak.
+- [Update system and applications](maintenance/updates.md): check and update
+  flake inputs, own packages, Flatpak and manual profiles with `nixup`, and
+  how each app reaches the system (flake, binary or Flatpak).
 - [`nh`: build and deploy](maintenance/nh.md): what `nh` does and how to use it
   in this repository.
 - [Recovery and generations](maintenance/recovery.md): test changes, boot
@@ -26,3 +27,4 @@ this NixOS system. Each guide covers a separate workflow:
 - [Laptop installation](installation-laptop.md): guide to add `zenbook`.
   Requires generating its own hardware file and enabling the prepared output in
   `flake.nix` before it can be built or maintained with commands like `nh os`.
+  Until then every command in these guides targets `desktop`.

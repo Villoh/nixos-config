@@ -1,11 +1,11 @@
 # Update system and applications
 
 Packages declared in NixOS or Home Manager change when you update the flake
-inputs and rebuild the configuration. Do not update those packages manually:
-change their version in the configuration when needed.
+inputs and rebuild the configuration. Do not bump versions by hand: `nixup` does it.
 
-Updates go through [nixup](https://github.com/Villoh/nixup), itself a flake input. It
-covers four sources: flake inputs, the packages in `packages/`, Flatpak and `nix profile`.
+Updates go through [nixup](https://github.com/Villoh/nixup), itself a flake input
+installed system-wide (`modules/nixos/core/nix.nix`). It covers four sources: flake
+inputs, the packages in `packages/`, Flatpak and `nix profile`.
 
 ## See what is pending
 
@@ -13,6 +13,9 @@ covers four sources: flake inputs, the packages in `packages/`, Flatpak and `nix
 nixup check            # everything outdated, one table
 nixup check --all      # up-to-date rows too
 nixup check nixpkgs    # one name
+nixup check --review   # add the upstream changes of each outdated row
+nixup list             # everything it watches, offline
+nixup search <name>    # nixpkgs, own packages, inputs and Flatpak
 ```
 
 Rows marked `major` are likely breaking jumps: read the upstream notes first. A weekly
@@ -36,7 +39,11 @@ nixup never commits.
   diff of what changes. `--test`, `--switch` and `--boot` imply it, then run `nh os
   <verb>`. Without them, a `flake.lock` that does not build is only found at `nh os test`.
 - `--source input,package` leaves Flatpak and `nix profile` alone (both install on yes).
-- `--report <file>` writes the review as Markdown.
+- `--report <file>` appends the review as Markdown.
+- `-H <host>` picks the host to build and activate (default: every `nixosConfiguration`;
+  today only `desktop` exists).
+- `--allow-dirty` updates over uncommitted changes in `flake.nix` or a package; `-y`
+  applies without asking (CI).
 
 Then validate and activate with [nh](nh.md), unless `--test` already did:
 
@@ -64,8 +71,8 @@ Inputs that publish releases are pinned to their tag in `flake.nix`
 moves the tag and asks first when the jump is likely breaking. The rest follow a
 branch, and the table shows the locked commit and its age.
 
-- `goopdl`, `holded-tt`, `masamune`, `nixup`, `omarchy`, `omarchy-dms`, `sonora`, `strata`,
-  `ytm-player`, `dms` and `lanzaboote` are tags.
+- `goopdl`, `handy`, `holded-tt`, `masamune`, `nixup`, `omarchy`, `omarchy-dms`, `sonora`,
+  `strata`, `ytm-player`, `dms` and `lanzaboote` are tags.
 - `dms` provides only Dux Shell's HM module; the shell is nixpkgs' `dux-shell`. Its
   `# nixup: follows nixpkgs#dux-shell` marker makes nixup move the tag to nixpkgs'
   version (after `nixup update nixpkgs`), and show a newer upstream tag only as `info`.
@@ -96,7 +103,9 @@ Not covered: `dms-bitwarden` (pinned on purpose, audited by hand).
 
 ## Temporary nixpkgs workarounds
 
-None right now. When nixpkgs breaks a package you use, override it where it is used, with
+One: `filen-desktop` is built against `electron_43` (`modules/home/cloud/packages.nix`)
+because nixpkgs' default Electron removed an API it calls at load. Drop the override when
+upstream fixes it. When nixpkgs breaks a package you use, override it where it is used, with
 a `PENDING` comment naming the nixpkgs fix, and remove it once that fix reaches
 nixos-unstable (the channel moves only after Hydra builds the commit). An overridden
 package is never in cache.nixos.org, so it compiles here: prefer an override that applies
@@ -111,14 +120,13 @@ compile locally (no binary cache yet). They are bumped like the packages above, 
 `nixup update workmux-bin`.
 
 Each module line that uses one carries a `PENDING: cache` comment next to the original
-source-built line (the flake input stays in `flake.nix`, so it is still pinned in
-`flake.lock`). `aube` and `wealthfolio` also have a source package (`packages/aube`,
+source-built line, and the matching flake input is commented out in `flake.nix` with the same
+note, so it is not in `flake.lock`. To go back to a source build, uncomment both. `aube` and `wealthfolio` also have a source package (`packages/aube`,
 `packages/wealthfolio`, copied from nixpkgs, which runs behind upstream), commented out in
 `packages/default.nix` until then. `hex` is swapped in the overlay, so `pkgs.hex`
 keeps working; the modules use the other `-bin` packages by their own name.
 Once a binary cache serves the source builds, revert those lines and delete
-`packages/prebuilt/`. A release can lag the flake input (it is built from `main`), so
-check the version before assuming they match.
+`packages/prebuilt/`.
 
 `strata-bin` has no RAR support (the official release omits UnRAR) and is built for Arch: it
 finds ffmpeg, ffmpegthumbnailer, imagemagick, bubblewrap and the other helpers only in system

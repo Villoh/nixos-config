@@ -16,30 +16,144 @@ See [Docked and undocked](#docked-and-undocked) for the rules.
 
 ## Before you start
 
-- **SSH access to GitHub.** `flake.nix` has a private input over SSH
-  (`git+ssh://git@github.com/Villoh/nix-ttf-ms-win11-auto`), so the first build needs an SSH
-  key on the laptop that can read it. Without it, evaluation fails when fetching that input.
-- **dotfiles.** chezmoi owns dotfiles, scripts and secret templates; they are not part of this
-  configuration. Apply them separately after the first login.
-- **Partitions, LUKS and swap** are decided when installing NixOS, not by this repository. The
-  Zenbook profile enables zswap, which needs persistent swap (see step 2).
+Have at hand:
 
-## 1. Install NixOS and get the repository
+- The **VeraCrypt-encrypted external disk** and the **USB with its keyfiles** (the volume
+  needs the password plus the keyfiles). The disk holds everything this guide needs under
+  `Computers/`:
+  - `Keys/gpg/gpg-private-key.asc` and `Keys/gpg/gpg-ownertrust.txt`: the GPG backup.
+  - `Keys/ssh/id_personal.pub` and `id_work.pub`: the public SSH keys.
+  - `NixOS-Zenbook/`: this guide and the agent/SSH configuration files
+    (`gpg-agent.conf`, `sshcontrol`, `ssh-config`).
+- A network connection.
 
-Install NixOS from the installer with the layout you want (encrypted root, persistent swap)
-and boot into it. A minimal install has neither flakes nor `nh`, so on the first run:
+Why the key comes first: `flake.nix` has a private input over SSH
+(`git+ssh://git@github.com/Villoh/nix-ttf-ms-win11-auto`; anonymous access returns 404), so
+the first evaluation needs SSH. SSH authenticates with the GPG authentication subkey served
+by `gpg-agent`; there is no private SSH key file. This repository and the dotfiles are
+public, so they can be cloned over HTTPS.
+
+The agent and SSH configuration files are chezmoi's (`private_dot_gnupg/` and `dot_ssh/` in
+the dotfiles repository); the copies on the disk are a snapshot of them, so the first login
+does not depend on the network or on chezmoi. This configuration never manages them.
+
+Partitions, LUKS and swap are decided when installing NixOS, not by this repository. The
+Zenbook profile enables zswap, which needs persistent swap (see step 4).
+
+## 1. Install NixOS
+
+Install NixOS from the installer with the layout you want (encrypted root, persistent swap),
+create your user (in `wheel`, so it has `sudo`), and boot into it. The rest of the guide runs
+on that minimal system, from a TTY or a terminal, as your normal user.
+
+## 2. Bootstrap tools, GPG key and SSH
+
+A minimal install has neither flakes, `nh`, nor your tools. Open one shell with everything
+and keep using **that same shell** until the end (it holds the SSH agent variables).
+VeraCrypt is unfree, hence the extra variable:
 
 ```bash
 export NIX_CONFIG="experimental-features = nix-command flakes"
-nix shell nixpkgs#git nixpkgs#nh
+export NIXPKGS_ALLOW_UNFREE=1
+nix shell --impure nixpkgs#git nixpkgs#nh nixpkgs#gnupg nixpkgs#pinentry-curses \
+  nixpkgs#chezmoi nixpkgs#veracrypt
+```
+
+`nh` and `veracrypt` are installed by the configuration afterwards (`programs.nh.enable`,
+`modules/home/security/packages.nix`); this shell is only needed until the first switch.
+
+### Mount the external disk
+
+The volume opens with a **password plus keyfiles**, and the keyfiles are on a **separate USB**.
+Plug in both. Mount the keyfile USB read-only first:
+
+```bash
+lsblk -f                                   # find both devices, e.g. /dev/sda1 and /dev/sdb1
+sudo mkdir -p /mnt/usb /mnt/keys
+sudo mount -o ro /dev/sdY1 /mnt/usb        # keyfile USB (use its real filesystem; it is not encrypted)
+sudo "$(command -v veracrypt)" --text \
+  --keyfiles=/mnt/usb/<keyfile> --pim=0 --protect-hidden=no \
+  --mount /dev/sdX1 /mnt/keys              # VeraCrypt disk
+```
+
+It asks only for the password; the keyfiles, PIM and hidden-volume protection come from the
+options, so nothing else is prompted. `--keyfiles` takes a comma-separated list of files, or a
+directory (every file in it is used). Do not pass `--password`, which would leave it in the
+shell history. If the volume has a custom PIM, replace `--pim=0` with it. The volume holds an
+NTFS filesystem, which the kernel's `ntfs3` driver reads. Option names are checked against the
+installed `veracrypt --help`; the mount itself is untested on the minimal system. If it
+complains about device-mapper or FUSE, load the modules (`sudo modprobe dm_crypt fuse`) and
+retry.
+
+Unmount the keyfile USB as soon as the volume is open, so it can be removed:
+
+```bash
+sudo umount /mnt/usb
+```
+
+### Import the private GPG key
+
+```bash
+gpg --import /mnt/keys/Computers/Keys/gpg/gpg-private-key.asc
+gpg --import-ownertrust /mnt/keys/Computers/Keys/gpg/gpg-ownertrust.txt
+gpg --list-secret-keys --keyid-format long 2E5BD225E500AB50   # the dotfiles' recipient key
+```
+
+### Seed GPG and SSH from the disk
+
+Copy the agent and SSH files from the disk. These are the same five files as the dotfiles
+bootstrap guide copies, so chezmoi shows no diff for them later:
+
+```bash
+d=/mnt/keys/Computers
+mkdir -p "$HOME/.gnupg" "$HOME/.ssh"
+cp "$d/NixOS-Zenbook/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
+cp "$d/NixOS-Zenbook/sshcontrol" "$HOME/.gnupg/sshcontrol"
+cp "$d/NixOS-Zenbook/ssh-config" "$HOME/.ssh/config"
+cp "$d/Keys/ssh/id_personal.pub" "$d/Keys/ssh/id_work.pub" "$HOME/.ssh/"
+chmod 700 "$HOME/.gnupg" "$HOME/.ssh"
+chmod 600 "$HOME/.gnupg/gpg-agent.conf" "$HOME/.gnupg/sshcontrol" "$HOME/.ssh/config"
+chmod 644 "$HOME/.ssh/"*.pub
+```
+
+Now dismount the disk. Never copy the exported key anywhere else, and never into a repository:
+
+```bash
+sudo "$(command -v veracrypt)" --text --dismount /mnt/keys
+```
+
+### Start the agent and test SSH
+
+Home Manager's `gpg-agent` service does not exist yet, so start the agent by hand with a
+terminal pinentry (the service later uses the graphical one). `enable-ssh-support` comes from
+the copied `gpg-agent.conf`:
+
+```bash
+export GPG_TTY="$(tty)"
+gpgconf --kill gpg-agent
+gpg-agent --daemon --pinentry-program "$(command -v pinentry-curses)"
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+ssh-add -L                 # lists the authentication key(s)
+ssh -T git@github.com      # "Hi Villoh! You've successfully authenticated..."
+```
+
+Test `git@github.com` (not only `github-personal`): that is the host the flake input uses.
+Run the build as your normal user in this shell. `sudo` drops `SSH_AUTH_SOCK`, and Nix fetches
+`git+ssh` inputs from the evaluating user, not from the daemon.
+
+## 3. Get the repository
+
+```bash
 git clone git@github.com:Villoh/nixos-config.git
 cd nixos-config
 ```
 
-`nh` is installed by the configuration itself (`programs.nh.enable`), so the `nix shell` is
-only needed until the first switch.
+Git has no identity yet, and it does not need one: cloning, `git add` and building do not use
+it. Do not commit until step 10. The identity and signing settings are encrypted in the
+dotfiles (`~/.config/git/local` and `work`) and `chezmoi apply` creates them; do not configure
+git by hand.
 
-## 2. Generate the hardware configuration
+## 4. Generate the hardware configuration
 
 Generate this file on the Zenbook. Never copy `hosts/desktop/hardware-configuration.nix`.
 
@@ -69,7 +183,7 @@ Flakes only see files tracked by Git, so add it before evaluating:
 git add hosts/zenbook/hardware-configuration.nix
 ```
 
-## 3. Enable the flake output
+## 5. Enable the flake output
 
 In `flake.nix`, uncomment the prepared block beside `desktop`:
 
@@ -84,7 +198,7 @@ nixosConfigurations.zenbook = nixpkgs.lib.nixosSystem {
 Do not enable it before `hosts/zenbook/hardware-configuration.nix` exists and belongs to this
 Zenbook: an output that cannot evaluate breaks `nix flake check` for every host.
 
-## 4. Review the host
+## 6. Review the host
 
 `hosts/zenbook/default.nix` selects:
 
@@ -177,7 +291,7 @@ The eGPU is meant for monitors, games and LLMs, so it is Hyprland's primary rend
   device appears. OCuLink needs no enrolment, so only this note changes.
 - Check the S3 resume fix from `nvidia.nix` (VRAM preservation) with the eGPU attached.
 
-## 5. Validate and test
+## 7. Validate and test
 
 ```bash
 nix flake check
@@ -187,7 +301,7 @@ nh os test . -H zenbook
 
 `test` is temporary and does not change the boot default.
 
-## 6. Checks after the temporary test
+## 8. Checks after the temporary test
 
 General: networking, audio, Bluetooth, Hyprland, DankGreeter, DMS, keyboard layout, locking,
 notifications and Wayland portals. Then the laptop-specific ones. None of these has been run on
@@ -226,7 +340,7 @@ Attach the eGPU and monitors *before* logging in.
 
 Follow the notes above; nothing about it is verified.
 
-## 7. Switch only after testing
+## 9. Switch only after testing
 
 Review the diff, especially the generated hardware file, before switching:
 
@@ -238,7 +352,28 @@ nh os switch . -H zenbook
 
 Do not copy desktop hardware or run `switch` before `nix flake check` and the temporary test succeed. Permanent activation requires explicit approval. The Zenbook profile uses a Spanish keyboard by default; `Alt+Shift` switches to US International for an external US keyboard.
 
-Then apply your dotfiles with chezmoi and commit the new hardware file and the enabled output.
+## 10. After the first switch
+
+1. Stop the agent started by hand, so Home Manager's `gpg-agent` service (graphical pinentry)
+   takes over, then log out and back in:
+
+   ```bash
+   gpgconf --kill gpg-agent
+   ```
+
+2. Apply the dotfiles. `chezmoi diff` must be readable first; a decryption error means the
+   private key or the agent is not ready (see the dotfiles bootstrap guide). The five files
+   copied from the disk in step 2 should match chezmoi's; if the disk snapshot is stale,
+   the diff shows it.
+
+   ```bash
+   chezmoi init https://github.com/Villoh/dotfiles
+   chezmoi diff
+   chezmoi apply
+   ```
+
+3. Commit the new hardware file and the enabled flake output.
+4. Remove the exported key from anywhere it was copied; it should only live on the encrypted disk.
 
 ## Recovery
 

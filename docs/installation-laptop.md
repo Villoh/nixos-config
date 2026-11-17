@@ -91,14 +91,6 @@ Unmount the keyfile USB as soon as the volume is open, so it can be removed:
 sudo umount /mnt/usb
 ```
 
-### Import the private GPG key
-
-```bash
-gpg --import /mnt/keys/Computers/Keys/gpg/gpg-private-key.asc
-gpg --import-ownertrust /mnt/keys/Computers/Keys/gpg/gpg-ownertrust.txt
-gpg --list-secret-keys --keyid-format long 2E5BD225E500AB50   # the dotfiles' recipient key
-```
-
 ### Seed GPG and SSH from the disk
 
 Copy the agent and SSH files from the disk. These are the same five files as the dotfiles
@@ -116,23 +108,38 @@ chmod 600 "$HOME/.gnupg/gpg-agent.conf" "$HOME/.gnupg/sshcontrol" "$HOME/.ssh/co
 chmod 644 "$HOME/.ssh/"*.pub
 ```
 
-Now dismount the disk. Never copy the exported key anywhere else, and never into a repository:
+### Start the agent
 
-```bash
-sudo "$(command -v veracrypt)" --text --dismount /mnt/keys
-```
-
-### Start the agent and test SSH
-
-Home Manager's `gpg-agent` service does not exist yet, so start the agent by hand with a
-terminal pinentry (the service later uses the graphical one). `enable-ssh-support` comes from
-the copied `gpg-agent.conf`:
+Start the agent **before importing the key**: the import asks for the key's passphrase, and
+without a terminal pinentry it fails. Home Manager's `gpg-agent` service does not exist yet,
+so start it by hand with `pinentry-curses` (the service later uses the graphical one).
+`GPG_TTY` is required, or pinentry cannot find the terminal ("Inappropriate ioctl for
+device"). `enable-ssh-support` comes from the copied `gpg-agent.conf`:
 
 ```bash
 export GPG_TTY="$(tty)"
 gpgconf --kill gpg-agent
 gpg-agent --daemon --pinentry-program "$(command -v pinentry-curses)"
 export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+```
+
+### Import the private GPG key
+
+```bash
+gpg --import /mnt/keys/Computers/Keys/gpg/gpg-private-key.asc
+gpg --import-ownertrust /mnt/keys/Computers/Keys/gpg/gpg-ownertrust.txt
+gpg --list-secret-keys --keyid-format long 2E5BD225E500AB50   # the dotfiles' recipient key
+```
+
+Now dismount the disk. Never copy the exported key anywhere else, and never into a repository:
+
+```bash
+sudo "$(command -v veracrypt)" --text --dismount /mnt/keys
+```
+
+### Test SSH
+
+```bash
 ssh-add -L                 # lists the authentication key(s)
 ssh -T git@github.com      # "Hi Villoh! You've successfully authenticated..."
 ```

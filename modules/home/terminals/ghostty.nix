@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   # Keep this per-user input-method fix; NixOS provides unwrapped Ghostty as a fallback.
@@ -27,4 +32,19 @@ in
       ];
     };
   };
+
+  # Home Manager validates the config with `ghostty +validate-config` when it changes, and
+  # `theme = "dankcolors"` must exist at that point. DMS writes that file through matugen only
+  # once the shell has run, so on a fresh home the validation fails and takes
+  # home-manager-<user>.service down with it. Seed a placeholder; DMS replaces it later. An
+  # existing file or symlink is never touched.
+  home.activation.ghosttyThemeSeed = lib.hm.dag.entryBetween [ "onFilesChange" ] [ "writeBoundary" ] ''
+    theme="${config.xdg.configHome}/ghostty/themes/dankcolors"
+    if [[ ! -e "$theme" && ! -L "$theme" ]]; then
+      run install -Dm644 ${pkgs.writeText "dankcolors-seed" ''
+        background = #1e1e2e
+        foreground = #cdd6f4
+      ''} "$theme"
+    fi
+  '';
 }

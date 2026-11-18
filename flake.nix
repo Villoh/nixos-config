@@ -79,7 +79,7 @@
     };
 
     masamune = {
-      url = "github:Villoh/masamune/v1.1.2";
+      url = "github:Villoh/masamune/v1.1.3";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.goopdl.follows = "goopdl";
     };

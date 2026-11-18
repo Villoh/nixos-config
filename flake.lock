@@ -581,16 +581,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1793714955,
-        "narHash": "sha256-5+Fpk45hmAc0YTgZisinRfDpnQf63FSx5LU7j3IfPr4=",
+        "lastModified": 1794995218,
+        "narHash": "sha256-wKgCKkKN4rxWOzv2hsLC+ZFXyNpZK+bJeRWtazrYhWI=",
         "owner": "Villoh",
         "repo": "masamune",
-        "rev": "26ddf9f9ce87bc47c025f8656c17898a2b7b2841",
+        "rev": "08dd8570724ad4cee73d355f074cbf29310ebbdd",
         "type": "github"
       },
       "original": {
         "owner": "Villoh",
-        "ref": "v1.1.2",
+        "ref": "v1.1.3",
         "repo": "masamune",
         "type": "github"
       }

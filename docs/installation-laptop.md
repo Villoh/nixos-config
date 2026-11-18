@@ -46,6 +46,11 @@ Install NixOS from the installer with the layout you want (encrypted root, persi
 create your user (in `wheel`, so it has `sudo`), and boot into it. The rest of the guide runs
 on that minimal system, from a TTY or a terminal, as your normal user.
 
+The latest installer ISO is NixOS 26.05 (systemd 260), while the flake follows `nixos-unstable`
+(26.11, systemd 261 or later). That mismatch breaks the first activation with some `nh`
+versions: see [First activation](#first-activation-from-the-installer-system) in step 7. A
+26.11 or unstable ISO avoids it.
+
 ## 2. Bootstrap tools, GPG key and SSH
 
 A minimal install has neither flakes, `nh`, nor your tools. Open one shell with everything
@@ -298,15 +303,95 @@ The eGPU is meant for monitors, games and LLMs, so it is Hyprland's primary rend
   device appears. OCuLink needs no enrolment, so only this note changes.
 - Check the S3 resume fix from `nvidia.nix` (VRAM preservation) with the eGPU attached.
 
-## 7. Validate and test
+## 7. Build and first activation
+
+### Binary caches before the first build
+
+`modules/nixos/core/nix.nix` trusts three Cachix caches (`sonora`, `kopuz`, `handy-computer`), so
+their packages are downloaded instead of compiled. That file only applies **after** this
+configuration is active, so the first build, on the installer's system, would use only
+`cache.nixos.org`. A dry run of the `zenbook` build against an empty store counted 5035
+derivations to build without them and 969 with them, for about 12 GiB to download either way.
+Compiling `kopuz` alone is about 2200 derivations.
+
+Put them in the installer's own configuration first. Keep the values identical to
+`modules/nixos/core/nix.nix` (that file is the source of truth). Add to `/etc/nixos/configuration.nix`:
+
+```nix
+nix.settings = {
+  extra-substituters = [
+    "https://sonora.cachix.org"
+    "https://kopuz.cachix.org"
+    "https://handy-computer.cachix.org"
+  ];
+  extra-trusted-public-keys = [
+    "sonora.cachix.org-1:qbPeDsvZPbwUWHpQS5Oe0bjz5oHAVscHem+MCzwrc9Q="
+    "kopuz.cachix.org-1:J2X3AnAYhKTJW5S3aCLoA1ckonQXVNZMQvhZA0YAufw="
+    "handy-computer.cachix.org-1:Sihzctn6DC0CJM5QeL+9nBEL3CL8c33m777C+eIv748="
+  ];
+};
+```
+
+Then `sudo nixos-rebuild switch` (the installer's own configuration, no flake) and check
+`nix config show extra-substituters`. Settings in the daemon's configuration apply to every user,
+so `trusted-users` is not needed.
+
+There is a command-line form, `--option extra-substituters ... --option extra-trusted-public-keys ...`,
+but Nix only honours it for trusted users. A normal user gets `warning: ignoring the client-specified
+setting ..., because it is a restricted setting and you are not a trusted user`, and the same
+restriction applies to `~/.config/nix/nix.conf` and to a flake's `nixConfig`. Running the build with
+`sudo` would work, but then root fetches the private `git+ssh` input and needs its own SSH agent
+access and `known_hosts`. Editing `/etc/nixos/configuration.nix` is the simplest.
+
+In that dry run, with the caches `kopuz` and `handy` no longer appear among the derivations to
+build, but some of `sonora` still does (`sonora-deps`, `sonora-alsa-plugins`, a git crate), so its
+cache does not seem to cover all of it. It is an estimate, not a measurement.
+
+### Build
 
 ```bash
 nix flake check
 git diff
-nh os test . -H zenbook
+nh os build . -H zenbook
 ```
 
-`test` is temporary and does not change the boot default.
+Expect a long first build: about 12 GiB to download plus some local compilation (NVIDIA, `sonora`,
+`xwayland`, `dux-shell`, the Windows fonts, which are extracted in a VM). Stopping it with `Ctrl-C`
+is safe: finished derivations stay in the store and the next run resumes.
+
+### First activation from the installer system
+
+After the build, activate the configuration temporarily with `nh os test . -H zenbook`. Observed
+on the laptop: from the installer's system it builds everything and then fails with
+
+```text
+systemd-run: unrecognized option '--output=cat'
+Error: Activating configuration (exit status ExitStatus(Exited(1)))
+```
+
+Since version 4.5.0, `nh` activates the configuration through `systemd-run --output=cat`, an
+option that exists from systemd 261. The installer's system has 260. This only affects the first
+activation: once the new generation is running, `nh` works. The fix is in `nh`'s `master`
+(it checks the `systemd-run` version and falls back to `--pipe`), but at the time of writing it
+is not in a release. `nixos-rebuild` already has the equivalent fix
+([nixpkgs #569087](https://github.com/NixOS/nixpkgs/pull/569087)).
+
+Check `nh --version`. The `nh` in this repository's lock is 4.4.2, which according to its changelog
+does not activate through `systemd-run`; the one from `nix shell nixpkgs#nh` can be newer. If it is 4.5.0, use one of these from a
+**TTY** (`Ctrl+Alt+F3`), not from the graphical session: without `systemd-run` the activation runs
+inside your session, and restarting the display manager would close it.
+
+```bash
+# Option A: tell nh not to use systemd-run (documented in nh's changelog; untested here)
+NH_NO_SYSTEMD_RUN=1 nh os test . -H zenbook
+
+# Option B: activate the build directly
+nh os build . -H zenbook                          # nothing to compile if it already finished; creates ./result
+sudo ./result/bin/switch-to-configuration test
+```
+
+Neither workaround has been confirmed on this hardware yet. `test` is temporary and does not
+change the boot default; rebooting returns to the previous system.
 
 ## 8. Checks after the temporary test
 
@@ -356,6 +441,11 @@ git diff --stat
 git diff
 nh os switch . -H zenbook
 ```
+
+If the `nh` activation error above comes back (the running systemd is still the old one), use the
+same workaround, but with `boot` or `switch`: `sudo ./result/bin/switch-to-configuration boot`.
+After a successful `test` the running systemd is normally already the new one, so `nh os switch`
+should work; this is not confirmed.
 
 Do not copy desktop hardware or run `switch` before `nix flake check` and the temporary test succeed. Permanent activation requires explicit approval. The Zenbook profile uses a Spanish keyboard by default; `Alt+Shift` switches to US International for an external US keyboard.
 

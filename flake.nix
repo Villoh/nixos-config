@@ -74,7 +74,7 @@
     };
 
     goopdl = {
-      url = "github:Villoh/goopdl/v2.0.2";
+      url = "github:Villoh/goopdl/v2.0.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

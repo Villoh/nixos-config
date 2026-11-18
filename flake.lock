@@ -373,16 +373,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1794828489,
-        "narHash": "sha256-j+S/A3/kW+EKFiJFg7cw0z5bFSIoynbTEh6p1dZ471A=",
+        "lastModified": 1794962624,
+        "narHash": "sha256-S2iHA8AEPnbS8IPBpS4xlVV515imDs8olH/FAqr1Qc0=",
         "owner": "Villoh",
         "repo": "goopdl",
-        "rev": "7d4d75a3167d32d7e738e8bf8ee1237eb40bb694",
+        "rev": "f809dc2fa490bc8e687d89b30caa3ee61152d8ee",
         "type": "github"
       },
       "original": {
         "owner": "Villoh",
-        "ref": "v2.0.2",
+        "ref": "v2.0.3",
         "repo": "goopdl",
         "type": "github"
       }

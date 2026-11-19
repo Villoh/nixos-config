@@ -8,10 +8,34 @@
 let
   # Only the dictation client picked by DICTATION starts at login.
   dictation = config.home.sessionVariables.DICTATION;
+
+  # Start these after DMS is ready (dms.service is Type=notify and only reports ready once
+  # the tray exists) so they do not compete with it for CPU while it loads. Names are the
+  # autostart .desktop ids, systemd-escaped (`-` is `\x2d`).
+  afterDms = lib.listToAttrs (
+    map
+      (id: {
+        name = "systemd/user/app-${id}@autostart.service.d/after-dms.conf";
+        value.text = ''
+          [Unit]
+          After=dms.service
+        '';
+      })
+      [
+        "Handy"
+        "anomaly.hex"
+        "zapfast"
+        "yapfast"
+        "filen\\x2ddesktop"
+        "hylki"
+        "tunnelagent"
+        "org.kde.kdeconnect.daemon"
+      ]
+  );
 in
 {
   # App-generated autostarts bypass Nix wrappers and lose their runtime environment.
-  xdg.configFile = {
+  xdg.configFile = afterDms // {
     "autostart/Handy.desktop" = lib.mkIf (dictation == "handy") {
       text = ''
         [Desktop Entry]
@@ -43,8 +67,18 @@ in
       Version=1.0
       Name=ZapFast
       Comment=Start ZapFast at login
-      # ZapFast only hides if the tray exists at launch; DMS registers it late.
-      Exec=${pkgs.runtimeShell} -c "sleep 5 && exec ${lib.getExe pkgs.zapfast} --start-hidden"
+      # Ordered after dms.service (above), which is ready once the tray exists.
+      Exec=${lib.getExe pkgs.zapfast} --start-hidden
+      StartupNotify=false
+      Terminal=false
+    '';
+    "autostart/yapfast.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Version=1.0
+      Name=Yapfast
+      Comment=Start Yapfast in the tray at login
+      Exec=${lib.getExe pkgs.yapfast-bin} --background
       StartupNotify=false
       Terminal=false
     '';
@@ -53,7 +87,9 @@ in
       Type=Application
       Name=Filen Desktop
       Comment=Start Filen Desktop at login
-      Exec=${pkgs.filen-desktop}/bin/filen-desktop
+      # The home profile one: it is built with Electron 43 (../cloud/packages.nix); the
+      # default pkgs.filen-desktop crashes on load with Electron 45.
+      Exec=${config.home.path}/bin/filen-desktop
       StartupNotify=false
       Terminal=false
     '';

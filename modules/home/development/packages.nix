@@ -5,7 +5,7 @@ let
   llm-agents = inputs.llm-agents.packages.${system};
 
   # Default providerPackages would build codex/opencode/grok/cursor-agent from
-  # source; claude, codex, pi and omp come from mise (~/.config/mise/config.toml).
+  # source; claude, codex and omp come from mise (~/.config/mise/config.toml).
   # Electron only picks the libsecret backend on known DEs; Hyprland is not one.
   claude-desktop = llm-agents.claude-desktop.override {
     commandLineArgs = "--password-store=gnome-libsecret";
@@ -41,10 +41,9 @@ in
     usql
 
     # AI agents
-    # Provided by mise (first on PATH); uncomment to use the Nix versions instead.
     # claude-code
     # codex
-    # pi-coding-agent
+    pi-coding-agent
     # omp
     claude-desktop
     t3code-desktop

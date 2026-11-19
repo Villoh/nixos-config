@@ -87,7 +87,7 @@
       imports = [ ../../modules/home/gaming ];
 
       # Avalonia is X11-only; with force_zero_scaling it needs per-output scale.
-      home.sessionVariables.AVALONIA_SCREEN_SCALE_FACTORS = "DP-1=1;HDMI-A-1=1.5";
+      home.sessionVariables.AVALONIA_SCREEN_SCALE_FACTORS = "DP-1=1.5;HDMI-A-1=1.5";
 
       wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
         -- Keep workspace 1 on DP-1 and workspace 6 on HDMI-A-1.

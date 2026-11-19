@@ -8,7 +8,7 @@ Never copy `hosts/desktop/hardware-configuration.nix`.
 
 The laptop is used in two modes, and the configuration handles both without a rebuild:
 
-- **Docked**: the desktop's two monitors (ASUS VG259QM, Acer VG280K), through the eGPU or
+- **Docked**: the desktop's two monitors (TCL 27C2A, Acer VG280K), through the eGPU or
   any port. The internal panel is switched off.
 - **Undocked**: the laptop alone. The internal panel is on.
 
@@ -232,7 +232,7 @@ the [host checklist](architecture.md#new-host-checklist) for anything else machi
 `hosts/zenbook/display.nix` writes the shared Hyprland rules to `/etc/xdg/hypr/host.lua`,
 which the session and the greeter both load. Desk monitors are matched by EDID description
 (`desc:`), so the layout follows them through any port, dock or eGPU. To change the monitors,
-edit the `ASUS` and `ACER` strings there (`hyprctl monitors` shows each `description`).
+edit the `TCL` and `ACER` strings there (`hyprctl monitors` shows each `description`).
 
 | Situation | Internal panel `eDP-1` |
 | --- | --- |
@@ -242,8 +242,8 @@ edit the `ASUS` and `ACER` strings there (`hyprctl monitors` shows each `descrip
 | Laptop alone | on |
 | Lid closed, no monitor | on, but logind suspends the machine |
 
-- Layout, scale and workspace pinning are the desktop's: ASUS on the left, Acer on the right,
-  bottoms aligned; workspace 1 on the ASUS and 6 on the Acer. Without those monitors the rules
+- Layout, scale and workspace pinning are the desktop's: TCL on the left, Acer on the right,
+  both 4K at scale 1.5; workspace 1 on the TCL and 6 on the Acer. Without those monitors the rules
   match nothing.
 - The panel state is recomputed in one function (`sync_panel`) on start, on monitor
   hot-plug and on lid events, with a 500 ms debounce. Turning the panel back on runs

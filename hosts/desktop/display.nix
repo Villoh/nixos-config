@@ -20,14 +20,14 @@
 
     hl.monitor({
       output = "DP-1",
-      mode = "1920x1080@239.760",
+      mode = "3840x2160@160",
       position = "0x0",
-      scale = 1,
+      scale = 1.5,
     })
     hl.monitor({
       output = "HDMI-A-1",
       mode = "3840x2160@59.997",
-      position = "1920x-360",
+      position = "2560x0",
       scale = 1.5,
     })
   '';
@@ -52,14 +52,14 @@
 
     hl.monitor({
       output = "DP-1",
-      mode = "1920x1080@239.760",
+      mode = "3840x2160@160",
       position = "0x0",
-      scale = 1,
+      scale = 1.5,
     })
     hl.monitor({
       output = "HDMI-A-1",
       mode = "3840x2160@59.997",
-      position = "1920x-360",
+      position = "2560x0",
       scale = 1.5,
     })
   '';

@@ -8,26 +8,27 @@
   # the laptop is a normal second screen. Merged with keyboard.nix; the greeter
   # already requires this file.
   environment.etc."xdg/hypr/host.lua".text = ''
-    local ASUS = "ASUSTek COMPUTER INC VG259QM L9LMQS194060"
+    local TCL = "Technical Concepts Ltd 27C2A P2611005101"
     local ACER = "Acer Technologies VG280K 0x0431B372"
 
-    -- ASUS VG259QM on the left, Acer VG280K on the right, bottoms aligned.
+    -- TCL 27C2A on the left, Acer VG280K on the right: both 4K at scale 1.5, so the
+    -- same logical height and no vertical offset.
     hl.monitor({
-      output = "desc:" .. ASUS,
-      mode = "1920x1080@239.760",
+      output = "desc:" .. TCL,
+      mode = "3840x2160@160",
       position = "0x0",
-      scale = 1,
+      scale = 1.5,
     })
     hl.monitor({
       output = "desc:" .. ACER,
       mode = "3840x2160@59.997",
-      position = "1920x-360",
+      position = "2560x0",
       scale = 1.5,
     })
 
-    -- Same pinning as desktop: workspace 1 on the ASUS, 6 on the Acer. Without
+    -- Same pinning as desktop: workspace 1 on the TCL, 6 on the Acer. Without
     -- those monitors the rules match nothing and workspaces go where Hyprland puts them.
-    hl.workspace_rule({ workspace = "1", monitor = "desc:" .. ASUS, default = true })
+    hl.workspace_rule({ workspace = "1", monitor = "desc:" .. TCL, default = true })
     hl.workspace_rule({ workspace = "6", monitor = "desc:" .. ACER, default = true })
 
     -- Same as desktop. Mixed-DPI XWayland apps handle their own scale. Note it also
@@ -65,7 +66,7 @@
     local function sync_panel()
       local desk, ext = false, false
       for _, m in ipairs(hl.get_monitors()) do
-        if m.description == ASUS or m.description == ACER then desk = true end
+        if m.description == TCL or m.description == ACER then desk = true end
         if m.name ~= "eDP-1" then ext = true end
       end
       local want = desk or (ext and lid_closed())

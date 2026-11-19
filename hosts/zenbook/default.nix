@@ -31,6 +31,11 @@
     efi.canTouchEfiVariables = true;
   };
 
+  # Unlocks the swap partition declared in hardware-configuration.nix; the installer
+  # kept this entry in /etc/nixos/configuration.nix, which the flake does not import.
+  boot.initrd.luks.devices."luks-ad6ce096-c480-4d2f-84e7-551d22c89eae".device =
+    "/dev/disk/by-uuid/ad6ce096-c480-4d2f-84e7-551d22c89eae";
+
   users.users.mikel.extraGroups = [ "docker" ];
 
   # Intel thermal daemon (Core Ultra); works alongside power-profiles-daemon.

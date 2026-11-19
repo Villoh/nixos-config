@@ -63,7 +63,7 @@
 
     # CLI that turns Omarchy themes into dmsProfiles looks.
     omarchy-dms = {
-      url = "github:Villoh/omarchy-dms/v0.4.1";
+      url = "github:Villoh/omarchy-dms/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

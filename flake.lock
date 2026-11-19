@@ -862,16 +862,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1793616519,
-        "narHash": "sha256-46wLJAq8t29nMktkQa4+PEP/xlw+cVQtb2G94NWLV98=",
+        "lastModified": 1795090347,
+        "narHash": "sha256-/LwSoBGzGNJ53a3PDZiJowhLKA276uD7FVv6gDkdWkE=",
         "owner": "Villoh",
         "repo": "omarchy-dms",
-        "rev": "855cade7f1f644a97cee41baef1d031efd02b96f",
+        "rev": "3c23ae157a4a56983c875ffde505f6e0da57f395",
         "type": "github"
       },
       "original": {
         "owner": "Villoh",
-        "ref": "v0.4.1",
+        "ref": "v0.4.2",
         "repo": "omarchy-dms",
         "type": "github"
       }

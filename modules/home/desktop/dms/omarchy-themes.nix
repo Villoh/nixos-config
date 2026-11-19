@@ -7,7 +7,8 @@
 
 # Omarchy's themes as dmsProfiles looks: DMS theme.json files generated from each
 # colors.toml, plus the wallpapers. Profiles themselves are DMS runtime state, so
-# `omarchy-dms sync` creates them once. `omarchy-dms install` adds community themes
+# `omarchy-dms sync` creates them, run by the user service below on each login (it only
+# adds what is missing). `omarchy-dms install` adds community themes
 # from omarchy.org/themes on demand, next to these (they are not part of the build).
 let
   root = "${inputs.omarchy}/themes";
@@ -72,6 +73,27 @@ in
     source = "${wallpapers}/${baseNameOf path}";
     recursive = true;
   });
+
+  # Creates the profiles on a fresh install. `sync` skips the ones that exist, so it is
+  # safe on every login. It needs DMS and the dmsProfiles plugin answering on IPC, which
+  # can lag behind dms.service starting: retry until it does.
+  systemd.user.services.omarchy-dms-sync = {
+    Unit = {
+      Description = "Create the dmsProfiles profiles for Omarchy's themes";
+      After = [ "dms.service" ];
+      Wants = [ "dms.service" ];
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 10; # gives up after ~2.5 min instead of retrying forever
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${lib.getExe omarchy-dms} sync";
+      Environment = [ "PATH=/etc/profiles/per-user/%u/bin:/run/current-system/sw/bin" ];
+      Restart = "on-failure";
+      RestartSec = 15;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
 
   home.packages = [ omarchy-dms ];
 }

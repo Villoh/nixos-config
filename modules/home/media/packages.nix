@@ -9,7 +9,6 @@
     pkgs.meiro
     pkgs.imv
     pkgs.mpv
-    pkgs.obs-studio
     pkgs.wf-recorder
     pkgs.ffmpeg
     pkgs.yt-dlp

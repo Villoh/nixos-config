@@ -13,6 +13,12 @@
   # pkexec, fails, and falls back to wf-recorder. Also installs gpu-screen-recorder.
   programs.gpu-screen-recorder.enable = true;
 
+  # Installs OBS and v4l2loopback so "OBS Virtual Camera" shows up as a webcam in other apps.
+  programs.obs-studio = {
+    enable = true;
+    enableVirtualCamera = true;
+  };
+
   imports = [
     ./packages.nix
     ./dms

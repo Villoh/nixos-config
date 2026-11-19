@@ -26,10 +26,16 @@
       scale = 1.5,
     })
 
-    -- Same pinning as desktop: workspace 1 on the TCL, 6 on the Acer. Without
-    -- those monitors the rules match nothing and workspaces go where Hyprland puts them.
-    hl.workspace_rule({ workspace = "1", monitor = "desc:" .. TCL, default = true })
-    hl.workspace_rule({ workspace = "6", monitor = "desc:" .. ACER, default = true })
+    -- Workspaces 1-5 on the TCL, 6-10 on the Acer (an unpinned workspace opens on the
+    -- focused monitor). Without those monitors the rules match nothing and workspaces
+    -- go where Hyprland puts them.
+    for i = 1, 10 do
+      hl.workspace_rule({
+        workspace = tostring(i),
+        monitor = "desc:" .. (i <= 5 and TCL or ACER),
+        default = i == 1 or i == 6,
+      })
+    end
 
     -- Same as desktop. Mixed-DPI XWayland apps handle their own scale. Note it also
     -- applies on the laptop panel alone (see docs if X11 apps look tiny there).

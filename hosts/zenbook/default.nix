@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, inputs, ... }:
 
 {
   # Generate this host's hardware-configuration.nix on the Zenbook before
@@ -20,6 +20,7 @@
     ../../modules/nixos/home-manager.nix
     ./display.nix
     ./keyboard.nix
+    inputs.acid-boot.nixosModules.default
   ];
 
   networking.hostName = "nixos-zenbook";
@@ -35,6 +36,15 @@
   # kept this entry in /etc/nixos/configuration.nix, which the flake does not import.
   boot.initrd.luks.devices."luks-ad6ce096-c480-4d2f-84e7-551d22c89eae".device =
     "/dev/disk/by-uuid/ad6ce096-c480-4d2f-84e7-551d22c89eae";
+
+  acidBoot = {
+    enable = true;
+    palette = "nix-blue";
+  };
+
+  # Early KMS for the Arc iGPU: without it Plymouth draws on simpledrm (the UEFI
+  # framebuffer) and the LUKS prompt can come out stretched.
+  boot.initrd.kernelModules = [ "i915" ];
 
   users.users.mikel.extraGroups = [ "docker" ];
 

@@ -57,12 +57,14 @@
   # The first available entry is Hyprland's primary renderer. With the eGPU
   # attached at login it renders the desktop, so games and monitors wired to it
   # skip the link; without it Hyprland falls back to the iGPU (Hyprland wiki:
-  # the next entry becomes primary when the first is unavailable). Attach the
-  # card before login: plugging it in later is untested, and unplugging it
-  # during a session is not safe (see docs/installation-laptop.md).
-  # Hyprland's Nvidia wiki lists these for slow or broken multi-GPU: swap the
-  # order above, and AQ_FORCE_LINEAR_BLIT=0 (stop forcing linear modifiers on
-  # multi-GPU buffers). Left off until measured on this hardware.
+  # the next entry becomes primary when the first is unavailable). This is a
+  # login-time fallback only: if the eGPU falls off the bus mid-session (Xid 79
+  # on 2026-11-19) the session dies and the next login starts on the iGPU.
+  # Attach the card before login: plugging it in later is untested, and
+  # unplugging it during a session is not safe (see docs/installation-laptop.md).
+  # Hyprland's Nvidia wiki lists AQ_FORCE_LINEAR_BLIT=0 (stop forcing linear
+  # modifiers on multi-GPU buffers) for slow or broken multi-GPU. Left off
+  # until measured on this hardware.
   environment.etc."xdg/uwsm/env-hyprland".text = ''
     export AQ_DRM_DEVICES=/dev/dri/egpu:/dev/dri/igpu
     # export AQ_FORCE_LINEAR_BLIT=0

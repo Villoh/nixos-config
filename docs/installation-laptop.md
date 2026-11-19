@@ -447,7 +447,7 @@ same workaround, but with `boot` or `switch`: `sudo ./result/bin/switch-to-confi
 After a successful `test` the running systemd is normally already the new one, so `nh os switch`
 should work; this is not confirmed.
 
-Do not copy desktop hardware or run `switch` before `nix flake check` and the temporary test succeed. Permanent activation requires explicit approval. The Zenbook profile uses a Spanish keyboard by default; `Alt+Shift` switches to US International for an external US keyboard.
+Do not copy desktop hardware or run `switch` before `nix flake check` and the temporary test succeed. Permanent activation requires explicit approval. The Zenbook profile uses a Spanish keyboard; the external AL68 keyboard is pinned to US International.
 
 ## 10. After the first switch
 

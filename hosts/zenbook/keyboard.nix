@@ -1,15 +1,14 @@
 { lib, ... }:
 
 {
-  # Zenbook default: Spanish keyboard, US International as second layout
-  # (Alt+Shift or the DMS bar widget).  The external US keyboard is pinned to
-  # US International so it never depends on the toggle state.
+  # Zenbook default: Spanish keyboard. The external US keyboard (AL68) is pinned
+  # to US International.
   environment.etc."xdg/hypr/host.lua".text = ''
     hl.config({
       input = {
-        kb_layout = "es,us",
-        kb_variant = ",intl",
-        kb_options = "grp:alt_shift_toggle",
+        kb_layout = "es",
+        kb_variant = "",
+        kb_options = "",
       },
     })
     for _, name in ipairs({

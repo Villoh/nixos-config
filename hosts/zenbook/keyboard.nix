@@ -12,7 +12,10 @@
         kb_options = "grp:alt_shift_toggle",
       },
     })
-    for _, name in ipairs({ "smartcloud-al68-keyboard", "smartcloud-al68-keyboard-1" }) do
+    for _, name in ipairs({
+      "smartcloud-al68-keyboard", "smartcloud-al68-keyboard-1",
+      "i-chip-yunzii-al68-2.4g", "i-chip-yunzii-al68-2.4g-keyboard", "i-chip-yunzii-al68-2.4g-keyboard-1",
+    }) do
       hl.device({ name = name, kb_layout = "us", kb_variant = "intl", kb_options = "" })
     end
   '';

@@ -8,6 +8,7 @@
     ../../modules/nixos/core
     # The RTX 3080 moves to a Thunderbolt eGPU; the Arc iGPU drives the desktop.
     ../../modules/nixos/hardware/egpu-nvidia.nix
+    ../../modules/nixos/hardware/monitor-input.nix
     # Optional desktop services, selected by this host rather than the profile.
     ../../modules/nixos/services/docker.nix
     ../../modules/nixos/services/flatpak.nix

@@ -8,6 +8,11 @@ hl.config({
     kb_layout = "us",
     kb_variant = "intl",
   },
+  -- Black instead of Hyprland's default wallpaper/logo while DMS loads.
+  misc = {
+    force_default_wallpaper = 0,
+    disable_hyprland_logo = true,
+  },
 })
 
 -- Keys freed from dms/binds.lua without a replacement (the keys default.nix binds

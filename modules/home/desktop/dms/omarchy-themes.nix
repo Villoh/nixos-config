@@ -81,7 +81,6 @@ in
     Unit = {
       Description = "Create the dmsProfiles profiles for Omarchy's themes";
       After = [ "dms.service" ];
-      Wants = [ "dms.service" ];
       StartLimitIntervalSec = 300;
       StartLimitBurst = 10; # gives up after ~2.5 min instead of retrying forever
     };
@@ -92,7 +91,10 @@ in
       Restart = "on-failure";
       RestartSec = 15;
     };
-    Install.WantedBy = [ "graphical-session.target" ];
+    # Wanted by dms, not graphical-session.target: dms is ordered after that target, so
+    # After=dms + target wants made an ordering cycle and systemd sometimes dropped dms's
+    # start job, delaying the shell ~13 s.
+    Install.WantedBy = [ "dms.service" ];
   };
 
   home.packages = [ omarchy-dms ];

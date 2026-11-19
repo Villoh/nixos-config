@@ -5,7 +5,8 @@
 #
 # The eGPU can be absent at boot or unplugged at any time, so nothing here
 # assumes a PCI bus ID (it changes with the port): cards are found by vendor
-# and class through udev aliases, and nothing loads NVIDIA from the initrd.
+# and class through udev aliases. The initrd loads NVIDIA only when udev sees a card
+# (see below), so an absent eGPU costs nothing there.
 # Only nvidia_uvm is in boot.kernelModules; with no card present its load is
 # expected to fail without effect (untested), and udev loads the driver when
 # the card shows up.
@@ -29,6 +30,21 @@
     # Same fix as desktop: keep VRAM across S3 so resume does not corrupt the GPU.
     powerManagement.enable = true;
   };
+
+  # Plymouth and the LUKS prompt on the monitors wired to the eGPU. Two initrd-only
+  # udev rules: authorize Thunderbolt devices when IOMMU DMA protection is on (the
+  # kernel docs' rule, same policy boltd applies to "iommu" devices, which cannot run
+  # in the initrd), then load nvidia_drm when an NVIDIA GPU appears. The modules are
+  # only made available, not loaded: with no eGPU nothing fails or waits.
+  boot.initrd.availableKernelModules = [
+    "nvidia"
+    "nvidia_modeset"
+    "nvidia_drm"
+  ];
+  boot.initrd.services.udev.rules = ''
+    ACTION=="add", SUBSYSTEM=="thunderbolt", ATTRS{iommu_dma_protection}=="1", ATTR{authorized}=="0", ATTR{authorized}="1"
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03*", RUN{builtin}+="kmod load nvidia_drm"
+  '';
 
   services.udev.extraRules = ''
     # Stable aliases for Hyprland. The class match matters: on Thunderbolt the

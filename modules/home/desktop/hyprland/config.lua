@@ -8,10 +8,12 @@ hl.config({
     kb_layout = "us",
     kb_variant = "intl",
   },
-  -- Black instead of Hyprland's default wallpaper/logo while DMS loads.
+  -- Plain black instead of Hyprland's default wallpaper, logo and splash quote while DMS loads.
   misc = {
     force_default_wallpaper = 0,
     disable_hyprland_logo = true,
+    disable_splash_rendering = true,
+    background_color = 0xff000000,
   },
 })
 

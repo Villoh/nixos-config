@@ -1,4 +1,4 @@
-{ config, inputs, ... }:
+{ config, ... }:
 
 {
   # Generate this host's hardware-configuration.nix on the Zenbook before
@@ -20,7 +20,8 @@
     ../../modules/nixos/home-manager.nix
     ./display.nix
     ./keyboard.nix
-    inputs.acid-boot.nixosModules.default
+    # Acid Boot with the relayout patch for the eGPU monitors; replaces the input's own module.
+    ../../modules/nixos/hardware/acid-boot-egpu.nix
   ];
 
   networking.hostName = "nixos-zenbook";

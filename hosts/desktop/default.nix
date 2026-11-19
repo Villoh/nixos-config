@@ -90,17 +90,15 @@
       home.sessionVariables.AVALONIA_SCREEN_SCALE_FACTORS = "DP-1=1.5;HDMI-A-1=1.5";
 
       wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
-        -- Keep workspace 1 on DP-1 and workspace 6 on HDMI-A-1.
-        hl.workspace_rule({
-          workspace = "1",
-          monitor = "DP-1",
-          default = true,
-        })
-        hl.workspace_rule({
-          workspace = "6",
-          monitor = "HDMI-A-1",
-          default = true,
-        })
+        -- Workspaces 1-5 on DP-1, 6-10 on HDMI-A-1 (an unpinned workspace opens on
+        -- the focused monitor).
+        for i = 1, 10 do
+          hl.workspace_rule({
+            workspace = tostring(i),
+            monitor = i <= 5 and "DP-1" or "HDMI-A-1",
+            default = i == 1 or i == 6,
+          })
+        end
       '';
     };
   };

@@ -1,0 +1,5 @@
+hl.bind("SUPER + CTRL + K", hl.dsp.exec_cmd("dms ipc call keybinds toggle hyprland"), { description = "Keybindings" })
+hl.bind("SUPER + ALT + Q", hl.dsp.layout("preselect l"), { description = "Preselect left" })
+hl.bind("SUPER + ALT + E", hl.dsp.layout("preselect r"), { description = "Preselect right" })
+hl.bind("SUPER + ALT + W", hl.dsp.window.resize({ x = 100, y = 0, relative = true }), { repeating = true, description = "Grow window width" })
+hl.bind("SUPER + ALT + H", hl.dsp.window.resize({ x = 0, y = 100, relative = true }), { repeating = true, description = "Grow window height" })

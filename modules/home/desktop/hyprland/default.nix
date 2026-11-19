@@ -324,6 +324,8 @@ in
       keybinds
       ''
         require("/etc/xdg/hypr/host")
+        -- Optional per-host binds (the greeter loads host.lua too, so they live apart).
+        pcall(require, "/etc/xdg/hypr/host-binds")
       ''
     ];
   };

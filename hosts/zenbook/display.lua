@@ -64,7 +64,7 @@ local function lid_closed()
   return false
 end
 
-local off
+local off, start_focus
 local function sync_panel()
   local desk, ext = false, false
   for _, m in ipairs(hl.get_monitors()) do
@@ -76,11 +76,14 @@ local function sync_panel()
   local want = ext and lid_closed()
   if desk then
     set_workspaces("desc:" .. TCL, "desc:" .. ACER)
+    start_focus = "desc:" .. TCL
   elseif want then
     -- Clamshell: the panel is about to go off, so everything moves to the other monitor.
     set_workspaces("desc:" .. ext, "desc:" .. ext)
+    start_focus = "desc:" .. ext
   else
     set_workspaces("eDP-1", ext and ("desc:" .. ext) or "eDP-1")
+    start_focus = "eDP-1"
   end
   if want == off then return end
   local first = off == nil
@@ -103,3 +106,9 @@ hl.on("monitor.removed", schedule)
 hl.bind("switch:on:Lid Switch", schedule, { locked = true })
 hl.bind("switch:off:Lid Switch", schedule, { locked = true })
 sync_panel()
+
+-- Start with focus (and the cursor) on the main screen: the TCL at the desk, the
+-- laptop panel when undocked, the only monitor in clamshell.
+hl.on("hyprland.start", function()
+  hl.dispatch(hl.dsp.focus({ monitor = start_focus }))
+end)

@@ -45,8 +45,14 @@
   };
 
   # Early KMS for the Arc iGPU: without it Plymouth draws on simpledrm (the UEFI
-  # framebuffer) and the LUKS prompt can come out stretched.
-  boot.initrd.kernelModules = [ "i915" ];
+  # framebuffer) and the LUKS prompt can come out stretched. mei_gsc_proxy must load
+  # with it, or i915 waits 20 s for the GSC proxy and logs "GSC proxy component didn't
+  # bind within the expected timeout".
+  boot.initrd.kernelModules = [
+    "i915"
+    "mei_me"
+    "mei_gsc_proxy"
+  ];
 
   users.users.mikel.extraGroups = [ "docker" ];
 

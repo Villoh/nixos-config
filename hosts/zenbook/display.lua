@@ -16,15 +16,21 @@ hl.monitor({
   scale = 1.5,
 })
 
--- Workspaces 1-5 on the TCL, 6-10 on the Acer (an unpinned workspace opens on the
--- focused monitor). Without those monitors the rules match nothing and workspaces
--- go where Hyprland puts them.
-for i = 1, 10 do
-  hl.workspace_rule({
-    workspace = tostring(i),
-    monitor = "desc:" .. (i <= 5 and TCL or ACER),
-    default = i == 1 or i == 6,
-  })
+-- Workspaces 1-5 on the first monitor, 6-10 on the second (an unpinned workspace
+-- opens on the focused monitor). Desk: TCL and Acer. Anywhere else: the laptop
+-- panel and the first other monitor (or the panel again when alone). Rules naming
+-- an absent monitor match nothing and Hyprland hands out 11, 12... instead.
+local ws_key
+local function set_workspaces(a, b)
+  if a .. b == ws_key then return end
+  ws_key = a .. b
+  for i = 1, 10 do
+    hl.workspace_rule({
+      workspace = tostring(i),
+      monitor = i <= 5 and a or b,
+      default = i == 1 or i == 6,
+    })
+  end
 end
 
 -- Same as desktop. Mixed-DPI XWayland apps handle their own scale. Note it also
@@ -63,9 +69,19 @@ local function sync_panel()
   local desk, ext = false, false
   for _, m in ipairs(hl.get_monitors()) do
     if m.description == TCL or m.description == ACER then desk = true end
-    if m.name ~= "eDP-1" then ext = true end
+    if m.name ~= "eDP-1" then ext = ext or m.description end
   end
-  local want = desk or (ext and lid_closed())
+  -- Desk monitors do not turn the panel off: it stays as workspace 11 (the next free
+  -- one) and a lifeline if the eGPU drops and takes the desk monitors with it.
+  local want = ext and lid_closed()
+  if desk then
+    set_workspaces("desc:" .. TCL, "desc:" .. ACER)
+  elseif want then
+    -- Clamshell: the panel is about to go off, so everything moves to the other monitor.
+    set_workspaces("desc:" .. ext, "desc:" .. ext)
+  else
+    set_workspaces("eDP-1", ext and ("desc:" .. ext) or "eDP-1")
+  end
   if want == off then return end
   local first = off == nil
   off = want

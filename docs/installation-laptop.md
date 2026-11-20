@@ -236,15 +236,17 @@ edit the `TCL` and `ACER` strings there (`hyprctl monitors` shows each `descript
 
 | Situation | Internal panel `eDP-1` |
 | --- | --- |
-| A desk monitor is connected | off |
+| A desk monitor is connected, lid open | on: workspace 11, and a lifeline if the eGPU crashes |
 | Lid closed with any other monitor connected (clamshell) | off |
 | Another monitor (work), lid open | on: the laptop is a second screen |
 | Laptop alone | on |
 | Lid closed, no monitor | on, but logind suspends the machine |
 
 - Layout, scale and workspace pinning are the desktop's: TCL on the left, Acer on the right,
-  both 4K at scale 1.5; workspace 1 on the TCL and 6 on the Acer. Without those monitors the rules
-  match nothing.
+  both 4K at scale 1.5; workspaces 1-5 on the TCL and 6-10 on the Acer. Without those monitors,
+  1-5 go to the panel `eDP-1` and 6-10 to the first other monitor (or the panel when alone),
+  so an unknown display gets 6-10 instead of Hyprland's 11, 12... In clamshell (panel off) all
+  ten go to the other monitor.
 - The panel state is recomputed in one function (`sync_panel`) on start, on monitor
   hot-plug and on lid events, with a 500 ms debounce. Turning the panel back on runs
   `hyprctl reload`, because `hl.monitor` cannot enable an output when no monitor is active.

@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 {
   # Generate this host's hardware-configuration.nix on the Zenbook before
@@ -40,6 +40,10 @@
   boot.initrd.luks.devices."luks-ad6ce096-c480-4d2f-84e7-551d22c89eae".device =
     "/dev/disk/by-uuid/ad6ce096-c480-4d2f-84e7-551d22c89eae";
 
+  # Hibernate (S4) so the dock NIC can wake the laptop from a full power-off; swap is the
+  # LUKS partition above, unlocked in the initrd before resume runs.
+  boot.resumeDevice = "/dev/mapper/luks-ad6ce096-c480-4d2f-84e7-551d22c89eae";
+
   acidBoot = {
     enable = true;
     palette = "nix-blue";
@@ -59,6 +63,12 @@
 
   # Intel thermal daemon (Core Ultra); works alongside power-profiles-daemon.
   services.thermald.enable = true;
+
+  # Wake-on-LAN (magic packet) on the dock's USB NIC. Matched by driver, not name: the
+  # enp0s13f0u1u4u2 name follows the USB port path and changes if the dock moves port.
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="net", DRIVERS=="r8152", RUN+="${pkgs.ethtool}/bin/ethtool -s $name wol g"
+  '';
 
   # One shared login appearance, imported by nixpkgs before greetd starts. Missing
   # source files (fresh home) are skipped, so the greeter keeps its defaults.

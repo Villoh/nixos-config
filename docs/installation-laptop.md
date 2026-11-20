@@ -9,7 +9,7 @@ Never copy `hosts/desktop/hardware-configuration.nix`.
 The laptop is used in two modes, and the configuration handles both without a rebuild:
 
 - **Docked**: the desktop's two monitors (TCL 27C2A, Acer VG280K), through the eGPU or
-  any port. The internal panel is switched off.
+  any port. The internal panel stays on with the lid open and goes off with the lid closed.
 - **Undocked**: the laptop alone. The internal panel is on.
 
 See [Docked and undocked](#docked-and-undocked) for the rules.
@@ -247,6 +247,36 @@ edit the `TCL` and `ACER` strings there (`hyprctl monitors` shows each `descript
   1-5 go to the panel `eDP-1` and 6-10 to the first other monitor (or the panel when alone),
   so an unknown display gets 6-10 instead of Hyprland's 11, 12... In clamshell (panel off) all
   ten go to the other monitor.
+- Workspaces per situation (the "Layout" bullet above, as a table). `(?)` marks cases not
+  checked on the hardware:
+
+  | Situation | TCL | Acer | Other monitor | Panel `eDP-1` | Focus |
+  | --- | --- | --- | --- | --- | --- |
+  | Laptop alone, lid open | - | - | - | 1-10 | panel, workspace 1 |
+  | Laptop alone, lid closed | - | - | - | logind suspends | - |
+  | Desk (TCL + Acer), lid open | 1-5 | 6-10 | - | 11 (next free) | TCL, workspace 1 |
+  | Desk, lid closed | 1-5 | 6-10 | - | off; its workspace and windows move to the first monitor in Hyprland's list, the Acer in the test | TCL |
+  | TCL only, lid open | 1-5 | - | - | 11; 6-10 open on the focused monitor (?) | TCL |
+  | Acer only, lid open | 1-5 open on the focused monitor (?) | 6-10 | - | 11 | Acer |
+  | Other monitor, lid open | - | - | 6-10 | 1-5 | panel |
+  | Other monitor, lid closed | - | - | 1-10 | off | that monitor |
+
+- Where the panel's workspace goes when it turns off was tested on 2026-11-20 by disabling
+  `eDP-1` with a window on workspace 12: workspace and window moved to monitor ID 0 (the
+  Acer), not to the focused monitor (the TCL). The order follows Hyprland's monitor IDs,
+  which depend on connection order, so it is not fixed. Seen once.
+- Closing the lid with a monitor connected does not suspend: logind has
+  `HandleLidSwitch=suspend` but `HandleLidSwitchDocked=ignore` (checked with
+  `busctl get-property org.freedesktop.login1 ... Docked`, which was `true`). Hyprland turns
+  the panel off instead (clamshell). The machine suspends only with no external monitor.
+- At login the panel is the only monitor, so workspace 1 and the apps opened on it are
+  created there, and Hyprland's rules do not move an existing workspace: the TCL would get
+  11. `rehome()` in `display.lua` moves workspaces 1-10 to their desk monitor after each
+  recompute; an absent monitor leaves its workspaces where they are. Checked live only for
+  the no-op case; the login case needs a boot to see.
+- Known gap: plugging a desk monitor in with the session open did not update the workspace
+  rules (seen on 2026-11-20 with the Acer on HDMI: the rules stayed on `eDP-1` until
+  `hyprctl reload`). Plug monitors in before logging in, or run `hyprctl reload`.
 - The panel state is recomputed in one function (`sync_panel`) on start, on monitor
   hot-plug and on lid events, with a 500 ms debounce. Turning the panel back on runs
   `hyprctl reload`, because `hl.monitor` cannot enable an output when no monitor is active.

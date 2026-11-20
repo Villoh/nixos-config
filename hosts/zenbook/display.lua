@@ -111,9 +111,25 @@ local function place()
   hl.dispatch(hl.dsp.cursor.move({ x = m.x + m.width / m.scale / 2, y = m.y + m.height / m.scale / 2 }))
 end
 
+-- At login the panel is the only monitor, so workspace 1 (and any app opened on it) is
+-- created there; rules do not move an existing workspace, and the TCL would get 11.
+-- Move workspaces 1-10 to their desk monitor. Idempotent; an absent monitor leaves its
+-- workspaces where they are.
+local function rehome()
+  local mons = {}
+  for _, m in ipairs(hl.get_monitors()) do mons[m.description] = m.name end
+  for _, w in ipairs(hl.get_workspaces()) do
+    local want = mons[w.id <= 5 and TCL or ACER]
+    if w.id >= 1 and w.id <= 10 and want and w.monitor.name ~= want then
+      hl.dispatch(hl.dsp.workspace.move({ workspace = w.id, monitor = want }))
+    end
+  end
+end
+
 local placed
 local timer = hl.timer(function()
   sync_panel()
+  rehome()
   if not placed then placed = true; place() end
 end, { timeout = 500, type = "oneshot" })
 timer:set_enabled(false)

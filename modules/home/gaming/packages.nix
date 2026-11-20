@@ -19,6 +19,15 @@
     goverlay
     wineWow64Packages.stable
     winetricks
+    # PlayStation Remote Play client. The global QT_STYLE_OVERRIDE=breeze makes its QML UI
+    # fail to load ("module breeze is not installed") and the app exits silently, so unset
+    # it for this app only.
+    (symlinkJoin {
+      name = "chiaki-ng";
+      paths = [ chiaki-ng ];
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = "wrapProgram $out/bin/chiaki --unset QT_STYLE_OVERRIDE";
+    })
   ];
 
   # umu-run outside Steam: PROTONPATH points it at the Nix-managed GE-Proton

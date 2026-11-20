@@ -17,6 +17,7 @@
     ../../modules/nixos/services/tailscale.nix
     ../../modules/nixos/services/kdeconnect.nix
     ../../profiles/laptop.nix
+    ../../profiles/gaming.nix
     ../../users/mikel
     ../../users/mikel/al68.nix
     ../../modules/nixos/home-manager.nix
@@ -25,6 +26,8 @@
     # Acid Boot with the relayout patch for the eGPU monitors; replaces the input's own module.
     ../../modules/nixos/hardware/acid-boot-egpu.nix
   ];
+
+  home-manager.users.mikel.imports = [ ../../modules/home/gaming ];
 
   networking.hostName = "nixos-zenbook";
   system.stateVersion = "26.05";

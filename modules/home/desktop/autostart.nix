@@ -25,7 +25,7 @@ let
         "Handy"
         "anomaly.hex"
         "zapfast"
-        "yapfast"
+        "serein"
         "filen\\x2ddesktop"
         "hylki"
         "tunnelagent"
@@ -72,13 +72,14 @@ in
       StartupNotify=false
       Terminal=false
     '';
-    "autostart/yapfast.desktop".text = ''
+    # Serein has no autostart of its own on Linux nor a start-hidden flag: it opens its window.
+    "autostart/serein.desktop".text = ''
       [Desktop Entry]
       Type=Application
       Version=1.0
-      Name=Yapfast
-      Comment=Start Yapfast in the tray at login
-      Exec=${lib.getExe pkgs.yapfast-bin} --background
+      Name=Serein
+      Comment=Start Serein at login
+      Exec=${lib.getExe pkgs.serein-bin}
       StartupNotify=false
       Terminal=false
     '';

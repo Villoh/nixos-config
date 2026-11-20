@@ -63,19 +63,8 @@ let
         args = "cz.viceverse.serein:toggle-deafen";
       };
     };
-    # Yapfast has no CLI; it registers global shortcuts with the portal (see `hyprctl globalshortcuts`).
-    # Assign keys to Toggle Mute/Deafen in its settings first. Ids are unverified: check them there.
-    yapfast = {
-      launch = "yapfast";
-      mute = {
-        dsp = "global";
-        args = "io.github.yapfast.Yapfast:toggle_mute";
-      };
-      deafen = {
-        dsp = "global";
-        args = "io.github.yapfast.Yapfast:toggle_deafen";
-      };
-    };
+    # Yapfast has no CLI nor mute/deafen keys (only push-to-talk): no binds.
+    yapfast.launch = "yapfast";
     equibop = {
       launch = "equibop";
       mute = cli "equibop --toggle-mic";

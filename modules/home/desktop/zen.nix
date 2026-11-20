@@ -27,6 +27,11 @@ in
           --replace-fail 'Exec=zen-beta ' 'Exec=${lib.getExe config.programs.zen-browser.package} '
       '';
 
+  # DMS writes ~/.config/dms/zen.css but never links it into the profile. Out-of-store, so
+  # DMS keeps regenerating the target without a rebuild.
+  xdg.configFile."zen/35l08yb0.Default Profile/chrome/userChrome.css".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/dms/zen.css";
+
   programs.zen-browser = {
     enable = true;
 
@@ -42,9 +47,9 @@ in
     };
 
     # The profile predates Home Manager: pin its directory so profiles.ini keeps pointing at it
-    # (sessions, extensions and the DMS-owned chrome/userChrome.css live there). Spaces, pins,
-    # containers, bookmarks, extensions and userChrome stay out of Nix on purpose: they hold
-    # state Zen edits at runtime, and userChrome.css is a symlink owned by DMS/Matugen.
+    # (sessions and extensions live there). Spaces, pins, containers, bookmarks and extensions
+    # stay out of Nix on purpose: they hold state Zen edits at runtime. userChrome.css is the
+    # symlink to the DMS/Matugen output declared above.
     profiles."Default Profile" = {
       id = 0;
       path = "35l08yb0.Default Profile";
@@ -132,6 +137,8 @@ in
         # Fewer session-store disk writes (default 15s).
         "browser.sessionstore.interval" = 60000;
         "browser.quitShortcut.disabled" = true;
+        # Off by default in Zen: without it chrome/userChrome.css (DMS/Matugen colours) is ignored.
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
         "full-screen-api.warning.timeout" = 0;
         "browser.download.alwaysOpenPanel" = false;
         # Ctrl+W on a pinned tab closes it instead of switching (Zen default: "switch").

@@ -64,7 +64,7 @@ local function lid_closed()
   return false
 end
 
-local off, start_focus
+local off
 local function sync_panel()
   local desk, ext = false, false
   for _, m in ipairs(hl.get_monitors()) do
@@ -76,14 +76,11 @@ local function sync_panel()
   local want = ext and lid_closed()
   if desk then
     set_workspaces("desc:" .. TCL, "desc:" .. ACER)
-    start_focus = "desc:" .. TCL
   elseif want then
     -- Clamshell: the panel is about to go off, so everything moves to the other monitor.
     set_workspaces("desc:" .. ext, "desc:" .. ext)
-    start_focus = "desc:" .. ext
   else
     set_workspaces("eDP-1", ext and ("desc:" .. ext) or "eDP-1")
-    start_focus = "eDP-1"
   end
   if want == off then return end
   local first = off == nil
@@ -95,7 +92,20 @@ local function sync_panel()
   end
 end
 
-local timer = hl.timer(sync_panel, { timeout = 500, type = "oneshot" })
+-- At login the monitors appear after this file ran, so each got whatever workspace
+-- was free (11...) before the rules above were right. Once, with monitors present:
+-- show 6 on its monitor, then 1, which also leaves focus (and the cursor) on the
+-- main screen: the TCL at the desk, the laptop panel when undocked, the only
+-- monitor in clamshell.
+local placed
+local function place()
+  if placed or #hl.get_monitors() == 0 then return end
+  placed = true
+  hl.dispatch(hl.dsp.focus({ workspace = "6" }))
+  hl.dispatch(hl.dsp.focus({ workspace = "1" }))
+end
+
+local timer = hl.timer(function() sync_panel() place() end, { timeout = 500, type = "oneshot" })
 timer:set_enabled(false)
 local function schedule()
   timer:set_enabled(false)
@@ -106,9 +116,4 @@ hl.on("monitor.removed", schedule)
 hl.bind("switch:on:Lid Switch", schedule, { locked = true })
 hl.bind("switch:off:Lid Switch", schedule, { locked = true })
 sync_panel()
-
--- Start with focus (and the cursor) on the main screen: the TCL at the desk, the
--- laptop panel when undocked, the only monitor in clamshell.
-hl.on("hyprland.start", function()
-  hl.dispatch(hl.dsp.focus({ monitor = start_focus }))
-end)
+hl.on("hyprland.start", place)

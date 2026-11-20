@@ -17,6 +17,26 @@
   # on OCuLink or with nothing plugged in and can stay enabled for either link.
   services.hardware.bolt.enable = true;
 
+  # Keep the tunnel the firmware built. The default host reset drops it for ~1 s,
+  # so nvidia probes a missing GPU in the initrd and fails 2-3 times before the link
+  # returns. Untested: remove it if the eGPU stops authorising or enumerating.
+  boot.kernelParams = [ "thunderbolt.host_reset=0" ];
+
+  # Unplugging the eGPU while a monitor is lit on it wedges the NVIDIA driver
+  # (Xid 79, pciehp stuck in nv_drm_remove, Hyprland in D state), see
+  # NVIDIA/open-gpu-kernel-modules#1440 and #1190. There is no fix from userspace,
+  # so reboot by itself instead of needing the power button: a task stuck in D state
+  # for 120 s panics, and the kernel reboots 10 s later. Full SysRq (Alt+SysRq+S,U,B)
+  # is the manual way out.
+  # If the machine ever reboots like this without the eGPU hang, delete the
+  # hung_task_panic line (and kernel.panic) and keep only sysrq. Check with:
+  # journalctl -b -1 -k | grep -iE 'hung_task|Kernel panic'
+  boot.kernel.sysctl = {
+    "kernel.hung_task_panic" = 1;
+    "kernel.panic" = 10;
+    "kernel.sysrq" = 1;
+  };
+
   services.xserver.videoDrivers = [
     "modesetting"
     "nvidia"

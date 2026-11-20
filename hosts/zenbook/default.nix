@@ -64,6 +64,17 @@
   # Intel thermal daemon (Core Ultra); works alongside power-profiles-daemon.
   services.thermald.enable = true;
 
+  # Always on AC (eGPU + hub): cap charge at 80% to cut high-voltage wear. The BIOS
+  # has no such setting; asus-wmi exposes it through sysfs.
+  systemd.services.battery-charge-limit = {
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "/bin/sh -c 'echo 80 > /sys/class/power_supply/BAT0/charge_control_end_threshold'";
+    };
+  };
+
   # Wake-on-LAN (magic packet) on the dock's USB NIC. Matched by driver, not name: the
   # enp0s13f0u1u4u2 name follows the USB port path and changes if the dock moves port.
   services.udev.extraRules = ''

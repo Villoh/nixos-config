@@ -109,5 +109,57 @@
       export __GLX_VENDOR_LIBRARY_NAME=nvidia
       exec "$@"
     '')
+
+    # Detach the eGPU before pulling the cable. Run it from a text console (Ctrl+Alt+F3),
+    # not inside Hyprland: Hyprland holds the NVIDIA driver (the eGPU is its primary
+    # renderer), and removing a GPU the driver still has open stalls the driver, the same
+    # wedge as pulling the cable (NVIDIA/open-gpu-kernel-modules#1440). So it ends the
+    # graphical session first, refuses to continue if anything still has the card open,
+    # removes the PCI functions, and brings the greeter back on the iGPU. Untested.
+    (pkgs.writeShellApplication {
+      name = "egpu-eject";
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.psmisc
+        pkgs.systemd
+      ];
+      text = ''
+        [ "$(id -u)" -eq 0 ] || exec sudo "$0" "$@"
+
+        card=$(readlink -f /dev/dri/egpu) || { echo "no eGPU attached"; exit 1; }
+        name=$(basename "$card")
+        dev=$(readlink -f "/sys/class/drm/$name/device")
+        bus=''${dev%.*}
+
+        read -r -p "This ends the graphical session and removes $(basename "$dev"). Continue? [y/N] " ans
+        [ "$ans" = y ] || exit 1
+
+        # greetd's sessions live in their own logind scopes, so stopping greetd alone
+        # would leave Hyprland running: end every Wayland session, then greetd.
+        while read -r s _; do
+          [ "$(loginctl show-session "$s" -p Type --value)" = wayland ] && loginctl terminate-session "$s"
+        done < <(loginctl list-sessions --no-legend)
+        systemctl stop greetd
+        sleep 3
+
+        shopt -s nullglob
+        nodes=(/dev/nvidia* "$card")
+        for r in /sys/class/drm/"$name"/device/drm/renderD*; do
+          nodes+=("/dev/dri/$(basename "$r")")
+        done
+        if fuser -s "''${nodes[@]}" 2>/dev/null; then
+          echo "Still in use, not removing:"
+          fuser -v "''${nodes[@]}" 2>&1 || true
+          systemctl start greetd
+          exit 1
+        fi
+
+        for fn in "$bus".*; do
+          echo 1 > "$fn/remove"
+        done
+        systemctl start greetd
+        echo "eGPU removed. Safe to unplug the cable."
+      '';
+    })
   ];
 }

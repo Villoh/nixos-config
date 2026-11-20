@@ -37,6 +37,11 @@ end
 -- applies on the laptop panel alone (see docs if X11 apps look tiny there).
 hl.config({ xwayland = { force_zero_scaling = true } })
 
+-- Focus follows the mouse and the cursor starts on the first connector (the external
+-- monitor). Start it on the panel so apps launched at login open there; place() moves
+-- it to the TCL at the desk. Ignored in clamshell, when the panel is off.
+hl.config({ cursor = { default_monitor = "eDP-1" } })
+
 -- Electron apps (Codex, Claude) trigger auto HDR on fullscreen, which turns on
 -- wide gamut and shows a warning. Set to 1 or 2 to use HDR.
 hl.config({ render = { cm_auto_hdr = 0 } })
@@ -94,18 +99,23 @@ end
 
 -- At login the monitors appear after this file ran, so each got whatever workspace
 -- was free (11...) before the rules above were right. Once, with monitors present:
--- show 6 on its monitor, then 1, which also leaves focus (and the cursor) on the
--- main screen: the TCL at the desk, the laptop panel when undocked, the only
--- monitor in clamshell.
-local placed
+-- show 6 on its monitor, then 1, which focuses the main screen: the TCL at the desk,
+-- the laptop panel when undocked, the only monitor in clamshell. Focus follows the
+-- mouse, so the cursor goes to the middle of that screen too or it would pull the
+-- focus back.
 local function place()
-  if placed or #hl.get_monitors() == 0 then return end
-  placed = true
+  if #hl.get_monitors() == 0 then return end
   hl.dispatch(hl.dsp.focus({ workspace = "6" }))
   hl.dispatch(hl.dsp.focus({ workspace = "1" }))
+  local m = hl.get_active_monitor()
+  hl.dispatch(hl.dsp.cursor.move({ x = m.x + m.width / m.scale / 2, y = m.y + m.height / m.scale / 2 }))
 end
 
-local timer = hl.timer(function() sync_panel() place() end, { timeout = 500, type = "oneshot" })
+local placed
+local timer = hl.timer(function()
+  sync_panel()
+  if not placed then placed = true; place() end
+end, { timeout = 500, type = "oneshot" })
 timer:set_enabled(false)
 local function schedule()
   timer:set_enabled(false)

@@ -211,6 +211,12 @@ let
   ++ lib.mapAttrsToList (
     key: dir: dsp "SUPER + CTRL + ALT + ${key}" "Focus monitor ${key}" "focus" { monitor = dir; }
   ) (directions // vimDirections)
+  # Move the window to the monitor in that direction; no monitor there is a no-op.
+  # Modifier order matches DMS so the unbind above catches its bind.
+  ++ lib.mapAttrsToList (
+    key: dir:
+    lua "SUPER + SHIFT + CTRL + ${key}" "Move window to monitor ${key}" ''move_to_monitor("${dir}")''
+  ) (directions // vimDirections)
   ++ [
     # Apps by desktop id or command; the ones with a role are in shell-binds.nix.
     # SUPER+SHIFT+N stays the DMS notepad toggle.

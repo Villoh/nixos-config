@@ -32,6 +32,36 @@ local function cycle(forward)
   end
 end
 
+-- Is there a monitor next to m in that direction (l/r/u/d)? Layout coordinates are
+-- logical, so sizes are divided by scale.
+local function has_monitor(m, dir)
+  local mw, mh = m.width / m.scale, m.height / m.scale
+  for _, o in ipairs(hl.get_monitors()) do
+    if o.id ~= m.id then
+      local ow, oh = o.width / o.scale, o.height / o.scale
+      local overlap_y = o.y < m.y + mh and m.y < o.y + oh
+      local overlap_x = o.x < m.x + mw and m.x < o.x + ow
+      if (dir == "l" and overlap_y and o.x + ow <= m.x)
+        or (dir == "r" and overlap_y and o.x >= m.x + mw)
+        or (dir == "u" and overlap_x and o.y + oh <= m.y)
+        or (dir == "d" and overlap_x and o.y >= m.y + mh) then
+        return true
+      end
+    end
+  end
+  return false
+end
+
+-- Move the window to the monitor in that direction. The dispatcher prints "Invalid monitor"
+-- itself (no Lua error to catch) when there is none, e.g. up/down on a row of monitors.
+local function move_to_monitor(dir)
+  return function()
+    if has_monitor(hl.get_active_monitor(), dir) then
+      hl.dispatch(hl.dsp.window.move({ monitor = dir }))
+    end
+  end
+end
+
 -- Universal clipboard (Omarchy): SUPER+C/V/X/A work in any app. Terminals take
 -- CTRL+SHIFT for copy/paste and ignore cut and select-all, since CTRL+X/A would
 -- reach the shell.

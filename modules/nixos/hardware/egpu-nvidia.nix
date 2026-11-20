@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 # NVIDIA eGPU over Thunderbolt/USB4 on a laptop whose iGPU (Intel) drives the
 # desktop. Hosts select this explicitly; it is not part of the laptop profile.
@@ -65,6 +70,71 @@
     ACTION=="add", SUBSYSTEM=="thunderbolt", ATTRS{iommu_dma_protection}=="1", ATTR{authorized}=="0", ATTR{authorized}="1"
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03*", RUN{builtin}+="kmod load nvidia_drm"
   '';
+
+  # Hibernate resume with the eGPU attached. The initrd above has nvidia bound to the card
+  # when the resume kernel quiesces its devices, and nvidia refuses (nv_pmops_freeze returns
+  # -5) with PreserveVideoMemoryAllocations=1, so the image loads and is then discarded
+  # (NVIDIA/open-gpu-kernel-modules#1343, open; reported fix is to keep nvidia out of the
+  # initrd, which would lose the LUKS prompt on the eGPU monitors). Instead, when an image
+  # is waiting, unbind the driver from the card just before the resume starts: with no
+  # driver bound there is nothing to freeze. If the resume does not happen (no image,
+  # failed), bind it again so a normal boot goes on as usual.
+  # Unbinding with outputs lit is what wedges the driver (Xid 79, see egpu-eject below),
+  # so Plymouth is stopped first, and only when there is a card to unbind (without the
+  # eGPU nothing here touches the boot). Tested once: hibernated and resumed with the
+  # eGPU attached, same boot ID, no Xid; the "only with a card" guard was added after
+  # that test and has not been run. If the boot ever hangs after the LUKS prompt, pick
+  # the previous generation in the boot menu.
+  # Hibernate and resume with the same hardware attached. Hibernating with the eGPU and
+  # resuming without it restores a system that still owns a GPU that is gone, the same
+  # wedge as pulling the cable mid-session (Xid 79, then the hung task panic reboots);
+  # the reverse leaves the restored kernel unaware of a card that is there. Untested
+  # either way. To move the eGPU, end the session and use egpu-eject first.
+  boot.initrd.systemd.services = lib.mkIf (config.boot.resumeDevice != "") {
+    egpu-unbind-for-resume = {
+      description = "Unbind nvidia from the eGPU before resuming from hibernation";
+      # Both LUKS devices are open (no password prompt left to lose) and the resume has
+      # not started.
+      wantedBy = [ "systemd-hibernate-resume.service" ];
+      after = [ "cryptsetup.target" ];
+      before = [ "systemd-hibernate-resume.service" ];
+      unitConfig.DefaultDependencies = false;
+      serviceConfig.Type = "oneshot";
+      script = ''
+        # A hibernation image is marked S1SUSPEND in the last 10 bytes of the first page.
+        sig=$(${pkgs.coreutils}/bin/dd if=${config.boot.resumeDevice} bs=1 skip=4086 count=9 2>/dev/null) || true
+        [ "$sig" = S1SUSPEND ] || exit 0
+        gpus=
+        for d in /sys/bus/pci/devices/*; do
+          [ "$(${pkgs.coreutils}/bin/cat "$d/vendor")" = 0x10de ] || continue
+          case $(${pkgs.coreutils}/bin/cat "$d/class") in 0x03*) ;; *) continue ;; esac
+          [ -e "$d/driver" ] || continue
+          gpus="$gpus $d"
+        done
+        [ -n "$gpus" ] || exit 0
+        ${config.boot.plymouth.package}/bin/plymouth quit || true
+        ${pkgs.coreutils}/bin/sleep 1
+        for d in $gpus; do
+          echo "''${d##*/}" >> /run/egpu-unbound
+          echo "''${d##*/}" > "$d/driver/unbind"
+        done
+      '';
+    };
+    egpu-rebind-after-resume = {
+      description = "Bind nvidia back to the eGPU when the resume did not happen";
+      wantedBy = [ "initrd.target" ];
+      after = [ "systemd-hibernate-resume.service" ];
+      before = [ "initrd.target" ];
+      unitConfig.DefaultDependencies = false;
+      serviceConfig.Type = "oneshot";
+      script = ''
+        [ -s /run/egpu-unbound ] || exit 0
+        while read -r dev; do
+          echo "$dev" > /sys/bus/pci/drivers_probe
+        done < /run/egpu-unbound
+      '';
+    };
+  };
 
   services.udev.extraRules = ''
     # Stable aliases for Hyprland. The class match matters: on Thunderbolt the

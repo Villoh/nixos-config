@@ -33,6 +33,7 @@ local function set_workspaces(a, b)
       workspace = tostring(i),
       monitor = i <= 5 and a or b,
       default = i == 1 or i == 6,
+      persistent = i == 1 or i == 6, -- always exists, so rehome() can move it when the rules come late
     })
   end
 end

@@ -21,13 +21,17 @@ hl.monitor({
 })
 
 -- Workspaces 1-5 on the first monitor, 6-10 on the second (an unpinned workspace
--- opens on the focused monitor). Desk: TCL and Acer. Anywhere else: the laptop
--- panel and the first other monitor (or the panel again when alone). Rules naming
--- an absent monitor match nothing and Hyprland hands out 11, 12... instead.
+-- opens on the focused monitor), 11 on the laptop panel. Desk: TCL and Acer. Anywhere
+-- else: the laptop panel and the first other monitor (or the panel again when alone).
+-- Rules naming an absent monitor match nothing and Hyprland hands out 12, 13... instead.
 local ws_key
-local function set_workspaces(a, b)
-  if a .. b == ws_key then return end
-  ws_key = a .. b
+local function set_workspaces(a, b, panel)
+  if a .. b .. tostring(panel) == ws_key then return end
+  ws_key = a .. b .. tostring(panel)
+  -- Persistent, so the panel always has its own workspace and never gets a 12, 13...
+  if panel ~= false then
+    hl.workspace_rule({ workspace = "11", monitor = "eDP-1", default = true, persistent = true })
+  end
   for i = 1, 10 do
     hl.workspace_rule({
       workspace = tostring(i),
@@ -89,7 +93,7 @@ local function sync_panel()
     set_workspaces("desc:" .. TCL, "desc:" .. ACER)
   elseif want then
     -- Clamshell: the panel is about to go off, so everything moves to the other monitor.
-    set_workspaces("desc:" .. ext, "desc:" .. ext)
+    set_workspaces("desc:" .. ext, "desc:" .. ext, false)
   else
     set_workspaces("eDP-1", ext and ("desc:" .. ext) or "eDP-1")
   end
@@ -119,14 +123,17 @@ end
 
 -- At login the panel is the only monitor, so workspace 1 (and any app opened on it) is
 -- created there; rules do not move an existing workspace, and the TCL would get 11.
--- Move workspaces 1-10 to their desk monitor. Idempotent; an absent monitor leaves its
+-- Move workspaces 1-11 to their desk monitor. Idempotent; an absent monitor leaves its
 -- workspaces where they are.
 local function rehome()
   local mons = {}
-  for _, m in ipairs(hl.get_monitors()) do mons[m.description] = m.name end
+  for _, m in ipairs(hl.get_monitors()) do
+    mons[m.description] = m.name
+    if m.name == "eDP-1" then mons.panel = m.name end
+  end
   for _, w in ipairs(hl.get_workspaces()) do
-    local want = mons[w.id <= 5 and TCL or ACER]
-    if w.id >= 1 and w.id <= 10 and want and w.monitor.name ~= want then
+    local want = mons[w.id == 11 and "panel" or w.id <= 5 and TCL or ACER]
+    if w.id >= 1 and w.id <= 11 and want and w.monitor.name ~= want then
       hl.dispatch(hl.dsp.workspace.move({ workspace = w.id, monitor = want }))
     end
   end

@@ -2,12 +2,16 @@ local TCL = "Technical Concepts Ltd 27C2A P2611005101"
 local ACER = "Acer Technologies VG280K 0x0431B372"
 
 -- TCL 27C2A on the left, Acer VG280K on the right: both 4K at scale 1.5, so the
--- same logical height and no vertical offset.
+-- same logical height and no vertical offset. Only the TCL runs 10-bit: the
+-- Acer is on HDMI 2.0, which has no bandwidth for 4K60 10-bit RGB. HDR is not
+-- forced on the desktop (it looked dim and washed out); cm_auto_hdr below turns
+-- it on for fullscreen HDR content.
 hl.monitor({
   output = "desc:" .. TCL,
   mode = "3840x2160@160",
   position = "0x0",
   scale = 1.5,
+  bitdepth = 10,
 })
 hl.monitor({
   output = "desc:" .. ACER,
@@ -43,8 +47,9 @@ hl.config({ xwayland = { force_zero_scaling = true } })
 hl.config({ cursor = { default_monitor = "eDP-1" } })
 
 -- Electron apps (Codex, Claude) trigger auto HDR on fullscreen, which turns on
--- wide gamut and shows a warning. Set to 1 or 2 to use HDR.
-hl.config({ render = { cm_auto_hdr = 0 } })
+-- wide gamut, and shows a warning on 8-bit outputs. 1 = HDR for fullscreen HDR
+-- content (games), 0 = never.
+hl.config({ render = { cm_auto_hdr = 1 } })
 
 -- The state is recomputed from scratch each time, so the same code runs at
 -- start and on every event. Pitfalls, from Hyprland discussions #14660 and

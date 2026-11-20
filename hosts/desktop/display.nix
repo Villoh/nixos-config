@@ -41,20 +41,24 @@
     hl.config({ xwayland = { force_zero_scaling = true } })
 
     -- Electron apps (Codex, Claude) trigger auto HDR on fullscreen, which turns on
-    -- wide gamut while the outputs run 8-bit and shows a warning. Set to 1 or 2
-    -- (and enable 10-bit) to use HDR.
-    hl.config({ render = { cm_auto_hdr = 0 } })
+    -- wide gamut, and shows a warning on 8-bit outputs. 1 = HDR for fullscreen HDR
+    -- content (games), 0 = never.
+    hl.config({ render = { cm_auto_hdr = 1 } })
 
     -- XWayland marks no primary output, so Wine/Proton games pick HDMI-A-1.
     hl.on("hyprland.start", function()
       hl.exec_cmd("${pkgs.xrandr}/bin/xrandr --output DP-1 --primary")
     end)
 
+    -- Only DP-1 (TCL 27C2A) runs 10-bit: HDMI-A-1 (Acer) is HDMI 2.0, which has no
+    -- bandwidth for 4K60 10-bit RGB. HDR is not forced on the desktop (it looked dim
+    -- and washed out); cm_auto_hdr above turns it on for fullscreen HDR content.
     hl.monitor({
       output = "DP-1",
       mode = "3840x2160@160",
       position = "0x0",
       scale = 1.5,
+      bitdepth = 10,
     })
     hl.monitor({
       output = "HDMI-A-1",

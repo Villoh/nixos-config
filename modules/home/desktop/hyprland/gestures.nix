@@ -99,10 +99,13 @@ let
     (g 4 "right" "" "Next window" (fn "cycle(true)"))
     (g 4 "up" "" "Fullscreen" (builtin "fullscreen" { }))
     (g 4 "down" "" "Toggle floating" (builtin "float" { }))
-    (g 3 "pinchin" "" "Launcher" (run "launcher"))
-    (g 3 "pinchout" "" "Notification center" (run "notifyCenter"))
-    (g 4 "pinchin" "" "Control Center" (run "controlCenter"))
-    (g 4 "pinchout" "" "Quake terminal" (fn "quake(${toLua terminal})"))
+    # zoomout = fingers together (pinch), zoomin = fingers apart (spread). They are Hyprland's
+    # aliases of pinchout and pinchin, which its wiki describes the other way round: in
+    # TrackpadGestures.cpp scale < 1 (fingers together) is PINCH_OUT.
+    (g 3 "zoomout" "" "Launcher" (run "launcher"))
+    (g 3 "zoomin" "" "Notification center" (run "notifyCenter"))
+    (g 4 "zoomout" "" "Control Center" (run "controlCenter"))
+    (g 4 "zoomin" "" "Quake terminal" (fn "quake(${toLua terminal})"))
 
     # SUPER: move, resize and capture the active window 1:1; zoom the screen.
     (g 3 "horizontal" "SUPER" "Move window" (builtin "move" { }))
@@ -182,9 +185,9 @@ let
     horizontal = "↔";
     vertical = "↕";
     swipe = "swipe";
-    pinch = "pinch";
-    pinchin = "pinch in";
-    pinchout = "pinch out";
+    pinch = "pinch or spread";
+    zoomout = "pinch";
+    zoomin = "spread";
   };
   key =
     x:

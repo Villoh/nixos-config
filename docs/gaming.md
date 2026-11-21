@@ -6,7 +6,7 @@ a launcher.
 | Layer | Where | What it provides |
 | --- | --- | --- |
 | Host support | `profiles/gaming.nix` → `modules/nixos/gaming/` | 32-bit graphics and audio, Steam controller udev rules, GameMode, Gamescope and the `Steam (user profile)` session |
-| User clients | `modules/home/gaming/` | Steam, Proton-GE, Lutris, Heroic, Wine/Winetricks, ProtonUp-Qt, ProtonPlus, MangoHud, GOverlay |
+| User clients | `modules/home/gaming/` | Steam, Proton-GE, Lutris, Heroic, Bottles, Wine/Winetricks, ProtonUp-Qt, ProtonPlus, MangoHud, GOverlay, Ludusavi |
 
 Only `desktop` imports the profile, and only Mikel's Home Manager profile on that
 host imports the user module (`hosts/desktop/default.nix`). The Zenbook and any

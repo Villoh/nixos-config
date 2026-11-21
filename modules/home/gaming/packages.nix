@@ -2,8 +2,10 @@
 
 {
   home.packages = with pkgs; [
+    bottles
     heroic
     hydralauncher
+    ludusavi
     lutris
     umu-launcher
     protonup-qt

@@ -6,4 +6,6 @@
   # GIO/GVfs para Strata y Nautilus; también instala las reglas udev MTP.
   services.gvfs.enable = true;
   security.polkit.enable = true;
+  # VeraCrypt monta por defecto en /media/veracrypt<N> si /media existe; GIO solo lista mounts ahí.
+  systemd.tmpfiles.rules = [ "d /media 0755 root root -" ];
 }

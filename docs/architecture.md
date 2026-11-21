@@ -191,6 +191,13 @@ including its current limitations if a source goes missing. Review this
 workaround when upgrading nixpkgs. Do not restart greetd in an active session
 just to refresh appearance.
 
+Settings → Greeter in DMS shows "Not linked" with a "Set up" button on NixOS. This is
+expected: the UI looks for a live slot at `/var/cache/dms-greeter/users/<user>/`, while the
+NixOS module uses `/var/lib/dms-greeter`. Do not press "Set up" (or "Apply changes"): it runs
+`dms-greeter sync`, which is disabled on NixOS and documented as unavailable there. The
+`configHome` copy above is the sync; `dms-greeter status` reports the declarative state.
+Faking the link with tmpfiles would misreport the state and need greeter read access to HOME.
+
 See official [NixOS configuration](https://danklinux.com/docs/dankgreeter/nixos)
 and [greeter cache format](https://danklinux.com/docs/dankgreeter/configuration).
 Do not delete the cache to work around startup errors. UWSM starts DMS through

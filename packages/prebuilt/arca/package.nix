@@ -16,11 +16,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "arca";
-  version = "0.10.0";
+  version = "1.0.0";
 
   src = fetchurl {
     url = "https://github.com/beyondhumane/arca/releases/download/v${finalAttrs.version}/arca-v${finalAttrs.version}-linux-x86_64.tar.gz";
-    hash = "sha256-VpoQTzUuF0FSIaLEt5EE496R36dj9mVmpzIN1Rp+DG0=";
+    hash = "sha256-qm0OEBubBz93xZWZNHSxvM5oAMOMwTj+uN+BTHiO+fQ=";
   };
 
   # The release tarball ships no icon; the same file the source build installs, at the tag.

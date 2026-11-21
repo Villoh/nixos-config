@@ -25,13 +25,16 @@ hl.monitor({
 -- else: the laptop panel and the first other monitor (or the panel again when alone).
 -- Rules naming an absent monitor match nothing and Hyprland hands out 12, 13... instead.
 local ws_key
-local function set_workspaces(a, b, panel)
-  if a .. b .. tostring(panel) == ws_key then return end
-  ws_key = a .. b .. tostring(panel)
+local function set_workspaces(a, b, panel, closed)
+  local key = a .. b .. tostring(panel) .. tostring(closed)
+  if key == ws_key then return end
+  ws_key = key
   -- Persistent, so the panel always has its own workspace and never gets a 12, 13...
   -- Only with two distinct monitors: a single screen shows just workspace 1.
+  -- Not with the lid closed: SUPER+num cannot reach 11 then, so an empty one must vanish
+  -- (one with windows stays, on the first monitor, until emptied).
   if panel ~= false then
-    hl.workspace_rule({ workspace = "11", monitor = "eDP-1", default = a ~= b, persistent = a ~= b })
+    hl.workspace_rule({ workspace = "11", monitor = "eDP-1", default = a ~= b, persistent = a ~= b and not closed })
   end
   for i = 1, 10 do
     hl.workspace_rule({
@@ -91,7 +94,7 @@ local function sync_panel()
   -- one) and a lifeline if the eGPU drops and takes the desk monitors with it.
   local want = ext and lid_closed()
   if desk then
-    set_workspaces("desc:" .. TCL, "desc:" .. ACER)
+    set_workspaces("desc:" .. TCL, "desc:" .. ACER, true, want)
   elseif want then
     -- Clamshell: the panel is about to go off, so everything moves to the other monitor.
     set_workspaces("desc:" .. ext, "desc:" .. ext, false)

@@ -265,7 +265,14 @@ let
     (lua "ALT + Tab" "Next window" "cycle(true)")
     (lua "ALT + SHIFT + Tab" "Previous window" "cycle(false)")
   ]
-  ++ shellBinds;
+  ++ shellBinds.binds;
+
+  gestures = import ./gestures.nix {
+    inherit lib wpctl;
+    inherit (shellBinds) commands;
+    shell = if noctalia then "noctalia" else "dms";
+    terminal = TERMINAL;
+  };
 
   active = lib.filter (b: b ? exec || b ? dsp || b ? lua) binds;
 
@@ -328,6 +335,7 @@ in
       (builtins.readFile ../../../nixos/desktop/dms/hyprland-base.lua)
       (builtins.readFile ./config.lua)
       keybinds
+      gestures
       ''
         require("/etc/xdg/hypr/host")
         -- Optional per-host binds (the greeter loads host.lua too, so they live apart).

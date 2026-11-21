@@ -1,8 +1,8 @@
 # Keybinds that depend on the desktop shell (DMS or Noctalia). The keys are written
 # once in `binds`; each shell only supplies the commands in `shells.<shell>`. An action
 # the active shell has no command for is skipped, and the app actions fall back to
-# xdg-open / gtk-launch, which work with any shell. Returns bind entries for
-# default.nix, which renders them.
+# xdg-open / gtk-launch, which work with any shell. Returns { binds; commands; }:
+# bind entries for default.nix, which renders them, and the command table.
 {
   lib,
   pkgs,
@@ -231,6 +231,10 @@ let
     (media (bind "XF86MonBrightnessDown" "brightnessDown" "Brightness down"))
   ];
 in
-map (b: removeAttrs b [ "action" ] // { exec = commands.${b.action}; }) (
-  lib.filter (b: commands ? ${b.action}) binds
-)
+{
+  # Also used by the touchpad gestures (gestures.nix).
+  inherit commands;
+  binds = map (b: removeAttrs b [ "action" ] // { exec = commands.${b.action}; }) (
+    lib.filter (b: commands ? ${b.action}) binds
+  );
+}

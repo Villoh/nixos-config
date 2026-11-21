@@ -29,15 +29,16 @@ local function set_workspaces(a, b, panel)
   if a .. b .. tostring(panel) == ws_key then return end
   ws_key = a .. b .. tostring(panel)
   -- Persistent, so the panel always has its own workspace and never gets a 12, 13...
+  -- Only with two distinct monitors: a single screen shows just workspace 1.
   if panel ~= false then
-    hl.workspace_rule({ workspace = "11", monitor = "eDP-1", default = true, persistent = true })
+    hl.workspace_rule({ workspace = "11", monitor = "eDP-1", default = a ~= b, persistent = a ~= b })
   end
   for i = 1, 10 do
     hl.workspace_rule({
       workspace = tostring(i),
       monitor = i <= 5 and a or b,
-      default = i == 1 or i == 6,
-      persistent = i == 1 or i == 6, -- always exists, so rehome() can move it when the rules come late
+      default = i == 1 or (i == 6 and a ~= b),
+      persistent = i == 1 or (i == 6 and a ~= b), -- always exists, so rehome() can move it when the rules come late
     })
   end
 end

@@ -252,9 +252,9 @@ edit the `TCL` and `ACER` strings there (`hyprctl monitors` shows each `descript
 
   | Situation | TCL | Acer | Other monitor | Panel `eDP-1` | Focus |
   | --- | --- | --- | --- | --- | --- |
-  | Laptop alone, lid open | - | - | - | 1-10 | panel, workspace 1 |
+  | Laptop alone, lid open | - | - | - | 1-10, only 1 persistent (6 and 11 are not, so no extra empty workspaces) | panel, workspace 1 |
   | Laptop alone, lid closed | - | - | - | logind suspends | - |
-  | Desk (TCL + Acer), lid open | 1-5 | 6-10 | - | 11 (next free) | TCL, workspace 1 |
+  | Desk (TCL + Acer), lid open | 1-5 | 6-10 | - | 11 (persistent) | TCL, workspace 1 |
   | Desk, lid closed | 1-5 | 6-10 | - | off; its workspace and windows move to the first monitor in Hyprland's list, the Acer in the test | TCL |
   | TCL only, lid open | 1-5 | - | - | 11; 6-10 open on the focused monitor (?) | TCL |
   | Acer only, lid open | 1-5 open on the focused monitor (?) | 6-10 | - | 11 | Acer |
@@ -271,7 +271,7 @@ edit the `TCL` and `ACER` strings there (`hyprctl monitors` shows each `descript
   the panel off instead (clamshell). The machine suspends only with no external monitor.
 - At login the panel is the only monitor, so workspace 1 and the apps opened on it are
   created there, and Hyprland's rules do not move an existing workspace: the TCL would get
-  11. `rehome()` in `display.lua` moves workspaces 1-10 to their desk monitor after each
+  11. `rehome()` in `display.lua` moves workspaces 1-11 to their desk monitor after each
   recompute; an absent monitor leaves its workspaces where they are. Checked live only for
   the no-op case; the login case needs a boot to see.
 - Known gap: plugging a desk monitor in with the session open did not update the workspace
@@ -283,8 +283,8 @@ edit the `TCL` and `ACER` strings there (`hyprctl monitors` shows each `descript
 - The lid is read from `/proc/acpi/button/lid/*/state`, not from the bind callback (which can
   report the old state in Hyprland 0.57.2). If that file is missing the lid counts as open and
   only the desk rule works.
-- `xwayland.force_zero_scaling = true` and `render.cm_auto_hdr = 0` are the same as desktop's
-  (mixed-DPI XWayland apps handle their own scale; no auto HDR for fullscreen Electron apps).
+- `xwayland.force_zero_scaling = true` and `render.cm_auto_hdr = 1` are the same as desktop's
+  (mixed-DPI XWayland apps handle their own scale; HDR only for fullscreen HDR content).
   `force_zero_scaling` also applies with the panel alone.
 
 ## NVIDIA eGPU

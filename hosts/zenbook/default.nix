@@ -30,6 +30,11 @@
 
   home-manager.users.mikel.imports = [ ../../modules/home/gaming ];
 
+  # Avalonia (Tunnel Agent) is X11-only; with force_zero_scaling it needs per-output scale.
+  # shortcut: connector names depend on the port; if a monitor changes port its entry stops
+  # matching, so update the names (`hyprctl monitors`).
+  home-manager.users.mikel.home.sessionVariables.AVALONIA_SCREEN_SCALE_FACTORS = "eDP-1=2;HDMI-A-2=1.5;DP-3=1.5";
+
   networking.hostName = "nixos-zenbook";
   system.stateVersion = "26.05";
 

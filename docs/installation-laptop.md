@@ -453,8 +453,10 @@ Attach the eGPU and monitors *before* logging in.
 - The lid binds work. Reports say `switch:*` binds may stop working when they sit in the same
   Lua file as the `hl.monitor` rules, which is the case here. Test closing and opening the lid.
 - Note the connector names (`hyprctl monitors`, `xrandr`). Desktop's `DP-1`/`HDMI-A-1` values
-  (`AVALONIA_SCREEN_SCALE_FACTORS`, `xrandr --primary`, the greeter's cursor monitor) are not
-  copied to Zenbook because the names depend on the port; add them only if needed.
+  (`xrandr --primary`, the greeter's cursor monitor) are not copied to Zenbook because the names
+  depend on the port; add them only if needed. `AVALONIA_SCREEN_SCALE_FACTORS` is set in
+  `hosts/zenbook/default.nix` with the current names (`eDP-1`, `HDMI-A-2`, `DP-3`): update them
+  if a monitor changes port.
 
 ### Work monitor
 

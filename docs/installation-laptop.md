@@ -462,12 +462,22 @@ Attach the eGPU and monitors *before* logging in.
 
 ### Touchscreen
 
-Gestures come from the hyprgrass plugin (`hosts/zenbook/touchscreen.nix`, which lists them).
+Gestures come from the hyprgrass plugin: `hosts/zenbook/touchscreen.nix` loads it and
+`modules/home/desktop/hyprland/touchscreen.nix` lists the gestures (also in the DMS keybind
+viewer, under "Touch"). None is tested yet.
 
 - `hyprctl plugin list` shows `hyprgrass`. If not, the plugin does not match the running
   Hyprland: see [updates](maintenance/updates.md#own-packages-packages).
-- 3 fingers left/right switches workspace; a 3-finger tap toggles floating; a 3-finger long
-  press then drag moves the window. Not tested yet.
+- 3 fingers: swipe left/right switches workspace, up is the overview, down the scratchpad.
+  4 fingers: swipe left/right cycles windows, up is fullscreen, down toggles floating.
+  5 fingers: swipe left/right sends the window to another workspace, up pops it out, down
+  closes it.
+- Hold 3 fingers and drag moves the window; hold 4 and drag resizes it.
+- Swipes from the edges: bottom opens the launcher, top the Control Center, left the
+  overview, right the notifications. Sliding along the right edge changes the volume and
+  along the left edge the brightness.
+- If an edge swipe also hits the bar or an app's own edge, raise `edge_margin` or lower it
+  in `hosts/zenbook/touchscreen.nix`.
 
 ### eGPU
 

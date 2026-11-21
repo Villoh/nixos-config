@@ -268,13 +268,29 @@ let
     # The full viewer (SUPER+SHIFT+/, SUPER+CTRL+K) lists the gestures too; these two open it
     # on the gestures alone, from a sheet of their own. SUPER+CTRL+SHIFT+/ is the docked AL68
     # one and G the laptop keyboard one (SUPER+CTRL+G is the monitor input toggle, host binds).
-    (exec "SUPER + CTRL + SHIFT + Slash" "Touchpad gestures only" gesturesOnly)
-    (exec "SUPER + CTRL + ALT + G" "Touchpad gestures only" gesturesOnly)
+    (exec "SUPER + CTRL + SHIFT + Slash" "Gestures only" gesturesOnly)
+    (exec "SUPER + CTRL + ALT + G" "Gestures only" gesturesOnly)
   ]
   ++ shellBinds.binds;
 
-  gesturesOnly = "dms ipc call keybinds toggleWithPath hyprland ${pkgs.writeTextDir "hyprland.lua" gestures.sheet}";
+  # Touchpad gestures, plus the touchscreen ones on a host that has them.
+  gesturesOnly = "dms ipc call keybinds toggleWithPath hyprland ${
+    pkgs.writeTextDir "hyprland.lua" (
+      gestures.sheet + lib.optionalString hasTouchscreen touchscreen.sheet
+    )
+  }";
   gestures = import ./gestures.nix {
+    inherit lib wpctl;
+    inherit (shellBinds) commands;
+    shell = if noctalia then "noctalia" else "dms";
+    terminal = TERMINAL;
+  };
+
+  # Touchscreen gestures only where the host loads hyprgrass (hosts/zenbook/touchscreen.nix).
+  hasTouchscreen = lib.any (
+    p: lib.getName p == "hyprgrass"
+  ) config.wayland.windowManager.hyprland.plugins;
+  touchscreen = import ./touchscreen.nix {
     inherit lib wpctl;
     inherit (shellBinds) commands;
     shell = if noctalia then "noctalia" else "dms";
@@ -343,13 +359,15 @@ in
       (builtins.readFile ./config.lua)
       keybinds
       gestures.lua
+      (lib.optionalString hasTouchscreen touchscreen.lua)
       ''
         -- Never runs. DMS's keybind viewer (SUPER+SHIFT+/, SUPER+CTRL+K) parses this file
-        -- without executing it and reads hl.bind only, so the touchpad gestures are listed
-        -- here as binds to show up next to the keybinds.
+        -- without executing it and reads hl.bind only, so the touchpad and touchscreen
+        -- gestures are listed here as binds to show up next to the keybinds.
         if false then
       ''
       gestures.sheet
+      (lib.optionalString hasTouchscreen touchscreen.sheet)
       ''
         end
       ''

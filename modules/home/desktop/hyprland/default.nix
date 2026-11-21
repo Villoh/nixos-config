@@ -264,9 +264,16 @@ let
   ++ lib.optionals (!noctalia) [
     (lua "ALT + Tab" "Next window" "cycle(true)")
     (lua "ALT + SHIFT + Tab" "Previous window" "cycle(false)")
+
+    # The full viewer (SUPER+SHIFT+/, SUPER+CTRL+K) lists the gestures too; these two open it
+    # on the gestures alone, from a sheet of their own. SUPER+CTRL+SHIFT+/ is the docked AL68
+    # one and G the laptop keyboard one (SUPER+CTRL+G is the monitor input toggle, host binds).
+    (exec "SUPER + CTRL + SHIFT + Slash" "Touchpad gestures only" gesturesOnly)
+    (exec "SUPER + CTRL + ALT + G" "Touchpad gestures only" gesturesOnly)
   ]
   ++ shellBinds.binds;
 
+  gesturesOnly = "dms ipc call keybinds toggleWithPath hyprland ${pkgs.writeTextDir "hyprland.lua" gestures.sheet}";
   gestures = import ./gestures.nix {
     inherit lib wpctl;
     inherit (shellBinds) commands;
@@ -335,7 +342,17 @@ in
       (builtins.readFile ../../../nixos/desktop/dms/hyprland-base.lua)
       (builtins.readFile ./config.lua)
       keybinds
-      gestures
+      gestures.lua
+      ''
+        -- Never runs. DMS's keybind viewer (SUPER+SHIFT+/, SUPER+CTRL+K) parses this file
+        -- without executing it and reads hl.bind only, so the touchpad gestures are listed
+        -- here as binds to show up next to the keybinds.
+        if false then
+      ''
+      gestures.sheet
+      ''
+        end
+      ''
       ''
         require("/etc/xdg/hypr/host")
         -- Optional per-host binds (the greeter loads host.lua too, so they live apart).

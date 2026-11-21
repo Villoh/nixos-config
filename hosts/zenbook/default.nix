@@ -67,6 +67,9 @@
   # Intel thermal daemon (Core Ultra); works alongside power-profiles-daemon.
   services.thermald.enable = true;
 
+  # Firmware updates from LVFS (BIOS, NVMe, Thunderbolt...): `fwupdmgr get-updates`.
+  services.fwupd.enable = true;
+
   # Always on AC (eGPU + hub): cap charge at 80% to cut high-voltage wear. The BIOS
   # has no such setting; asus-wmi exposes it through sysfs.
   systemd.services.battery-charge-limit = {

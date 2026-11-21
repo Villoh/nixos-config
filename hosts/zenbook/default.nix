@@ -23,6 +23,7 @@
     ../../modules/nixos/home-manager.nix
     ./display.nix
     ./keyboard.nix
+    ./touchscreen.nix
     # Acid Boot with the relayout patch for the eGPU monitors; replaces the input's own module.
     ../../modules/nixos/hardware/acid-boot-egpu.nix
   ];

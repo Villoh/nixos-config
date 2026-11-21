@@ -460,6 +460,15 @@ Attach the eGPU and monitors *before* logging in.
 
 - Lid open: the panel stays on beside the other monitor. Lid closed: the panel turns off.
 
+### Touchscreen
+
+Gestures come from the hyprgrass plugin (`hosts/zenbook/touchscreen.nix`, which lists them).
+
+- `hyprctl plugin list` shows `hyprgrass`. If not, the plugin does not match the running
+  Hyprland: see [updates](maintenance/updates.md#own-packages-packages).
+- 3 fingers left/right switches workspace; a 3-finger tap toggles floating; a 3-finger long
+  press then drag moves the window. Not tested yet.
+
 ### eGPU
 
 Follow the notes above; nothing about it is verified.

@@ -96,7 +96,9 @@ those flags, so `nixup update <name>` follows the same rules:
 - `passthru.nixup.versionUrl`: a URL that serves the latest version, for a project whose
   GitHub tags mix release channels (none here now; brave-origin used it while it was out
   of nixpkgs).
-- `passthru.nixup.pinned`: kept where it is on purpose (herdr-agent-icons).
+- `passthru.nixup.pinned`: kept where it is on purpose (herdr-agent-icons; hyprgrass, whose
+  tag `hl-<version>` must match Hyprland: bump `rev`, `tag` and the hash by hand when a
+  Hyprland update fails to load the plugin).
 
 A matching hash does not prove the new version runs: build it and try it before `switch`.
 Not covered: `dms-bitwarden` (pinned on purpose, audited by hand).

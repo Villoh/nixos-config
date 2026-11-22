@@ -11,8 +11,10 @@
 # reaches us as a DRM hotplug uevent (tested on the TCL 27C2A). Each uevent brings any
 # external monitor off in Hyprland back with `hyprctl reload` (a disabled output sends
 # no signal, so the monitor would otherwise find nothing and fall back to its other
-# input), then disables again those that stay silent on DDC. Leaving raises no uevent,
-# so a slow DDC check every 10 s (no reload) is what notices it. Monitors that never
+# input), then disables again those that stay silent on DDC. Leaving raises a uevent on
+# the Acer VG280K (tested) but not on the TCL 27C2A: a TCL switched away needs
+# SUPER+CTRL+G. A DDC poll every 10 s used to catch it, but ddcutil holds the NVIDIA
+# driver lock and froze the game's render thread every 10 s. Monitors that never
 # answered DDC (TVs, the laptop panel) are left alone, and the last active monitor is
 # never disabled.
 let
@@ -92,17 +94,12 @@ let
 
         check 0 # learn which monitors answer DDC
         while true; do
-          if IFS= read -r -t 10 line; then
-            case $line in UDEV*change*"(drm)") ;; *) continue ;; esac
-            # One input change is a burst of uevents: wait for it to settle, check once.
-            while read -r -t 2 _; do :; done
-            check 1
-          else
-            rc=$?
-            # Above 128 is the 10 s timeout; anything else is udevadm gone.
-            if [ "$rc" -le 128 ]; then break; fi
-            check 0
-          fi
+          # Blocks until a uevent; fails only when udevadm is gone.
+          IFS= read -r line || break
+          case $line in UDEV*change*"(drm)") ;; *) continue ;; esac
+          # One input change is a burst of uevents: wait for it to settle, check once.
+          while read -r -t 2 _; do :; done
+          check 1
           # Our own reload/disable raises uevents too, some of them late: ignore them
           # or this never ends.
           if [ "$acted" = 1 ]; then

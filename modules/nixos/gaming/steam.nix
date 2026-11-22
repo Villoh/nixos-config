@@ -8,6 +8,10 @@
     enable32Bit = true;
   };
   hardware.steam-hardware.enable = true;
+
+  # Proton 11+ and GE-Proton use /dev/ntsync when present and fall back to fsync otherwise.
+  boot.kernelModules = [ "ntsync" ];
+
   services.pulseaudio.support32Bit = config.services.pulseaudio.enable;
   services.pipewire.alsa.support32Bit = config.services.pipewire.alsa.enable;
 

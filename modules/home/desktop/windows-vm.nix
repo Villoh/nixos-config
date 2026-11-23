@@ -35,6 +35,7 @@ let
       pkgs.freerdp
       pkgs.jq
       pkgs.libnotify
+      pkgs.util-linux
       pkgs.openssl
     ];
     text = ''
@@ -42,9 +43,17 @@ let
       cfg="''${XDG_CONFIG_HOME:-$HOME/.config}/windows"
       user=${username}
 
+      # Status goes to a DMS toast (no history); falls back to a notification if DMS is down.
+      running() { [ "$(docker inspect -f '{{.State.Running}}' "$name" 2> /dev/null)" = true ]; }
+
+      toast() {
+        dms ipc call toast info "$1" > /dev/null 2>&1 || notify-send -a "Windows VM" "Windows VM" "$1"
+      }
+
       case "''${1:-launch}" in
         stop)
-          docker stop -t 120 "$name"
+          docker stop -t 120 "$name" > /dev/null
+          echo "windows-vm: stopped"
           exit
           ;;
         status)
@@ -84,12 +93,17 @@ let
 
       if [ ! -e /dev/kvm ]; then
         echo "windows-vm: /dev/kvm is missing; enable virtualization in the BIOS" >&2
-        notify-send -u critical "Windows VM" "/dev/kvm is missing; enable virtualization in the BIOS"
+        notify-send -a "Windows VM" -u critical "Windows VM" "/dev/kvm is missing; enable virtualization in the BIOS"
         exit 1
       fi
 
       # RDP password: random, kept in a private file instead of the repo.
       mkdir -p "$cfg" "$HOME/.windows" "$HOME/Windows"
+
+      # One launcher at a time: a second RDP login kicks the first, and the two loops would
+      # keep reconnecting each other forever.
+      exec 9> "$cfg/lock"
+      flock -n 9 || { toast "Windows VM: already running"; exit 0; }
       if [ ! -e "$cfg/password" ]; then
         (umask 077 && openssl rand -hex 12 > "$cfg/password")
       fi
@@ -108,11 +122,13 @@ let
           -v "$HOME/.windows:/storage" -v "$HOME/Windows:/shared" \
           --stop-timeout 120 \
           dockurr/windows > /dev/null
-      elif [ "$(docker inspect -f '{{.State.Running}}' "$name")" != true ]; then
+        # First run: show the Windows install progress.
+        xdg-open http://127.0.0.1:8006 > /dev/null 2>&1 || true
+      elif ! running; then
         docker start "$name" > /dev/null
       fi
 
-      notify-send "Windows VM" "Starting; the first run installs Windows (see http://127.0.0.1:8006)" -t 10000
+      toast "Windows VM: starting"
 
       # XWayland windows are not scaled by Hyprland, so Windows must do it: RDP only accepts
       # 100, 140 or 180 %. Uses the focused monitor, where the launcher was clicked.
@@ -134,6 +150,8 @@ let
       trap 'interrupted=true' INT
       connected=false
       for _ in $(seq 1 600); do
+        # Container gone (e.g. `windows-vm stop`): nothing left to reconnect to.
+        running || break
         rc=0
         start=$(date +%s)
         xfreerdp /u:"$user" /p:"$pass" /v:127.0.0.1:3389 /cert:ignore /title:"Windows" \
@@ -144,12 +162,18 @@ let
           # Wrong user or password: retrying cannot fix it (134 seen in practice; 132 and 135
           # are authentication failure and locked-out account, from memory).
           132 | 134 | 135)
-            notify-send -u critical "Windows VM" "RDP login failed for '$user'; container left running"
+            notify-send -a "Windows VM" -u critical "Windows VM" "RDP login failed for '$user'; container left running"
             exit 1
             ;;
           *) ;;
         esac
         if [ "$rc" -lt 128 ] && [ "$dur" -gt 10 ]; then
+          connected=true
+          break
+        fi
+        # xfreerdp exits 0 when the user closes its window (a server drop reports an error
+        # code): treat it as a normal close, so it neither reopens nor leaves the VM running.
+        if [ "$rc" -eq 0 ]; then
           connected=true
           break
         fi
@@ -164,13 +188,13 @@ let
 
       # Never stop a VM that was not reached (e.g. Windows is still installing).
       if [ "$connected" = true ] && [ "$keep_alive" = true ]; then
-        notify-send "Windows VM" "Still running; stop it with: windows-vm stop"
+        toast "Windows VM: Still running; stop it with: windows-vm stop"
       elif [ "$connected" = true ]; then
-        notify-send "Windows VM" "Shutting down..."
+        toast "Windows VM: Shutting down..."
         docker stop -t 120 "$name" > /dev/null
-        notify-send "Windows VM" "Stopped"
-      else
-        notify-send -u critical "Windows VM" "Could not connect over RDP; container left running"
+        toast "Windows VM: Stopped"
+      elif running; then
+        notify-send -a "Windows VM" -u critical "Windows VM" "Could not connect over RDP; container left running"
       fi
     '';
   };

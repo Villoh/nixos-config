@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, inputs, pkgs, ... }:
 
 {
   # Generate this host's hardware-configuration.nix on the Zenbook before
@@ -26,8 +26,7 @@
     ./display.nix
     ./keyboard.nix
     ./touchscreen.nix
-    # Acid Boot with the relayout patch for the eGPU monitors; replaces the input's own module.
-    ../../modules/nixos/hardware/acid-boot-egpu.nix
+    inputs.acid-boot.nixosModules.default
   ];
 
   home-manager.users.mikel.imports = [ ../../modules/home/gaming ];

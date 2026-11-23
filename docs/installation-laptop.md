@@ -215,7 +215,7 @@ Zenbook: an output that cannot evaluate breaks `nix flake check` for every host.
 `hosts/zenbook/default.nix` selects:
 
 - hostname `nixos-zenbook`, state version `26.05`, `systemd-boot` (no Secure Boot, no
-  Lanzaboote, no Acid Boot: those are desktop-only);
+  Lanzaboote: those are desktop-only; Acid Boot is on, palette `nix-blue`);
 - the `laptop` profile: audio, Bluetooth, zswap, the desktop session (Hyprland, DMS,
   Dux Greeter), power-profiles-daemon and UPower (battery in the shell);
 - Intel `thermald`, the NVIDIA eGPU module (see below), and the optional services Docker,

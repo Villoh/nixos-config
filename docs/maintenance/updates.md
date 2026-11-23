@@ -76,6 +76,9 @@ branch, and the table shows the locked commit and its age.
 - `dms` provides only Dux Shell's HM module; the shell is nixpkgs' `dux-shell`. Its
   `# nixup: follows nixpkgs#dux-shell` marker makes nixup move the tag to nixpkgs'
   version (after `nixup update nixpkgs`), and show a newer upstream tag only as `info`.
+- `acid-boot` is a public mirror (`github:Villoh/nix-acid-boot`) of the deleted upstream,
+  carrying the eGPU relayout fix, so hosts use its module as is. It follows the default
+  branch: update it with `nix flake update acid-boot`.
 - `himalaya-tui` keeps its own nixpkgs (nixos-25.11), the one upstream tests: with unstable's
   `cargoSetupHook` its `-sys` crates need libraries its derivation does not list.
 - Noctalia's plugin inputs are trusted Luau code: review their diff before updating them.

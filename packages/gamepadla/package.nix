@@ -9,15 +9,16 @@
 
 # The original Gamepadla tester (cakama3a/Polling). Single script: it uploads every result to
 # gamepadla.com and writes data.txt to the current directory. See plus.nix for the CLI/GUI fork.
-stdenvNoCC.mkDerivation {
+stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "gamepadla";
-  version = "1.2.0.1-unstable-2026-01-18";
+  # Python.py is identical at this tag and at master; version.txt upstream is stale (1.2.0.1).
+  version = "1.3.1.4";
 
   src = fetchFromGitHub {
     owner = "cakama3a";
     repo = "Polling";
-    rev = "8c34ed6fc14c3bce49c80e03f4618749aa1424f8";
-    hash = "sha256-SRTCnb82jvXtMGRX2I0S2zPyVWa3/orjUFfBmQGUfGc=";
+    tag = finalAttrs.version;
+    hash = "sha256-N5GeSijB1bIai8Srm6aGf9yBGL6RynyyoBvMepGw+YA=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -32,7 +33,7 @@ stdenvNoCC.mkDerivation {
     runHook postInstall
   '';
 
-  passthru.updateScript = nix-update-script { extraArgs = [ "--version=branch" ]; };
+  passthru.updateScript = nix-update-script { };
 
   meta = {
     description = "Gamepad polling rate tester (original Gamepadla / Polling)";
@@ -40,4 +41,4 @@ stdenvNoCC.mkDerivation {
     license = lib.licenses.mit;
     mainProgram = "gamepadla";
   };
-}
+})

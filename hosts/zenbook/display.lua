@@ -136,10 +136,12 @@ local function rehome()
     if m.name == "eDP-1" then mons.panel = m.name end
   end
   for _, w in ipairs(hl.get_workspaces()) do
-    local want = mons[w.id == 11 and "panel" or w.id <= 5 and TCL or ACER]
-    -- w.monitor is nil while its monitor is gone (input switch on the TCL).
-    if w.id >= 1 and w.id <= 11 and want and (not w.monitor or w.monitor.name ~= want) then
-      hl.dispatch(hl.dsp.workspace.move({ workspace = w.id, monitor = want }))
+    -- w.id is nil for a workspace whose monitor is gone (input switch on the TCL).
+    local id = w.id or 0
+    local want = mons[id == 11 and "panel" or id <= 5 and TCL or ACER]
+    -- w.monitor is nil too while its monitor is gone.
+    if id >= 1 and id <= 11 and want and (not w.monitor or w.monitor.name ~= want) then
+      hl.dispatch(hl.dsp.workspace.move({ workspace = id, monitor = want }))
     end
   end
 end

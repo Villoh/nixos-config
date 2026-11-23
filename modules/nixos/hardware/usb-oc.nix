@@ -3,9 +3,10 @@
 let
   kernel = config.boot.kernelPackages.kernel;
 
-  # VID:PID:bInterval, one entry per device (see lsusb for the IDs).
+  # VID:PID:bInterval, one entry per device model (see lsusb for the IDs). It applies to every
+  # device with that VID:PID, on any port; the module cannot tell two identical devices apart.
   overrides = [
-    "054c:0ce6:1" # DualSense
+    "054c:0ce6:4" # DualSense, 1000 Hz: matches its ~1 kHz sensor data; higher rates are not noticeable
   ];
 
   # Out-of-tree equivalent of Windows' hidusbf: rewrites bInterval on a USB
@@ -48,7 +49,7 @@ in
   # counters exist, so a load-time value oopses. Writing it at runtime is fine.
   #
   # VID:PID:bInterval. DualSense is high-speed: period = 2^(bInterval-1) * 125 us,
-  # so 1 = 8000 Hz, 2 = 4000 Hz, 3 = 2000 Hz, 4 = 1000 Hz (stock). USB only.
+  # so 1 = 8000 Hz, 2 = 4000 Hz, 3 = 2000 Hz, 4 = 1000 Hz, 6 = 250 Hz (stock HID endpoints). USB only.
   # Change at runtime (re-enumerates the device) with:
   #   echo -n '054c:0ce6:2' | sudo tee /sys/module/usb_oc/parameters/interrupt_interval_override
   systemd.services.usb-oc = {

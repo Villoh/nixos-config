@@ -153,12 +153,23 @@ in
 {
   home.packages = [
     windows-vm
+    # Flat four-square Windows logo, drawn here so the launcher does not depend on an icon theme.
+    (pkgs.writeTextDir "share/icons/hicolor/scalable/apps/windows-vm.svg" ''
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <g fill="#0078d4">
+          <rect x="24" y="24" width="100" height="100"/>
+          <rect x="132" y="24" width="100" height="100"/>
+          <rect x="24" y="132" width="100" height="100"/>
+          <rect x="132" y="132" width="100" height="100"/>
+        </g>
+      </svg>
+    '')
     (pkgs.makeDesktopItem {
       name = "windows-vm";
       desktopName = "Windows";
       comment = "Windows 11 VM over RDP (stops when the window closes)";
       exec = "windows-vm";
-      icon = "computer";
+      icon = "windows-vm";
       categories = [
         "System"
         "Emulator"

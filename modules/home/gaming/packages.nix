@@ -3,6 +3,7 @@
 {
   home.packages = with pkgs; [
     bottles
+    faugus-launcher
     heroic
     hydralauncher
     ludusavi

@@ -13,7 +13,7 @@
     ./display.nix
     ../../modules/nixos/core
     ../../modules/nixos/hardware/nvidia.nix
-    ../../modules/nixos/hardware/qualcomm-edl.nix
+    ../../modules/nixos/hardware/astro-mixamp.nix
     ../../modules/nixos/hardware/logitech-receiver.nix
     ../../modules/nixos/hardware/usb-oc.nix
     ../../modules/nixos/services/docker.nix

@@ -27,5 +27,5 @@
   # - mac-style: add flake input + overlays.default; themePackages = [ pkgs.mac-style-plymouth ]; theme = "mac-style" (two-step module, fixed-size images; needs acidBoot.enable = false).
   #   https://github.com/SergioRibera/s4rchiso-plymouth-theme
   # - Acid Boot: add flake input + nixosModules.default; set acidBoot.enable = true (custom Plymouth/systemd integration).
-  #   https://github.com/kurisu-agent/nix-acid-boot
+  #   https://github.com/kurisu-agent/nix-acid-boot (upstream gone; the input is the public mirror Villoh/nix-acid-boot)
 }

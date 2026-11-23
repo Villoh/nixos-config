@@ -7,15 +7,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1793236566,
-        "narHash": "sha256-nU45pkYb9K7UH01TncnBOeifAP4Mxxfc8ehcvFDcouI=",
-        "owner": "kurisu-agent",
+        "lastModified": 1795345455,
+        "narHash": "sha256-0nmcUYzXpz61LK2qvrqm5GOJNUUBtHNycKXzY4WYoJI=",
+        "owner": "Villoh",
         "repo": "nix-acid-boot",
-        "rev": "b518a01be4c2b98beb1e155414ecb273ecbb8c5c",
+        "rev": "4758ca86f335cae6e19b14b5d8ceeec5ab160a79",
         "type": "github"
       },
       "original": {
-        "owner": "kurisu-agent",
+        "owner": "Villoh",
         "repo": "nix-acid-boot",
         "type": "github"
       }

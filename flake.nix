@@ -9,7 +9,7 @@
     nix-ttf-ms-win11-auto.url = "git+ssh://git@github.com/Villoh/nix-ttf-ms-win11-auto";
 
     acid-boot = {
-      url = "github:kurisu-agent/nix-acid-boot";
+      url = "github:Villoh/nix-acid-boot";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

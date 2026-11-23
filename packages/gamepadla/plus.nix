@@ -1,7 +1,9 @@
 {
+  copyDesktopItems,
   fetchFromGitHub,
   fetchPypi,
   lib,
+  makeDesktopItem,
   nix-update-script,
   python3Packages,
   qt6,
@@ -37,6 +39,12 @@ python3Packages.buildPythonApplication rec {
 
   build-system = [ python3Packages.hatchling ];
 
+  # Upstream follows the system theme, and its light variant (TanBlue) is a glaring beige.
+  postPatch = ''
+    substituteInPlace gamepadla_plus/gui.py \
+      --replace-fail 'dark_mode_is_enabled = check_dark_mode_enabled()' 'dark_mode_is_enabled = True'
+  '';
+
   # Upstream pins tight ranges from uv.lock (typer, rich, numpy...); nixpkgs runs slightly behind.
   pythonRelaxDeps = true;
 
@@ -53,7 +61,10 @@ python3Packages.buildPythonApplication rec {
     typer
   ];
 
-  nativeBuildInputs = [ qt6.wrapQtAppsHook ];
+  nativeBuildInputs = [
+    copyDesktopItems
+    qt6.wrapQtAppsHook
+  ];
   buildInputs = [
     qt6.qtbase
     qt6.qtwayland
@@ -61,6 +72,26 @@ python3Packages.buildPythonApplication rec {
   dontWrapQtApps = true;
   preFixup = ''
     makeWrapperArgs+=("''${qtWrapperArgs[@]}")
+  '';
+
+  # Upstream ships no .desktop file. Absolute Exec (@out@ filled in below) so a mise shim of the same name cannot win.
+  desktopItems = [
+    (makeDesktopItem {
+      name = "gamepadla-plus";
+      desktopName = "Gamepadla+";
+      comment = "Gamepad polling rate and latency tester";
+      exec = "@out@/bin/gamepadla-plus";
+      icon = "gamepadla-plus";
+      categories = [ "Utility" ];
+    })
+  ];
+  postInstall = ''
+    install -Dm644 icon/gamepadla-plus-icon.svg \
+      $out/share/icons/hicolor/scalable/apps/gamepadla-plus.svg
+  '';
+
+  postFixup = ''
+    substituteInPlace $out/share/applications/gamepadla-plus.desktop --replace-fail @out@ $out
   '';
 
   passthru.updateScript = nix-update-script { };

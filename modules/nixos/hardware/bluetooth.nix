@@ -1,5 +1,6 @@
 {
-  # BlueZ for the DMS Control Center tile and the Orbit Bluetooth plugin; the adapter
-  # powers on at boot (the default).
+  # BlueZ for the DMS Control Center tile and the Orbit Bluetooth plugin.
   hardware.bluetooth.enable = true;
+  # Adapter stays off at boot and after bluetooth.service restarts (switch); turn it on from DMS.
+  hardware.bluetooth.powerOnBoot = false;
 }

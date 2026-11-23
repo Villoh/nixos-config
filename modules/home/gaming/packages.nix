@@ -19,6 +19,15 @@
     })
     mangohud
     goverlay
+    # DS4Windows-like tools: dualsensectl (LED, triggers, battery CLI), antimicrox (button remap).
+    dualsensectl
+    antimicrox
+    # Gamepad polling rate testers (packages/gamepadla). gamepadla-plus is the CLI and GUI
+    # fork and uploads only with --upload; gamepadla is the original and always uploads.
+    gamepadla
+    gamepadla-plus
+    # Mouse polling rate tester (sudo evhz, or add yourself to the input group).
+    evhz
     wineWow64Packages.stable
     winetricks
     # PlayStation Remote Play client. The global QT_STYLE_OVERRIDE=breeze makes its QML UI

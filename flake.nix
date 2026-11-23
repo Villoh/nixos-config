@@ -118,7 +118,7 @@
     # No nixpkgs follows on purpose: its CI cache (sonora.cachix.org, see modules/nixos/core/nix.nix)
     # only matches the build against the nixpkgs its own flake.lock pins.
     sonora = {
-      url = "github:sonorahq/sonora/v0.50.0";
+      url = "github:sonorahq/sonora/v0.50.3";
     };
 
     # Kopuz (GPUI), following master: its tags are no use here, nixup would offer the stray v2.0

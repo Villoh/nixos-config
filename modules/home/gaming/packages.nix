@@ -2,7 +2,8 @@
 
 {
   home.packages = with pkgs; [
-    bottles
+    # Hide nixpkgs' "Unsupported Environment" popup (Bottles is not sandboxed here).
+    (bottles.override { removeWarningPopup = true; })
     faugus-launcher
     heroic
     hydralauncher

@@ -19,11 +19,11 @@
 # Shadows nixpkgs' wealthfolio, like the source build in packages/wealthfolio.
 stdenv.mkDerivation (finalAttrs: {
   pname = "wealthfolio";
-  version = "3.13.0";
+  version = "3.13.1";
 
   src = fetchurl {
     url = "https://github.com/afadil/wealthfolio/releases/download/v${finalAttrs.version}/Wealthfolio_${finalAttrs.version}_amd64.deb";
-    hash = "sha256-dkZhCLG6Ru47uKnD8xattkzkz4AbOh0Fs8HTZaSkiNs=";
+    hash = "sha256-p4hyTGfulzdfOc41vO1++RqliDydYHgGr50kRXV6eFg=";
   };
 
   nativeBuildInputs = [

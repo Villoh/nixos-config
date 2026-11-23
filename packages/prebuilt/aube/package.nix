@@ -11,11 +11,11 @@
 # waiting for a binary cache is ../../aube.
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "aube";
-  version = "2.10.0";
+  version = "2.10.1";
 
   src = fetchurl {
     url = "https://github.com/aubepkg/aube/releases/download/v${finalAttrs.version}/aube-v${finalAttrs.version}-x86_64-unknown-linux-musl.tar.gz";
-    hash = "sha256-UciMSPeEqoLKb54s7XOqnFHlSCpb4OFnC4jMWXaf4us=";
+    hash = "sha256-AKC8mAA6odOwkfCANrshjiYUmu2NAgZM9BmE9TpBh9s=";
   };
 
   # The tarball holds the bare binaries, no top-level folder.

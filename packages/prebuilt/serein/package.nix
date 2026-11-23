@@ -34,14 +34,14 @@
 # wrapper mirror packaging/nix/package.nix in the Serein repo.
 stdenv.mkDerivation (finalAttrs: {
   pname = "serein";
-  version = "1.0.0-nightly.20261114.91";
+  version = "1.0.0-nightly.20261123.102";
 
   src = fetchurl {
     # The Arch file name spells the version "1.0.0pre.nightly.<date>.<n>".
     url = "https://github.com/ViceVerse-cz/Serein/releases/download/v${finalAttrs.version}/serein-v${finalAttrs.version}-Linux-arch-serein-${
       lib.replaceStrings [ "-" ] [ "pre." ] finalAttrs.version
     }-1-x86_64.pkg.tar.zst";
-    hash = "sha256-4nx6WH7hOuaU9GFkF/MJ+bo+b+nYWOcHjxs4jmp5J28=";
+    hash = "sha256-4VG48U8EYwseL/ShcplkgpdL5ZtRsCPScVbnJ/0nqmc=";
   };
 
   sourceRoot = ".";

@@ -23,11 +23,11 @@
 # is not used: it pipes a script into sh and writes to ~/.local.
 stdenv.mkDerivation (finalAttrs: {
   pname = "herdr-app";
-  version = "0.1.16";
+  version = "0.1.17";
 
   src = fetchurl {
     url = "https://releases.herdr.dev/app/${finalAttrs.version}/herdr-app-linux-x86_64.tar.gz";
-    hash = "sha256-KC0mMhlrI4IGz+Zr+2HA+vKZyhyRhDvQdlIbvjZXEhY=";
+    hash = "sha256-IYj019XPBBRQ29vy4UZJJEsaYnShCAvdl/p7xFDmXKE=";
   };
 
   sourceRoot = "herdr-app";

@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 
 let
   # PENDING: cache. Source build with RAR support, swapped for the prebuilt release meanwhile
@@ -22,10 +22,10 @@ in
     pkgs.arca-bin
   ]
   ++ (with pkgs; [
-    nautilus
     papirus-icon-theme
     tela-icon-theme
     fluent-icon-theme
+    kdePackages.dolphin
     kdePackages.kio-extras
     kdePackages.kde-cli-tools
     kdePackages.plasma-workspace

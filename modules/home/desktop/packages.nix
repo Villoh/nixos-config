@@ -35,6 +35,8 @@ in
     libqalculate # qalc CLI: optional engine of the DMS Calculator plugin
     dbeaver-bin
     onlyoffice-desktopeditors
+    freerdp # xfreerdp CLI
+    remmina # RDP/VNC client
     handy
     hex
     wtype

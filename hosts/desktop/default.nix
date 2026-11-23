@@ -15,6 +15,7 @@
     ../../modules/nixos/hardware/nvidia.nix
     ../../modules/nixos/hardware/qualcomm-edl.nix
     ../../modules/nixos/hardware/logitech-receiver.nix
+    ../../modules/nixos/hardware/usb-oc.nix
     ../../modules/nixos/services/docker.nix
     # Optional desktop services, selected by this host rather than the profile.
     ../../modules/nixos/services/flatpak.nix

@@ -3,11 +3,12 @@
 # On-demand Windows 11 VM: dockur/windows (QEMU/KVM in a Docker container) reached over RDP,
 # the same approach as Omarchy's `omarchy-windows-vm`. The first launch downloads and installs
 # Windows (10-30 min, progress at http://127.0.0.1:8006); the disk lives in ~/.windows and
-# ~/Windows is shared into the VM. Closing the RDP window shuts the VM down.
+# ~/Windows is shared into the VM. Closing the RDP window shuts the VM down, unless it was
+# started with `windows-vm launch --keep-alive`.
 # Needs modules/nixos/services/docker.nix, the docker group and /dev/kvm.
 let
-  # Only applied when Windows is installed: changing it later means `windows-vm remove` and
-  # wiping ~/.windows (keep win11x64.iso to skip the download).
+  # `username` and `disk` are only applied when Windows is installed: changing them later
+  # means `windows-vm reset`. `ram` and `cores` apply to a new container (`windows-vm remove`).
   username = "mikel";
   ram = "8G";
   cores = "4";
@@ -46,14 +47,18 @@ let
           docker stop -t 120 "$name"
           exit
           ;;
+        status)
+          docker inspect -f '{{.State.Status}}' "$name" 2> /dev/null || echo "not created"
+          exit
+          ;;
         remove)
           # Drops the container so changed settings apply; the disk in ~/.windows stays.
           docker rm -f "$name"
           exit
           ;;
         reset)
-          # Forgets the installed Windows (needed to change the username, disk size...). A
-          # downloaded ISO is kept, so the next launch reinstalls without downloading again.
+          # Forgets the installed Windows (needed to change the username or disk size). An ISO
+          # left over from an unfinished install is kept; dockur deletes it once Windows is set up.
           read -r -p "Delete the Windows VM and its disk in ~/.windows? [y/N] " answer
           [ "$answer" = y ] || exit 1
           docker rm -f "$name" > /dev/null 2>&1 || true
@@ -61,12 +66,27 @@ let
           echo "Windows VM reset; the next windows-vm launch installs it again."
           exit
           ;;
-        launch) ;;
+        launch | -k | --keep-alive) ;;
         *)
-          echo "usage: windows-vm [launch|stop|remove|reset]" >&2
+          echo "usage: windows-vm [launch [--keep-alive]|stop|status|remove|reset]" >&2
           exit 1
           ;;
       esac
+
+      # Leave the VM running after the RDP window closes.
+      keep_alive=false
+      for arg in "$@"; do
+        case "$arg" in
+          -k | --keep-alive) keep_alive=true ;;
+          *) ;;
+        esac
+      done
+
+      if [ ! -e /dev/kvm ]; then
+        echo "windows-vm: /dev/kvm is missing; enable virtualization in the BIOS" >&2
+        notify-send -u critical "Windows VM" "/dev/kvm is missing; enable virtualization in the BIOS"
+        exit 1
+      fi
 
       # RDP password: random, kept in a private file instead of the repo.
       mkdir -p "$cfg" "$HOME/.windows" "$HOME/Windows"
@@ -93,11 +113,7 @@ let
       fi
 
       notify-send "Windows VM" "Starting; the first run installs Windows (see http://127.0.0.1:8006)" -t 10000
-      # RDP only answers once Windows has booted (or finished installing), so retry until a
-      # session is both established and lasts. xfreerdp exit codes of 128 and up mean the
-      # connect failed (and a failed attempt can hang for minutes). A session that ends within
-      # seconds was dropped by the server, as Windows does during first logon and setup.
-      # Ctrl+C makes xfreerdp exit with 1 after a clean disconnect, so it is caught here instead.
+
       # XWayland windows are not scaled by Hyprland, so Windows must do it: RDP only accepts
       # 100, 140 or 180 %. Uses the focused monitor, where the launcher was clicked.
       pct=$(hyprctl monitors -j 2> /dev/null | jq -r '[.[] | select(.focused)][0].scale * 100 | round' 2> /dev/null || echo 100)
@@ -109,6 +125,11 @@ let
         rdp_scale=100
       fi
 
+      # RDP only answers once Windows has booted (or finished installing), so retry until a
+      # session is both established and lasts. xfreerdp exit codes of 128 and up mean the
+      # connect failed (and a failed attempt can hang for minutes). A session that ends within
+      # seconds was dropped by the server, as Windows does during first logon and setup.
+      # Ctrl+C makes xfreerdp exit with 1 after a clean disconnect, so it is caught here instead.
       interrupted=false
       trap 'interrupted=true' INT
       connected=false
@@ -142,8 +163,12 @@ let
       done
 
       # Never stop a VM that was not reached (e.g. Windows is still installing).
-      if [ "$connected" = true ]; then
+      if [ "$connected" = true ] && [ "$keep_alive" = true ]; then
+        notify-send "Windows VM" "Still running; stop it with: windows-vm stop"
+      elif [ "$connected" = true ]; then
+        notify-send "Windows VM" "Shutting down..."
         docker stop -t 120 "$name" > /dev/null
+        notify-send "Windows VM" "Stopped"
       else
         notify-send -u critical "Windows VM" "Could not connect over RDP; container left running"
       fi

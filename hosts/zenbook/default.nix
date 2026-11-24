@@ -12,6 +12,7 @@
     ../../modules/nixos/hardware/logitech-receiver.nix
     ../../modules/nixos/hardware/usb-oc.nix
     ../../modules/nixos/hardware/astro-mixamp.nix
+    ../../modules/nixos/hardware/storage-tools.nix
     # Optional desktop services, selected by this host rather than the profile.
     ../../modules/nixos/services/docker.nix
     ../../modules/nixos/services/flatpak.nix

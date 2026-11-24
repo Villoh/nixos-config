@@ -16,6 +16,26 @@ in
 {
   imports = [ inputs.zen-browser.homeModules.beta ];
 
+  # Known issue (investigated 2026-11-24, Hyprland 0.57.2, Zen 1.24.3b, eGPU RTX 3080): a large
+  # Zen window on native Wayland lags on every focus change (switching workspace or monitor, or
+  # opening another window on the same workspace), tiled or floating. At 1/4 of the screen it
+  # does not lag; under XWayland (MOZ_ENABLE_WAYLAND=0, layout.css.devPixelsPerPx = 1.5 for the
+  # scale) it does not lag; Brave and Ladybird do not lag. Not worked around here: XWayland
+  # loses native fractional scaling.
+  # Disabling Hyprland animations fixes only the same-monitor workspace switch.
+  # On a focus change Hyprland sends xdg_toplevel.configure with the same size and only the
+  # activated state toggled, and Zen answers with a full repaint; but that alone does not
+  # explain it: a nested Hyprland with a clean config got the same configure and no repaint.
+  # Not reproduced yet on a real DRM session with a clean config.
+  # Upstream, open and without a fix: hyprwm/Hyprland discussion #16409 (Firefox relayouts on
+  # every focus change); related: #14095 (4K 160 Hz, Zen/Librewolf), #15390 (fractional scale).
+  # Not about this: #14440 (spring animations, fixed in hyprutils #110).
+  # Ruled out by measurement or by hand: the profile, extensions, user.js, userChrome, DMS,
+  # software WebRender and its compositor, widget.wayland.* prefs, dmabuf, Gecko's Wayland proxy,
+  # wp_fifo/wp_commit_timing, GPU clocks, PCIe traffic, hardware cursor, 10-bit/160 Hz on DP-3,
+  # blur, shadows, nvidia_anti_flicker and new_render_scheduling.
+  # Retest after a Hyprland or Zen update, and remove this note if it is fixed.
+
   # Upstream uses Exec=zen-beta, which Claude's reduced PATH cannot resolve.
   # Keep its desktop entry and actions, but point all of them at the configured wrapper.
   # Remove when zen-browser-flake ships absolute Exec paths.

@@ -56,6 +56,17 @@
       aiOverviewControl.enable = true;
       wallhavenCarousel.enable = true;
       orbitBluetooth.enable = true;
+      # Not in the registry. Installed only: dms-glass (./glass.nix) turns it on for the
+      # liquid-* profiles and off for the rest.
+      liquidGlassBar = {
+        enable = true;
+        src = pkgs.fetchFromGitHub {
+          owner = "hua0512";
+          repo = "dms-liquid-glass-bar";
+          rev = "7ee1391411fd3f0cbc2a5e980d28df57742f4bd5"; # 0.1.1
+          hash = "sha256-VWZfacG8lV9BD/QxwBu8I02sK7WicQgXL/HIqF/qix4=";
+        };
+      };
     };
   };
 

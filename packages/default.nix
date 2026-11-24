@@ -1,7 +1,7 @@
 # Packages that are not in nixpkgs (or run ahead of it). Every one carries
 # `passthru.updateScript`, so `nix-update --flake <name>` bumps version and hashes,
-# except herdr-agent-icons (a single font file pinned to a commit) and hyprgrass (a tag that
-# tracks the Hyprland version).
+# except herdr-agent-icons (a single font file pinned to a commit), and hyprgrass and
+# hyprglass (tags that track the Hyprland version).
 # Exposed as `packages.<system>.*` and, through `overlays.default`, as `pkgs.<name>`.
 pkgs:
 let
@@ -29,5 +29,7 @@ rec {
   gamepadla-plus = pkgs.callPackage ./gamepadla/plus.nix { };
   # Touchscreen gestures plugin, built against the Hyprland of this nixpkgs.
   hyprgrass = pkgs.callPackage ./hyprgrass/package.nix { };
+  # Liquid Glass plugin, built against the Hyprland of this nixpkgs.
+  hyprglass = pkgs.callPackage ./hyprglass/package.nix { };
 }
 // prebuilt

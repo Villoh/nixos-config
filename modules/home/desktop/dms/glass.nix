@@ -7,6 +7,8 @@
 }:
 
 # Glass looks that follow the active dmsProfiles profile (profiles are DMS runtime state):
+#   liquid-frame* -> connected frame with hyprglass Liquid Glass on it and on every DMS
+#                    surface, plain hyprglass blur behind apps
 #   liquid-*  -> standard bar as a liquidGlassBar capsule (plugin, ./plugins.nix), hyprglass
 #                Liquid Glass on the other DMS surfaces, plain hyprglass blur behind apps
 #   frosted-* -> connected frame with Hyprland's blur, plain hyprglass blur behind apps
@@ -19,7 +21,7 @@
 # Hyprland, whose config reads it.
 # The file outlives a logout, so Hyprland starts in the mode of the last profile.
 #
-# Both profiles are seeded here when missing. A seed holds only the look it is about
+# The profiles are seeded here when missing. A seed holds only the look it is about
 # (dynamic colors, blur, transparency, bar layout), with no wallpaper or fonts: applying it
 # keeps those as they are. Once active, DMS autosave fills it with the whole look, wallpaper
 # included. Dynamic colors only: the glass tint comes from the wallpaper, like macOS vibrancy
@@ -56,8 +58,8 @@ let
     currentThemeName = "dynamic";
   };
 
-  # Bar layout per mode (keys of the first bar, id "default").
-  frostedBar = {
+  # Bar layout per profile (keys of the first bar, id "default").
+  frameBar = {
     settings = {
       frameEnabled = true;
       frameMode = "connected";
@@ -101,8 +103,9 @@ let
       }
     );
   seeds = {
-    frosted-dynamic = seed "Frosted Dynamic" (frosted // dynamic) frostedBar;
+    frosted-dynamic = seed "Frosted Dynamic" (frosted // dynamic) frameBar;
     liquid-dynamic = seed "Liquid Dynamic" (liquid // dynamic) liquidBar;
+    liquid-frame = seed "Liquid Frame" (liquid // dynamic) frameBar;
   };
 
   dms-glass = pkgs.writeShellApplication {
@@ -113,17 +116,15 @@ let
     ];
     text = ''
       slug=''${DMS_PROFILE_SLUG:-''${1:-}}
+      plugin=disable
       case $slug in
-        liquid-*) mode=liquid ;;
+        liquid-frame*) mode=liquid ;;
+        liquid-*) mode=liquid plugin=enable ;;
         frosted-*) mode=frosted ;;
         *) mode=off ;;
       esac
       # Every time, not only on a mode change: the plugin state lives in plugin_settings.json.
-      if [ "$mode" = liquid ]; then
-        dms ipc call plugins enable liquidGlassBar >/dev/null || true
-      else
-        dms ipc call plugins disable liquidGlassBar >/dev/null || true
-      fi
+      dms ipc call plugins "$plugin" liquidGlassBar >/dev/null || true
       file=''${XDG_STATE_HOME:-$HOME/.local/state}/dms-glass/mode
       [ "$(cat "$file" 2>/dev/null)" = "$mode" ] && exit 0
       mkdir -p "$(dirname "$file")"

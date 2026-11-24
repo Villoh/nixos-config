@@ -180,12 +180,13 @@ lib.mkIf osConfig.programs.dux-shell.enable {
             edge_thickness = 0,
             tint_color = 0x00000000,
           })
-          -- Liquid, after Apple's: nearly clear glass bent only along a narrow rim (flat centre),
-          -- a light rim reflection and a trace of colour fringe. On DMS only: Apple keeps
-          -- Liquid Glass to bars, menus and controls, so app windows get the frosted blur.
+          -- Liquid, after Apple's menus and control centre: softly frosted glass bent only along a
+          -- narrow rim (flat centre), a light rim reflection and a trace of colour fringe. On DMS
+          -- only: Apple keeps Liquid Glass to bars, menus and controls, so app windows get the
+          -- frosted blur.
           hg.preset("liquid", {
             inherits = "pomme",
-            blur_strength = 0.5,
+            blur_strength = 1.5,
             edge_height = 30,
             edge_thickness_px = 20,
             refraction_strength = 0.6,

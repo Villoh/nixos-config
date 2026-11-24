@@ -65,8 +65,6 @@ hl.config({ render = { cm_auto_hdr = 1 } })
 -- #14858 and the forum thread "Recovery from zero monitors":
 -- - hl.monitor fires monitor.added/removed itself: act only when the wanted
 --   state changes, and debounce the events.
--- - hl.monitor cannot enable an output when no monitor is active, so turning
---   the panel back on is `hyprctl reload`, which drops the runtime disable rule.
 -- - The switch callback can report the old lid state in 0.57.2: read the lid
 --   from /proc instead. If that fails the lid counts as open (desk logic still works).
 -- - Switch binds must come after the hl.monitor rules, and reportedly stop
@@ -83,7 +81,6 @@ local function lid_closed()
   return false
 end
 
-local off
 local function sync_panel()
   local desk, ext = false, false
   for _, m in ipairs(hl.get_monitors()) do
@@ -101,14 +98,22 @@ local function sync_panel()
   else
     set_workspaces("eDP-1", ext and ("desc:" .. ext) or "eDP-1")
   end
-  if want == off then return end
-  local first = off == nil
-  off = want
-  if want then
-    hl.monitor({ output = "eDP-1", disabled = true })
-  elseif not first then
-    hl.exec_cmd("hyprctl reload")
+end
+
+-- The lid binds switch the panel at once; the monitor events they cause then run
+-- sync_panel for the workspaces. Off only with another monitor to take over. Each step
+-- is logged (`journalctl -t display-lid`): switch binds were never verified here.
+-- shortcut: not handled: monitors unplugged while the lid is closed, and logging in with
+-- the lid closed (the panel stays on); hl.monitor cannot enable a first output, run
+-- `hyprctl reload`. Upgrade if it happens often.
+local function external()
+  for _, m in ipairs(hl.get_monitors()) do
+    if m.name ~= "eDP-1" then return m.description end
   end
+end
+local function panel(on)
+  hl.exec_cmd("logger -t display-lid panel " .. (on and "on" or "off"))
+  hl.monitor({ output = "eDP-1", disabled = not on })
 end
 
 -- At login the monitors appear after this file ran, so each got whatever workspace
@@ -159,7 +164,7 @@ local function schedule()
 end
 hl.on("monitor.added", schedule)
 hl.on("monitor.removed", schedule)
-hl.bind("switch:on:Lid Switch", schedule, { locked = true })
-hl.bind("switch:off:Lid Switch", schedule, { locked = true })
+hl.bind("switch:on:Lid Switch", function() if external() then panel(false) end end, { locked = true })
+hl.bind("switch:off:Lid Switch", function() panel(true) end, { locked = true })
 sync_panel()
 hl.on("hyprland.start", place)

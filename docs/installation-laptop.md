@@ -277,9 +277,12 @@ edit the `TCL` and `ACER` strings there (`hyprctl monitors` shows each `descript
 - Known gap: plugging a desk monitor in with the session open did not update the workspace
   rules (seen on 2026-11-20 with the Acer on HDMI: the rules stayed on `eDP-1` until
   `hyprctl reload`). Plug monitors in before logging in, or run `hyprctl reload`.
-- The panel state is recomputed in one function (`sync_panel`) on start, on monitor
-  hot-plug and on lid events, with a 500 ms debounce. Turning the panel back on runs
-  `hyprctl reload`, because `hl.monitor` cannot enable an output when no monitor is active.
+- The lid binds turn the panel off (only with another monitor) and on again with
+  `hl.monitor`, and log each step: `journalctl -t display-lid`. The workspaces are
+  recomputed in `sync_panel` on start and on monitor hot-plug, with a 500 ms debounce.
+  Not handled: unplugging every monitor with the lid closed, or logging in with the lid
+  closed; run `hyprctl reload`. The lid binds were tested on 2026-11-24: closing turned the
+  panel off, opening did not bring it back (the old code called `hyprctl reload`).
 - The lid is read from `/proc/acpi/button/lid/*/state`, not from the bind callback (which can
   report the old state in Hyprland 0.57.2). If that file is missing the lid counts as open and
   only the desk rule works.

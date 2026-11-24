@@ -72,18 +72,15 @@ in
       StartupNotify=false
       Terminal=false
     '';
-    # Serein's start-minimized setting is disabled on Linux, so Hyprland spawns it on a special
-    # workspace that is never toggled (silent): it sits in the tray until opened from there.
-    # shortcut: relies on the wrapper exec'ing serein (same PID); revisit if that changes.
+    # shortcut: --start-minimized only asks for a minimize, which Hyprland ignores, so the window
+    # may still open; revisit if Serein gets a real start-in-tray on Linux.
     "autostart/serein.desktop".text = ''
       [Desktop Entry]
       Type=Application
       Version=1.0
       Name=Serein
       Comment=Start Serein at login
-      Exec=${pkgs.writeShellScript "serein-hidden" ''
-        /run/current-system/sw/bin/hyprctl dispatch 'hl.dsp.exec_cmd("${lib.getExe pkgs.serein-bin}", { workspace = "special:serein silent" })'
-      ''}
+      Exec=${lib.getExe pkgs.serein-bin} --start-minimized
       StartupNotify=false
       Terminal=false
     '';

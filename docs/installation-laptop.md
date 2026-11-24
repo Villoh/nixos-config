@@ -281,7 +281,10 @@ edit the `TCL` and `ACER` strings there (`hyprctl monitors` shows each `descript
   `hl.monitor`, and log each step: `journalctl -t display-lid`. The workspaces are
   recomputed in `sync_panel` on start and on monitor hot-plug, with a 500 ms debounce.
   Not handled: unplugging every monitor with the lid closed, or logging in with the lid
-  closed; run `hyprctl reload`. The lid binds were tested on 2026-11-24: closing turned the
+  closed; run `hyprctl reload`. With the lid closed and a monitor connected, the bind also
+  holds a `handle-lid-switch` inhibitor (user unit `lid-inhibit`), because `Super+Shift+P`
+  (DPMS off) made logind count zero external displays and suspend (seen 2026-11-24). If
+  every monitor is unplugged with the lid closed it stays until the lid is opened. The lid binds were tested on 2026-11-24: closing turned the
   panel off, opening did not bring it back (the old code called `hyprctl reload`).
 - The lid is read from `/proc/acpi/button/lid/*/state`, not from the bind callback (which can
   report the old state in Hyprland 0.57.2). If that file is missing the lid counts as open and

@@ -111,9 +111,19 @@ local function external()
     if m.name ~= "eDP-1" then return m.description end
   end
 end
+-- Lid closed with monitors: logind must not suspend even if they lose signal (DPMS off
+-- makes it count zero externals). The inhibitor lives in a transient user unit.
+-- shortcut: stays on if every monitor is unplugged with the lid closed; open and close
+-- the lid to release it.
+local function inhibit(on)
+  hl.exec_cmd(on
+    and "systemd-run --user --collect --unit=lid-inhibit systemd-inhibit --what=handle-lid-switch --who=display.lua --why='lid closed with monitors' sleep infinity"
+    or "systemctl --user stop lid-inhibit")
+end
 local function panel(on)
   hl.exec_cmd("logger -t display-lid panel " .. (on and "on" or "off"))
   hl.monitor({ output = "eDP-1", disabled = not on })
+  inhibit(not on)
 end
 
 -- At login the monitors appear after this file ran, so each got whatever workspace
@@ -167,4 +177,6 @@ hl.on("monitor.removed", schedule)
 hl.bind("switch:on:Lid Switch", function() if external() then panel(false) end end, { locked = true })
 hl.bind("switch:off:Lid Switch", function() panel(true) end, { locked = true })
 sync_panel()
+-- Hyprland restarted with the lid open: drop an inhibitor left by a previous session.
+if not lid_closed() then inhibit(false) end
 hl.on("hyprland.start", place)

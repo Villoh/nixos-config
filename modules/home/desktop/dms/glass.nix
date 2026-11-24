@@ -7,7 +7,7 @@
 }:
 
 # Glass looks that follow the active dmsProfiles profile (profiles are DMS runtime state):
-#   liquid-frame* -> connected frame with hyprglass Liquid Glass on it and on every DMS
+#   liquid-glass-frame* -> connected frame with hyprglass Liquid Glass on it and on every DMS
 #                    surface, plain hyprglass blur behind apps
 #   liquid-*  -> standard bar as a liquidGlassBar capsule (plugin, ./plugins.nix), hyprglass
 #                Liquid Glass on the other DMS surfaces, plain hyprglass blur behind apps
@@ -103,9 +103,9 @@ let
       }
     );
   seeds = {
-    frosted-dynamic = seed "Frosted Dynamic" (frosted // dynamic) frameBar;
-    liquid-dynamic = seed "Liquid Dynamic" (liquid // dynamic) liquidBar;
-    liquid-frame = seed "Liquid Frame" (liquid // dynamic) frameBar;
+    frosted-glass = seed "Frosted Glass" (frosted // dynamic) frameBar;
+    liquid-glass = seed "Liquid Glass" (liquid // dynamic) liquidBar;
+    liquid-glass-frame = seed "Liquid Glass Frame" (liquid // dynamic) frameBar;
   };
 
   dms-glass = pkgs.writeShellApplication {
@@ -118,7 +118,7 @@ let
       slug=''${DMS_PROFILE_SLUG:-''${1:-}}
       plugin=disable
       case $slug in
-        liquid-frame*) mode=liquid ;;
+        liquid-glass-frame*) mode=liquid ;;
         liquid-*) mode=liquid plugin=enable ;;
         frosted-*) mode=frosted ;;
         *) mode=off ;;

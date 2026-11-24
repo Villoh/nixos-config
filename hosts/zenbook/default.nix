@@ -39,6 +39,10 @@
   networking.hostName = "nixos-zenbook";
   system.stateVersion = "26.05";
 
+  # TEMPORARY: find who asks for the unexplained suspend with the lid closed on the desk
+  # (2026-11-24). Remove once the cause is found; it makes logind noisy.
+  systemd.services.systemd-logind.environment.SYSTEMD_LOG_LEVEL = "debug";
+
   boot.loader = {
     systemd-boot.enable = true;
     systemd-boot.configurationLimit = 5;

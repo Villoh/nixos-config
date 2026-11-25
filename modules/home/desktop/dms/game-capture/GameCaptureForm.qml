@@ -78,7 +78,7 @@ Column {
         transientSurfaceTracker: root.transientSurfaceTracker
         text: "Pixel format"
         currentValue: root.cfg.fmt
-        options: ["NV12", "YUYV", "MJPG"]
+        options: ["NV12", "YUYV", "MJPG", "BGR3"]
         onValueChanged: value => root.set("fmt", value)
     }
 
@@ -115,7 +115,7 @@ Column {
     StyledText {
         width: root.width
         wrapMode: Text.WordWrap
-        text: "ezcap401 on USB 3.2 Gen 2: 4K 60 fps NV12 or 144 fps MJPG, 1440p 144 NV12, 1080p 240 NV12 or 120 YUYV.\nLatency: Ultra = Lowest plus a 1-frame GPU queue (less lag, may stutter if the GPU is busy)."
+        text: "ezcap401 on USB 3.2 Gen 2: 4K 60 fps NV12 or 144 fps MJPG, 1440p 144 NV12, 1080p 240 NV12 or 120 YUYV.\nBGR3 (uncompressed RGB): 4K 30, 1440p 60, 1080p 120.\nLatency: Ultra = Lowest plus a 1-frame GPU queue (less lag, may stutter if the GPU is busy)."
         font.pixelSize: Theme.fontSizeSmall
         color: Theme.surfaceVariantText
     }

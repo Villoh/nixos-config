@@ -19,6 +19,7 @@ Column {
             res: "3840x2160",
             fps: "60",
             fmt: "NV12",
+            range: "Auto",
             lat: "Ultra",
             audio: "Loopback",
             fs: "No"
@@ -48,7 +49,7 @@ Column {
     }
 
     function start() {
-        Quickshell.execDetached(["game-capture", "run", cfg.res, cfg.fps, cfg.fmt, cfg.lat, cfg.audio, cfg.fs === "Yes" ? "TRUE" : "FALSE"]);
+        Quickshell.execDetached(["game-capture", "run", cfg.res, cfg.fps, cfg.fmt, cfg.lat, cfg.audio, cfg.fs === "Yes" ? "TRUE" : "FALSE", cfg.range]);
         started();
     }
 
@@ -86,6 +87,16 @@ Column {
         width: root.width
         dropdownWidth: 220
         transientSurfaceTracker: root.transientSurfaceTracker
+        text: "Color range"
+        currentValue: root.cfg.range
+        options: ["Auto", "Limited", "Full"]
+        onValueChanged: value => root.set("range", value)
+    }
+
+    DDropdown {
+        width: root.width
+        dropdownWidth: 220
+        transientSurfaceTracker: root.transientSurfaceTracker
         text: "Latency"
         currentValue: root.cfg.lat
         options: ["Ultra", "Lowest", "Low", "Smooth"]
@@ -115,7 +126,7 @@ Column {
     StyledText {
         width: root.width
         wrapMode: Text.WordWrap
-        text: "ezcap401 on USB 3.2 Gen 2: 4K 60 fps NV12 or 144 fps MJPG, 1440p 144 NV12, 1080p 240 NV12 or 120 YUYV.\nBGR3 (uncompressed RGB): 4K 30, 1440p 60, 1080p 120.\nLatency: Ultra = Lowest plus a 1-frame GPU queue (less lag, may stutter if the GPU is busy)."
+        text: "ezcap401 on USB 3.2 Gen 2: 4K 60 fps NV12 or 144 fps MJPG, 1440p 144 NV12, 1080p 240 NV12 or 120 YUYV.\nBGR3 (uncompressed RGB): 4K 30, 1440p 60, 1080p 120.\nColor range: Auto trusts the card (limited); Full if the console sends full range and the picture looks off.\nLatency: Ultra = Lowest plus a 1-frame GPU queue (less lag, may stutter if the GPU is busy)."
         font.pixelSize: Theme.fontSizeSmall
         color: Theme.surfaceVariantText
     }

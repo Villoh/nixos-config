@@ -2,9 +2,9 @@
 
 # Low-latency view of the ezcap401 capture card (PS5) in mpv: raw V4L2 frames, no buffering.
 # `game-capture` is 4K60 NV12, `game-capture 1080` is 1080p120 and `game-capture menu` asks for
-# resolution, frame rate, pixel format, latency, audio and fullscreen in a yad dialog. The
-# launcher (`game-capture launcher`) opens a floating DMS form instead (./dms/game-capture, also a
-# dash tab), which calls `game-capture run RES FPS FMT LAT AUDIO FS`; yad is the fallback.
+# resolution, frame rate, pixel format, color range, latency, audio and fullscreen in a yad dialog.
+# The launcher (`game-capture launcher`) opens a floating DMS form instead (./dms/game-capture, also
+# a dash tab), which calls `game-capture run RES FPS FMT LAT AUDIO FS [RANGE]`; yad is the fallback.
 # The sound is the video-capture loopback in modules/nixos/hardware/audio.nix; the menu starts
 # or stops it. Close the window to stop. For the least latency play on the monitor on the
 # card's HDMI OUT; this view is for the PC.
@@ -23,7 +23,7 @@ let
       pkgs.yad
     ];
     text = ''
-      res=3840x2160 fps=60 fmt=NV12 lat=Ultra audio=Loopback fs=FALSE
+      res=3840x2160 fps=60 fmt=NV12 lat=Ultra audio=Loopback fs=FALSE range=Auto
       case "''${1:-4k}" in
         4k) ;;
         1080)
@@ -34,14 +34,15 @@ let
           # Limits on USB 3.2 Gen 2 (ezcap): 4K 60 NV12 / 50 YUYV / 144 MJPG / 30 BGR3; 1440p 144 NV12 /
           # 60 YUYV / 60 BGR3; 1080p 240 NV12 / 120 YUYV / 120 BGR3. A mode the card lacks makes mpv fail (notified).
           choice=$(yad --form --center --title="Game capture" --button="Start:0" --button="Cancel:1" \
-            --text="4K: 60 fps NV12, 144 fps MJPG. 1440p: 144 NV12. 1080p: 240 NV12, 120 YUYV.\nBGR3 (uncompressed RGB): 4K 30, 1440p 60, 1080p 120.\nLatency: Ultra = Lowest plus a 1-frame GPU queue (less lag, may stutter if the GPU is busy)." \
+            --text="4K: 60 fps NV12, 144 fps MJPG. 1440p: 144 NV12. 1080p: 240 NV12, 120 YUYV.\nBGR3 (uncompressed RGB): 4K 30, 1440p 60, 1080p 120.\nColor range: Auto trusts the card (limited); Full if the console sends full range and the picture looks off.\nLatency: Ultra = Lowest plus a 1-frame GPU queue (less lag, may stutter if the GPU is busy)." \
             --field="Resolution:CB" "^3840x2160!2560x1440!2560x1080!1920x1080!1280x720" \
             --field="Frame rate:CB" "^60!120!144!240!30" \
             --field="Pixel format:CB" "^NV12!YUYV!MJPG!BGR3" \
+            --field="Color range:CB" "^Auto!Limited!Full" \
             --field="Latency:CB" "^Ultra!Lowest!Low!Smooth" \
             --field="Audio:CB" "^Loopback!Off" \
             --field="Fullscreen:CHK" FALSE) || exit 0
-          IFS='|' read -r res fps fmt lat audio fs _ <<< "$choice"
+          IFS='|' read -r res fps fmt range lat audio fs _ <<< "$choice"
           ;;
         launcher)
           # `dms ipc call` exits 0 even for a missing target ("Target not found."), so check what
@@ -51,10 +52,10 @@ let
           exit
           ;;
         run)
-          res=$2 fps=$3 fmt=$4 lat=$5 audio=$6 fs=$7
+          res=$2 fps=$3 fmt=$4 lat=$5 audio=$6 fs=$7 range=''${8:-Auto}
           ;;
         *)
-          echo "usage: game-capture [4k|1080|menu|launcher|run RES FPS FMT LAT AUDIO FS]" >&2
+          echo "usage: game-capture [4k|1080|menu|launcher|run RES FPS FMT LAT AUDIO FS [RANGE]]" >&2
           exit 1
           ;;
       esac
@@ -85,6 +86,13 @@ let
         Ultra) opts+=(--profile=low-latency --untimed --swapchain-depth=1) ;;
         Lowest) opts+=(--profile=low-latency --untimed) ;;
         Low) opts+=(--profile=low-latency) ;;
+        *) ;;
+      esac
+      # Auto: what mpv detects from the card, which reports limited. Full when the console sends
+      # full range (PS5 RGB Range on Full or Automatic) and the picture looks crushed or washed.
+      case "$range" in
+        Limited) opts+=(--vf=format:colorlevels=limited) ;;
+        Full) opts+=(--vf=format:colorlevels=full) ;;
         *) ;;
       esac
       [ "$fs" = TRUE ] && opts+=(--fs)

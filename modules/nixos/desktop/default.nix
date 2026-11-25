@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 {
   # UWSM imports these defaults; each user's environment may override them.
@@ -17,6 +17,17 @@
   programs.obs-studio = {
     enable = true;
     enableVirtualCamera = true;
+    # With the NVIDIA driver, opening a projector makes OBS commit a surface with explicit sync
+    # but no acquire point; Hyprland rejects it ("Missing acquire timeline") and closes OBS
+    # (obs-studio #11022). Turn explicit sync off for OBS only; native Wayland stays.
+    package = pkgs.symlinkJoin {
+      inherit (pkgs.obs-studio) pname version meta;
+      paths = [ pkgs.obs-studio ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/obs --set __NV_DISABLE_EXPLICIT_SYNC 1
+      '';
+    };
   };
 
   imports = [

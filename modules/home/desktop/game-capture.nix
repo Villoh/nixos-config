@@ -96,10 +96,43 @@ let
       fi
     '';
   };
+
+  # Toggles the video-capture loopback (the game sound in the headset) and says which way it went
+  # with a DMS toast; notify-send when DMS is not the shell.
+  capture-audio = pkgs.writeShellApplication {
+    name = "capture-audio";
+    runtimeInputs = [
+      pkgs.libnotify
+      pkgs.systemd
+    ];
+    text = ''
+      if systemctl --user is-active --quiet video-capture; then
+        systemctl --user stop video-capture
+        state=off
+      else
+        systemctl --user start video-capture
+        state=on
+      fi
+      dms ipc call toast info "Capture audio $state" > /dev/null 2>&1 \
+        || notify-send -a "Game capture" "Capture audio" "$state"
+    '';
+  };
 in
 {
   home.packages = [
     game-capture
+    capture-audio
+    (pkgs.makeDesktopItem {
+      name = "capture-audio";
+      desktopName = "Capture audio: toggle";
+      comment = "Turn the capture card sound loopback on or off";
+      exec = "capture-audio";
+      icon = "audio-headphones";
+      categories = [
+        "AudioVideo"
+        "Audio"
+      ];
+    })
     (pkgs.makeDesktopItem {
       name = "game-capture";
       desktopName = "Game capture";

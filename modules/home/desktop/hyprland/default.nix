@@ -238,6 +238,7 @@ let
     (exec "SUPER + SHIFT + W" "Windows VM" "windows-vm")
     # P for PlayStation: the form of the low-latency ezcap401 view (modules/home/desktop/game-capture.nix).
     (exec "SUPER + SHIFT + P" "Game capture" "game-capture launcher")
+    (exec "SUPER + SHIFT + ALT + P" "Capture audio: toggle" "capture-audio")
     # Claude Quick Entry through the GlobalShortcuts portal: Hyprland only forwards it
     # with an explicit bind. The id is stable across restarts and ends with the
     # accelerator set in the app (Command+Shift+C); changing it there changes the id,

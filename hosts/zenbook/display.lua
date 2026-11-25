@@ -189,4 +189,7 @@ end, { description = "Laptop panel: toggle" })
 sync_panel()
 -- Hyprland restarted with the lid open: drop an inhibitor left by a previous session.
 if not lid_closed() then inhibit(false) end
+-- Every load, reloads too (DMS rewrites colors.lua/layout.lua at login, which reloads this
+-- file and turns the panel back on with no monitor event): recheck a closed lid.
+if lid_closed() then schedule() end
 hl.on("hyprland.start", place)

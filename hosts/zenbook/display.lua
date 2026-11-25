@@ -162,14 +162,29 @@ local function rehome()
   end
 end
 
-local placed
+-- Once per Hyprland instance, not once per load: DMS rewrites colors.lua at every wallpaper
+-- change, which reloads this file, and with the lid closed each reload scheduled the timer
+-- and jumped to workspace 1. The mark lives in the runtime dir, tied to this instance.
+local placed_mark = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/display-placed"
+local instance = os.getenv("HYPRLAND_INSTANCE_SIGNATURE") or ""
+local function placed()
+  local f = io.open(placed_mark)
+  if not f then return false end
+  local s = f:read("*a")
+  f:close()
+  return s == instance
+end
+local function mark_placed()
+  local f = io.open(placed_mark, "w")
+  if f then f:write(instance); f:close() end
+end
 local timer = hl.timer(function()
   -- No switch event fires with the lid already closed at login, and a reload turns the
   -- panel back on: look at the lid itself. panel_on keeps this from looping.
   if panel_on and lid_closed() and external() then panel(false) end
   sync_panel()
   rehome()
-  if not placed then placed = true; place() end
+  if not placed() then mark_placed(); place() end
   -- A monitor that came back can lose its glass bar (liquidGlassBar); no-op without glass.
   hl.exec_cmd("dms-glass fix")
 end, { timeout = 500, type = "oneshot" })

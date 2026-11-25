@@ -19,7 +19,7 @@ Column {
             res: "3840x2160",
             fps: "60",
             fmt: "NV12",
-            lat: "Lowest",
+            lat: "Ultra",
             audio: "Loopback",
             fs: "No"
         })

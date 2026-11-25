@@ -23,7 +23,7 @@ let
       pkgs.yad
     ];
     text = ''
-      res=3840x2160 fps=60 fmt=NV12 lat=Lowest audio=Loopback fs=FALSE
+      res=3840x2160 fps=60 fmt=NV12 lat=Ultra audio=Loopback fs=FALSE
       case "''${1:-4k}" in
         4k) ;;
         1080)
@@ -38,7 +38,7 @@ let
             --field="Resolution:CB" "^3840x2160!2560x1440!2560x1080!1920x1080!1280x720" \
             --field="Frame rate:CB" "^60!120!144!240!30" \
             --field="Pixel format:CB" "^NV12!YUYV!MJPG" \
-            --field="Latency:CB" "Ultra!^Lowest!Low!Smooth" \
+            --field="Latency:CB" "^Ultra!Lowest!Low!Smooth" \
             --field="Audio:CB" "^Loopback!Off" \
             --field="Fullscreen:CHK" FALSE) || exit 0
           IFS='|' read -r res fps fmt lat audio fs _ <<< "$choice"

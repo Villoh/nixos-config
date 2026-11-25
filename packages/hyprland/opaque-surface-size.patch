@@ -1,0 +1,17 @@
+diff --git a/src/desktop/view/window/WindowPresentation.cpp b/src/desktop/view/window/WindowPresentation.cpp
+--- a/src/desktop/view/window/WindowPresentation.cpp
++++ b/src/desktop/view/window/WindowPresentation.cpp
+@@ -238,9 +238,11 @@
+     if (m_window.backend().isX11())
+         return solitaryResource->m_current.texture->m_opaque;
+ 
+-    // TODO: this is wrong
++    // The opaque region is in surface coordinates, so compare it with the surface size, not the
++    // buffer size: with a fractional scale the buffer is larger and a fully opaque surface never matched.
+     const auto EXTENTS = solitaryResource->m_current.opaque.getExtents();
+-    if (EXTENTS.w >= solitaryResource->m_current.bufferSize.x && EXTENTS.h >= solitaryResource->m_current.bufferSize.y)
++    const auto SIZE    = solitaryResource->m_current.size;
++    if (SIZE.x > 0 && SIZE.y > 0 && EXTENTS.w >= SIZE.x && EXTENTS.h >= SIZE.y)
+         return true;
+ 
+     return solitaryResource->m_current.texture->m_opaque;

@@ -34,11 +34,11 @@ let
           # Limits on USB 3.2 Gen 2 (ezcap): 4K 60 NV12 / 50 YUYV / 144 MJPG; 1440p 144 NV12 /
           # 60 YUYV; 1080p 240 NV12 / 120 YUYV. A mode the card lacks makes mpv fail (notified).
           choice=$(yad --form --center --title="Game capture" --button="Start:0" --button="Cancel:1" \
-            --text="4K: 60 fps NV12, 144 fps MJPG. 1440p: 144 NV12. 1080p: 240 NV12, 120 YUYV." \
+            --text="4K: 60 fps NV12, 144 fps MJPG. 1440p: 144 NV12. 1080p: 240 NV12, 120 YUYV.\nLatency: Ultra = Lowest plus a 1-frame GPU queue (less lag, may stutter if the GPU is busy)." \
             --field="Resolution:CB" "^3840x2160!2560x1440!2560x1080!1920x1080!1280x720" \
             --field="Frame rate:CB" "^60!120!144!240!30" \
             --field="Pixel format:CB" "^NV12!YUYV!MJPG" \
-            --field="Latency:CB" "^Lowest!Low!Smooth" \
+            --field="Latency:CB" "Ultra!^Lowest!Low!Smooth" \
             --field="Audio:CB" "^Loopback!Off" \
             --field="Fullscreen:CHK" FALSE) || exit 0
           IFS='|' read -r res fps fmt lat audio fs _ <<< "$choice"
@@ -81,6 +81,7 @@ let
 
       opts=(--no-audio --title="Game capture")
       case "$lat" in
+        Ultra) opts+=(--profile=low-latency --untimed --swapchain-depth=1) ;;
         Lowest) opts+=(--profile=low-latency --untimed) ;;
         Low) opts+=(--profile=low-latency) ;;
         *) ;;

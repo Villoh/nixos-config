@@ -49,6 +49,13 @@
   nixpkgs.overlays = [
     inputs.self.overlays.default
     (final: prev: {
+      # Hyprland 0.57 sends HDR as the preferred description to every fullscreen window, so mpv and
+      # browsers modeset into HDR (screen blinks) even for SDR content. Upstream draft PR #16976
+      # restores opt-in auto HDR (cm_auto_hdr = 1). Drop this once a release includes it. Plugins
+      # (hyprglass, hyprgrass) build against pkgs.hyprland, so they follow the patched one.
+      hyprland = prev.hyprland.overrideAttrs (old: {
+        patches = (old.patches or [ ]) ++ [ ../../../packages/hyprland/auto-hdr-opt-in.patch ];
+      });
       # Handy from its own flake (cached by handy-computer.cachix.org): 0.10 already ships the
       # WEBKIT_DMABUF_RENDERER_FORCE_SHM fix that nixpkgs' 0.9.x needed a patch for.
       handy = inputs.handy.packages.${prev.stdenv.hostPlatform.system}.default;

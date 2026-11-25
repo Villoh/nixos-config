@@ -1,0 +1,98 @@
+diff --git a/src/config/values/ConfigValues.cpp b/src/config/values/ConfigValues.cpp
+index cf345f9a986..f7c3c14a5db 100644
+--- a/src/config/values/ConfigValues.cpp
++++ b/src/config/values/ConfigValues.cpp
+@@ -672,8 +672,8 @@ std::vector<SP<IValue>> Values::getConfigValues() {
+                 {.min = 0, .max = 2, .map = OptionMap{{"disable", 0}, {"enable", 1}, {"auto", 2}}}),
+         MS<Bool>("render:cm_enabled", "Enable Color Management pipelines (requires restart to fully take effect)", true),
+         MS<Bool>("render:send_content_type", "Report content type to allow monitor profile autoswitch", true),
+-        MS<Int>("render:cm_auto_hdr", "Auto-switch to hdr mode when fullscreen app is in hdr", 1,
+-                {.min = 0, .max = 2, .map = OptionMap{{"disable", 0}, {"hdr", 1}, {"hdredid", 2}}}),
++        MS<Int>("render:cm_auto_hdr", "Auto-switch to hdr mode when fullscreen app is in hdr. 3, 4 (prefer_*) also make hdr the app's preferred description", 1,
++                {.min = 0, .max = 4, .map = OptionMap{{"disable", 0}, {"hdr", 1}, {"hdredid", 2}, {"prefer_hdr", 3}, {"prefer_hdredid", 4}}}),
+         MS<Bool>("render:new_render_scheduling", "enable new render scheduling, which should improve FPS on underpowered devices.", false),
+         MS<Bool>("render:async_commit", "Submit eligible output commits asynchronously.", false),
+         MS<Int>("render:non_shader_cm", "Enable CM without shader.", 3, {.min = 0, .max = 3, .map = OptionMap{{"disable", 0}, {"always", 1}, {"ondemand", 2}, {"ignore", 3}}}),
+diff --git a/src/output/Monitor.cpp b/src/output/Monitor.cpp
+index 825ef64b604..3a8ab6dfb0e 100644
+--- a/src/output/Monitor.cpp
++++ b/src/output/Monitor.cpp
+@@ -2388,16 +2388,28 @@ std::optional<NColorManagement::PImageDescription> CMonitor::getFSImageDescripti
+ 
+ // the HDR description auto HDR would switch to, offered to the fullscreen surface so it can trigger the switch
+ std::optional<NColorManagement::PImageDescription> CMonitor::getAutoHDRImageDescription(const SP<CWLSurfaceResource>& surface) {
++    const auto FS_WINDOW = Fullscreen::controller()->getFullscreenWindow(m_self.lock());
++    if (!FS_WINDOW || FS_WINDOW->wlSurface()->resource() != surface || !prefersHDRFor(FS_WINDOW))
++        return {};
++
++    return getHDRImageDescription(getAutoHDRType());
++}
++
++// true when cm_auto_hdr is prefer_hdr or prefer_hdredid and the auto HDR description may be the window's preferred one. window is this monitor's fullscreen window
++bool CMonitor::prefersHDRFor(PHLWINDOW window) {
+     static const auto PAUTOHDR = CConfigValue<Config::INTEGER>("render:cm_auto_hdr");
+ 
+-    if (!*PAUTOHDR || !supportsHDR() || !m_activeMonitorRule.m_iccFile.empty() || m_cmType == NCMType::CM_HDR || m_cmType == NCMType::CM_HDR_EDID)
+-        return {};
++    if (!window || *PAUTOHDR < 3 || !supportsHDR() || !m_activeMonitorRule.m_iccFile.empty() || m_cmType == NCMType::CM_HDR || m_cmType == NCMType::CM_HDR_EDID)
++        return false;
+ 
+-    const auto FS_WINDOW = Fullscreen::controller()->getFullscreenWindow(m_self.lock());
+-    if (!FS_WINDOW || FS_WINDOW->wlSurface()->resource() != surface || FS_WINDOW->m_ruleApplicator->noAutoHDR().valueOrDefault())
+-        return {};
++    return !window->m_ruleApplicator->noAutoHDR().valueOrDefault();
++}
++
++// CM type auto HDR switches to, EDID primaries for hdredid and prefer_hdredid
++NCMType::eCMType CMonitor::getAutoHDRType() {
++    static const auto PAUTOHDR = CConfigValue<Config::INTEGER>("render:cm_auto_hdr");
+ 
+-    return getHDRImageDescription(*PAUTOHDR == 2 ? NCMType::CM_HDR_EDID : NCMType::CM_HDR);
++    return *PAUTOHDR == 2 || *PAUTOHDR == 4 ? NCMType::CM_HDR_EDID : NCMType::CM_HDR;
+ }
+ 
+ NColorManagement::SPCPRimaries CMonitor::getMasteringPrimaries() {
+diff --git a/src/output/Monitor.hpp b/src/output/Monitor.hpp
+index b0498b745c8..31d8280e174 100644
+--- a/src/output/Monitor.hpp
++++ b/src/output/Monitor.hpp
+@@ -344,6 +344,8 @@ namespace Monitor {
+ 
+         std::optional<NColorManagement::PImageDescription>          getFSImageDescription();
+         std::optional<NColorManagement::PImageDescription>          getAutoHDRImageDescription(const SP<CWLSurfaceResource>& surface);
++        NCMType::eCMType                                            getAutoHDRType();
++        bool                                                        prefersHDRFor(PHLWINDOW window);
+ 
+         NColorManagement::SPCPRimaries                              getMasteringPrimaries();
+         NColorManagement::SImageDescription::SPCMasteringLuminances getMasteringLuminances();
+diff --git a/src/render/Renderer.cpp b/src/render/Renderer.cpp
+index 63e17ca1519..3ed54506d1b 100644
+--- a/src/render/Renderer.cpp
++++ b/src/render/Renderer.cpp
+@@ -2663,7 +2663,7 @@ void IHyprRenderer::handleFullscreenSettings(PHLMONITOR pMonitor) {
+             const bool HDR_CHANGED = pMonitor->inHDR() != wantHDR;
+ 
+             if (HDR_CHANGED && *PAUTOHDR && !(pMonitor->inHDR() && configuredHDR)) {
+-                const auto targetCM      = wantHDR ? (*PAUTOHDR == 2 ? NCMType::CM_HDR_EDID : NCMType::CM_HDR) : pMonitor->m_cmType;
++                const auto targetCM      = wantHDR ? pMonitor->getAutoHDRType() : pMonitor->m_cmType;
+                 const auto targetSDREOTF = pMonitor->m_sdrEotf;
+                 LOG(Log::INFO, "[CM] Auto HDR: changing monitor cm to {}", sc<uint8_t>(targetCM));
+                 pMonitor->applyCMType(targetCM, targetSDREOTF);
+@@ -2761,10 +2761,13 @@ void IHyprRenderer::handleFullscreenSettings(PHLMONITOR pMonitor) {
+         pMonitor->m_output->state->setCTM(pMonitor->m_ctm);
+     }
+ 
+-    // the fullscreen surface's preferred description depends on the fullscreen window, see getPreferredImageDescription()
+-    if (*PAUTOHDR && PROTO::colorManagement && pMonitor->supportsHDR() && FULLSCREEN_WINDOW != pMonitor->m_autoHDRWindow) {
+-        pMonitor->m_autoHDRWindow = FULLSCREEN_WINDOW;
+-        PROTO::colorManagement->recheckFeedbacks();
++    // the fullscreen surface's preferred description depends on prefersHDRFor(), see getPreferredImageDescription()
++    if (PROTO::colorManagement) {
++        const auto AUTO_HDR_WINDOW = pMonitor->prefersHDRFor(FULLSCREEN_WINDOW) ? FULLSCREEN_WINDOW : nullptr;
++        if (AUTO_HDR_WINDOW != pMonitor->m_autoHDRWindow) {
++            pMonitor->m_autoHDRWindow = AUTO_HDR_WINDOW;
++            PROTO::colorManagement->recheckFeedbacks();
++        }
+     }
+ 
+     pMonitor->m_previousFSWindow = FULLSCREEN_WINDOW;

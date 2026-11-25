@@ -40,6 +40,14 @@ let
       }
       disable() { hyprctl eval "hl.monitor({ output = \"desc:$1\", disabled = true })" >/dev/null; }
       flagged() { grep -qxF -- "$1" "$off" 2>/dev/null; }
+      # A reload turns the laptop panel back on: with the lid closed, off again.
+      reload() {
+        hyprctl reload >/dev/null
+        if grep -qs closed /proc/acpi/button/lid/*/state; then
+          sleep 1
+          hyprctl eval 'hl.monitor({ output = "eDP-1", disabled = true })' >/dev/null
+        fi
+      }
 
       watch() {
         declare -A edid seen
@@ -56,7 +64,7 @@ let
             done < <(hyprctl monitors all -j | jq -r '.[] | select(.disabled and (.name | startswith("eDP") | not)) | .description')
           fi
           if [ "$relight" = 1 ]; then
-            hyprctl reload >/dev/null
+            reload
             acted=1
             sleep 4 # link training; DDC answers a bit later
           fi
@@ -115,7 +123,7 @@ let
           # Any external monitor disabled (by hand or by the watcher): bring them back.
           if [ "$(hyprctl monitors all -j | jq '[.[] | select(.disabled and (.name | startswith("eDP") | not))] | length')" -gt 0 ]; then
             rm -f "$off"
-            hyprctl reload >/dev/null
+            reload
           elif [ "$(hyprctl monitors -j | jq length)" -gt 1 ]; then
             desc=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .description')
             printf '%s\n' "$desc" >"$off"

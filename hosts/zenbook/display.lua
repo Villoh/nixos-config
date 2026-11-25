@@ -103,9 +103,8 @@ end
 -- The lid binds switch the panel at once; the monitor events they cause then run
 -- sync_panel for the workspaces. Off only with another monitor to take over. Each step
 -- is logged (`journalctl -t display-lid`): switch binds were never verified here.
--- shortcut: not handled: monitors unplugged while the lid is closed, and logging in with
--- the lid closed (the panel stays on); hl.monitor cannot enable a first output, run
--- `hyprctl reload`. Upgrade if it happens often.
+-- shortcut: not handled: monitors unplugged while the lid is closed; hl.monitor cannot
+-- enable a first output, run `hyprctl reload`. Upgrade if it happens often.
 local function external()
   for _, m in ipairs(hl.get_monitors()) do
     if m.name ~= "eDP-1" then return m.description end
@@ -120,7 +119,9 @@ local function inhibit(on)
     and "systemd-run --user --collect --unit=lid-inhibit systemd-inhibit --what=handle-lid-switch --who=display.lua --why='lid closed with monitors' sleep infinity"
     or "systemctl --user stop lid-inhibit")
 end
+local panel_on = true
 local function panel(on)
+  panel_on = on
   hl.exec_cmd("logger -t display-lid panel " .. (on and "on" or "off"))
   hl.monitor({ output = "eDP-1", disabled = not on })
   inhibit(not on)
@@ -163,6 +164,9 @@ end
 
 local placed
 local timer = hl.timer(function()
+  -- No switch event fires with the lid already closed at login, and a reload turns the
+  -- panel back on: look at the lid itself. panel_on keeps this from looping.
+  if panel_on and lid_closed() and external() then panel(false) end
   sync_panel()
   rehome()
   if not placed then placed = true; place() end
@@ -176,6 +180,10 @@ hl.on("monitor.added", schedule)
 hl.on("monitor.removed", schedule)
 hl.bind("switch:on:Lid Switch", function() if external() then panel(false) end end, { locked = true })
 hl.bind("switch:off:Lid Switch", function() panel(true) end, { locked = true })
+-- By hand, for when the lid was already closed at login (no switch event fires then).
+hl.bind("SUPER + CTRL + ALT + P", function()
+  if panel_on then if external() then panel(false) end else panel(true) end
+end, { description = "Laptop panel: toggle" })
 sync_panel()
 -- Hyprland restarted with the lid open: drop an inhibitor left by a previous session.
 if not lid_closed() then inhibit(false) end

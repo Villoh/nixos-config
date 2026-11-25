@@ -114,6 +114,7 @@ let
       osConfig.programs.hyprland.package
       osConfig.programs.dux-shell.package
       pkgs.gawk
+      pkgs.jq
       pkgs.util-linux
     ];
     text = ''
@@ -121,6 +122,9 @@ let
       # (input switch, lid, reload) can stay without glass under its bar, as DMS rebuilds the
       # bar after liquidGlassBar looked. Reload the plugin if a bar lacks its capsule.
       if [ "''${1:-}" = fix ]; then
+        # Only the liquidGlassBar capsule needs fixing: with the plugin off (frosted and frame
+        # profiles have no dms:bar layer) there is nothing to wait for.
+        jq -e '.liquidGlassBar.enabled' "''${XDG_CONFIG_HOME:-$HOME/.config}/dms/plugin_settings.json" > /dev/null 2>&1 || exit 0
         exec 9>"''${XDG_RUNTIME_DIR:-/tmp}/dms-glass-fix.lock"
         flock -n 9 || exit 0
         # DMS rebuilds its layer surfaces a few seconds after the change (~3 s measured): wait

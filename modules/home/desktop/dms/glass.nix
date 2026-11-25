@@ -123,7 +123,16 @@ let
       if [ "''${1:-}" = fix ]; then
         exec 9>"''${XDG_RUNTIME_DIR:-/tmp}/dms-glass-fix.lock"
         flock -n 9 || exit 0
-        sleep 10 # DMS rebuilds its layer surfaces a few seconds after the change
+        # DMS rebuilds its layer surfaces a few seconds after the change (~3 s measured): wait
+        # for a bar on every active monitor (20 s cap, e.g. a monitor DMS gives no bar), then
+        # let the glass settle.
+        for ((i = 0; i < 40; i++)); do
+          mons=$(hyprctl monitors | awk '/^Monitor/ { n++ } END { print n + 0 }')
+          bars=$(hyprctl layers | awk '/^Monitor/ { m = $2 } /dms:bar/ { s[m] = 1 } END { for (k in s) n++; print n + 0 }')
+          if [ "$mons" -gt 0 ] && [ "$bars" -ge "$mons" ]; then break; fi
+          sleep 0.5
+        done
+        sleep 2
         hyprctl layers | awk '
           /^Monitor/ { m = $2 }
           /dms:liquid-glass/ { glass[m] = 1; any = 1 }

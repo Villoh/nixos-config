@@ -230,3 +230,11 @@ hl.window_rule({
   no_dim = true,
   border_size = 0,
 })
+
+-- yad dialogs (game-capture menu) are resizable, so Hyprland would tile them at full height.
+hl.window_rule({
+  match = { class = "^yad$" },
+  float = true,
+  size = { 480, 420 },
+  move = { "monitor_w * 0.5 - 240", "monitor_h * 0.5 - 210" },
+})

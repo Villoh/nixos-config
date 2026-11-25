@@ -56,6 +56,11 @@
       aiOverviewControl.enable = true;
       wallhavenCarousel.enable = true;
       orbitBluetooth.enable = true;
+      # Local: menu (overlay, window or dash tab) for `game-capture` (../game-capture.nix).
+      gameCapture = {
+        enable = true;
+        src = ./game-capture;
+      };
       # Not in the registry. Installed only: dms-glass (./glass.nix) turns it on for the
       # liquid-* profiles and off for the rest.
       liquidGlassBar = {

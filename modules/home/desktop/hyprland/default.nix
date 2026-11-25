@@ -234,6 +234,9 @@ let
     # V for vault; Omarchy's SUPER+SHIFT+/ stays the DMS cheatsheet.
     (exec "SUPER + SHIFT + V" "Password manager (Bitwarden)" (launch "bitwarden"))
     (exec "SUPER + SHIFT + D" "Discord" discord.launch)
+    # P for PlayStation: low-latency view of the ezcap401 (modules/home/desktop/game-capture.nix).
+    (exec "SUPER + SHIFT + P" "Game capture (4K60)" "game-capture")
+    (exec "SUPER + SHIFT + ALT + P" "Game capture (1080p120)" "game-capture 1080")
     # Claude Quick Entry through the GlobalShortcuts portal: Hyprland only forwards it
     # with an explicit bind. The id is stable across restarts and ends with the
     # accelerator set in the app (Command+Shift+C); changing it there changes the id,

@@ -5,6 +5,7 @@
     ./autostart.nix
     ./browsers.nix
     ./dms
+    ./game-capture.nix
     ./gtk.nix
     ./mime.nix
     ./noctalia

@@ -236,9 +236,8 @@ let
     (exec "SUPER + SHIFT + D" "Discord" discord.launch)
     # W for Windows: the on-demand VM (modules/home/desktop/windows-vm.nix); closing its window shuts it down.
     (exec "SUPER + SHIFT + W" "Windows VM" "windows-vm")
-    # P for PlayStation: low-latency view of the ezcap401 (modules/home/desktop/game-capture.nix).
-    (exec "SUPER + SHIFT + P" "Game capture (4K60)" "game-capture")
-    (exec "SUPER + SHIFT + ALT + P" "Game capture (1080p120)" "game-capture 1080")
+    # P for PlayStation: the form of the low-latency ezcap401 view (modules/home/desktop/game-capture.nix).
+    (exec "SUPER + SHIFT + P" "Game capture" "game-capture launcher")
     # Claude Quick Entry through the GlobalShortcuts portal: Hyprland only forwards it
     # with an explicit bind. The id is stable across restarts and ends with the
     # accelerator set in the app (Command+Shift+C); changing it there changes the id,

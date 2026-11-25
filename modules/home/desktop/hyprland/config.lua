@@ -15,6 +15,18 @@ hl.config({
     disable_splash_rendering = true,
     background_color = 0xff000000,
   },
+  -- Low-latency experiments (game-capture and Steam games). To roll back:
+  --   freezes or colorful artifacts -> allow_tearing = false
+  --   other glitches (cursor, screen captures) -> direct_scanout = 0
+  -- 2 = direct scanout only for fullscreen windows with content type "game" (see the mpv rule below).
+  render = {
+    direct_scanout = 2,
+  },
+  -- Master switch: only windows with the `immediate` rule below tear, and only when fullscreen
+  -- with nothing else on that monitor. Experimental; if an app freezes, set it to false.
+  general = {
+    allow_tearing = true,
+  },
 })
 
 -- Keys freed from dms/binds.lua without a replacement (the keys default.nix binds
@@ -229,6 +241,20 @@ hl.window_rule({
   no_shadow = true,
   no_dim = true,
   border_size = 0,
+})
+
+-- The capture view is a game for Hyprland, so fullscreen it gets direct scanout (direct_scanout = 2)
+-- and tearing, for the least latency.
+hl.window_rule({
+  match = { class = "^mpv$", title = "^Game capture$" },
+  content = "game",
+  immediate = true,
+})
+
+-- Steam/Proton games tear when fullscreen.
+hl.window_rule({
+  match = { class = "^steam_app_" },
+  immediate = true,
 })
 
 -- yad dialogs (game-capture menu) are resizable, so Hyprland would tile them at full height.

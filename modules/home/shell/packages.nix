@@ -30,6 +30,9 @@
     tree
     trash-cli # trash-put/trash-list/trash-restore: freedesktop trash, same one Dolphin uses
     libarchive # bsdtar: opens .rar (RAR5 too) and .zip; imperivm-resurrected tools/wrap-map.js needs it
+    poppler-utils # pdftotext, pdfinfo, pdfimages, pdffonts, pdftoppm
+    qpdf # inspect/repair PDF structure (--qdf, --json)
+    ghostscript # gs: flatten/compress/rewrite PDFs
     tealdeer
     fastfetch
   ];

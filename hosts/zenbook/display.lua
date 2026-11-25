@@ -170,6 +170,8 @@ local timer = hl.timer(function()
   sync_panel()
   rehome()
   if not placed then placed = true; place() end
+  -- A monitor that came back can lose its glass bar (liquidGlassBar); no-op without glass.
+  hl.exec_cmd("dms-glass fix")
 end, { timeout = 500, type = "oneshot" })
 timer:set_enabled(false)
 local function schedule()

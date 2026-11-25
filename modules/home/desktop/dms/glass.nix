@@ -113,8 +113,28 @@ let
     runtimeInputs = [
       osConfig.programs.hyprland.package
       osConfig.programs.dux-shell.package
+      pkgs.gawk
+      pkgs.util-linux
     ];
     text = ''
+      # `dms-glass fix`, run by display.lua after monitor changes: a monitor that came back
+      # (input switch, lid, reload) can stay without glass under its bar, as DMS rebuilds the
+      # bar after liquidGlassBar looked. Reload the plugin if a bar lacks its capsule.
+      if [ "''${1:-}" = fix ]; then
+        exec 9>"''${XDG_RUNTIME_DIR:-/tmp}/dms-glass-fix.lock"
+        flock -n 9 || exit 0
+        sleep 10 # DMS rebuilds its layer surfaces a few seconds after the change
+        hyprctl layers | awk '
+          /^Monitor/ { m = $2 }
+          /dms:liquid-glass/ { glass[m] = 1; any = 1 }
+          /dms:bar/ { bar[m] = 1 }
+          END { for (m in bar) if (any && !glass[m]) exit 1 }' && exit 0
+        dms ipc call plugins disable liquidGlassBar >/dev/null || true
+        sleep 1
+        dms ipc call plugins enable liquidGlassBar >/dev/null || true
+        exit 0
+      fi
+
       slug=''${DMS_PROFILE_SLUG:-''${1:-}}
       plugin=disable
       case $slug in

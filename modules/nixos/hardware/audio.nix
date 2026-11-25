@@ -17,11 +17,10 @@
     pulse.enable = true;
   };
 
-  # Console (PS5) -> MS2109 USB capture card -> Astro MixAmp Pro Chat (the MixAmp's USB Game channel stays
+  # Console (PS5) -> ezcap401 USB capture card -> Astro MixAmp Pro Chat (the MixAmp's USB Game channel stays
   # silent in PC mode). Control: systemctl --user stop|start|restart video-capture (restart also fixes a
   # stale link after the MixAmp re-enumerates). dont-fallback keeps the audio off the default sink while
   # either device is unplugged. shortcut: names hardcoded, parametrize if a 2nd capture card shows up.
-  # The capture card's serial in the node name differs per link speed (..0621 on USB 2, ..0623 on USB 3).
   systemd.user.services.video-capture = {
     description = "Video capture audio loopback to Astro MixAmp";
     wantedBy = [ "default.target" ];
@@ -35,7 +34,7 @@
         "-l"
         "43"
         "-C"
-        "alsa_input.usb-MACROSILICON_USB3.0_capture_20210623-02.analog-stereo"
+        "alsa_input.usb-ezc_ezcap401_EC4010001-02.analog-stereo"
         "-i"
         "{ node.dont-fallback=true }"
         "-P"

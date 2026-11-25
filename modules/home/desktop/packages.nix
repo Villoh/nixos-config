@@ -35,6 +35,7 @@ in
     libqalculate # qalc CLI: optional engine of the DMS Calculator plugin
     dbeaver-bin
     onlyoffice-desktopeditors
+    libreoffice-fresh # fallback office suite; Draw edits PDF text
     freerdp # xfreerdp CLI
     remmina # RDP/VNC client
     handy

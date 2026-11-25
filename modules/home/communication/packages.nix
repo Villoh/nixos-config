@@ -25,6 +25,8 @@
       }
       # nixpkgs ships Cherry Studio 1.9.11 on EOL Electron 40 (marked insecure); Flathub tracks 2.x.
       "com.cherry_ai.CherryStudio"
+      # PDF text editor; not in nixpkgs.
+      "io.github.word_sys.word-sys-pdf-editor"
     ];
   };
 

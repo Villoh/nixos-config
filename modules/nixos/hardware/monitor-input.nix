@@ -50,6 +50,9 @@ let
       }
 
       watch() {
+        # A hyprctl hiccup (right after a reload, mid monitor change) must not kill the
+        # watcher: nothing restarts it. The toggle keeps errexit.
+        set +e
         declare -A edid seen
         acted=0
 
@@ -69,7 +72,7 @@ let
             sleep 4 # link training; DDC answers a bit later
           fi
 
-          mons=$(hyprctl monitors -j)
+          mons=$(hyprctl monitors -j) || return 0
           total=$(jq length <<<"$mons")
           while IFS=$'\t' read -r name desc dpms; do
             case $name in eDP*) continue ;; esac
@@ -124,13 +127,16 @@ let
           if [ "$(hyprctl monitors all -j | jq '[.[] | select(.disabled and (.name | startswith("eDP") | not))] | length')" -gt 0 ]; then
             rm -f "$off"
             reload
-          elif [ "$(hyprctl monitors -j | jq length)" -gt 1 ]; then
-            desc=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .description')
-            printf '%s\n' "$desc" >"$off"
-            disable "$desc"
           else
-            echo "monitor-input: last active monitor, not disabling it" >&2
-            exit 1
+            # Never the laptop panel: it would be left off with nothing to bring it back.
+            desc=$(hyprctl monitors -j | jq -r '.[] | select(.focused and (.name | startswith("eDP") | not)) | .description')
+            if [ -n "$desc" ] && [ "$(hyprctl monitors -j | jq length)" -gt 1 ]; then
+              printf '%s\n' "$desc" >"$off"
+              disable "$desc"
+            else
+              echo "monitor-input: focused monitor is the panel or the last active one, not disabling it" >&2
+              exit 1
+            fi
           fi
           ;;
         *) echo "usage: monitor-input [watch|toggle]" >&2; exit 1 ;;

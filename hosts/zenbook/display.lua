@@ -82,15 +82,18 @@ local function lid_closed()
 end
 
 local function sync_panel()
-  local desk, ext = false, false
+  local tcl, acer, ext = false, false, false
   for _, m in ipairs(hl.get_monitors()) do
-    if m.description == TCL or m.description == ACER then desk = true end
+    if m.description == TCL then tcl = true end
+    if m.description == ACER then acer = true end
     if m.name ~= "eDP-1" then ext = ext or m.description end
   end
   -- Desk monitors do not turn the panel off: it stays as workspace 11 (the next free
   -- one) and a lifeline if the eGPU drops and takes the desk monitors with it.
   local want = ext and lid_closed()
-  if desk then
+  -- Both desk monitors: with only one (the other on another input, see monitor-input.nix)
+  -- the generic branches below map the workspaces onto what is there.
+  if tcl and acer then
     set_workspaces("desc:" .. TCL, "desc:" .. ACER, true, want)
   elseif want then
     -- Clamshell: the panel is about to go off, so everything moves to the other monitor.
@@ -134,11 +137,13 @@ end
 -- mouse, so the cursor goes to the middle of that screen too or it would pull the
 -- focus back.
 local function place()
-  if #hl.get_monitors() == 0 then return end
+  if #hl.get_monitors() == 0 then return false end
   hl.dispatch(hl.dsp.focus({ workspace = "6" }))
   hl.dispatch(hl.dsp.focus({ workspace = "1" }))
   local m = hl.get_active_monitor()
+  if not m then return false end
   hl.dispatch(hl.dsp.cursor.move({ x = m.x + m.width / m.scale / 2, y = m.y + m.height / m.scale / 2 }))
+  return true
 end
 
 -- At login the panel is the only monitor, so workspace 1 (and any app opened on it) is
@@ -184,7 +189,8 @@ local timer = hl.timer(function()
   if panel_on and lid_closed() and external() then panel(false) end
   sync_panel()
   rehome()
-  if not placed() then mark_placed(); place() end
+  -- Mark only after place() worked, so a nil monitor retries on the next event.
+  if not placed() and place() then mark_placed() end
   -- A monitor that came back can lose its glass bar (liquidGlassBar); no-op without glass.
   hl.exec_cmd("dms-glass fix")
 end, { timeout = 500, type = "oneshot" })

@@ -74,9 +74,13 @@ let
         *) systemctl --user start video-capture ;;
       esac
 
+      flip=
       case "$fmt" in
         YUYV) fmt=yuyv422 ;;
-        BGR3) fmt=bgr24 ;;
+        BGR3)
+          fmt=bgr24
+          flip=1
+          ;;
         MJPG) fmt=mjpeg ;;
         *) fmt=nv12 ;;
       esac
@@ -95,6 +99,9 @@ let
         Full) opts+=(--vf=format:colorlevels=full) ;;
         *) ;;
       esac
+      # The card sends BGR3 rows bottom-up (OBS flips it itself); mpv shows it upside down.
+      # After the --vf above, so it is added to that chain. shortcut: CPU flip, fine at 4K30.
+      [ -n "$flip" ] && opts+=(--vf-add=vflip)
       [ "$fs" = TRUE ] && opts+=(--fs)
 
       rc=0

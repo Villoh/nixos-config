@@ -15,6 +15,7 @@
     ../../modules/nixos/hardware/storage-tools.nix
     # Optional desktop services, selected by this host rather than the profile.
     ../../modules/nixos/services/docker.nix
+    ../../modules/nixos/services/libvirt.nix
     ../../modules/nixos/services/flatpak.nix
     ../../modules/nixos/services/printing.nix
     ../../modules/nixos/services/tailscale.nix
@@ -74,7 +75,10 @@
     "mei_gsc_proxy"
   ];
 
-  users.users.mikel.extraGroups = [ "docker" ];
+  users.users.mikel.extraGroups = [
+    "docker"
+    "libvirtd"
+  ];
 
   # Intel thermal daemon (Core Ultra); works alongside power-profiles-daemon.
   services.thermald.enable = true;

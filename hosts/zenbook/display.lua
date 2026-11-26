@@ -206,5 +206,10 @@ sync_panel()
 if not lid_closed() then inhibit(false) end
 -- Every load, reloads too (DMS rewrites colors.lua/layout.lua at login, which reloads this
 -- file and turns the panel back on with no monitor event): recheck a closed lid.
-if lid_closed() then schedule() end
+-- Off right here when monitors exist (a reload): waiting for the timer lets the panel come
+-- on first, and removing it then drops the focus on the first monitor (workspace 6).
+if lid_closed() then
+  if external() then panel(false) end
+  schedule()
+end
 hl.on("hyprland.start", place)

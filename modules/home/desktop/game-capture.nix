@@ -163,6 +163,24 @@ in
       comment = "Low-latency view of the ezcap401 capture card";
       exec = "game-capture launcher";
       icon = "camera-video";
+      actions = {
+        "4k" = {
+          name = "4K 60 fps";
+          exec = "game-capture 4k";
+        };
+        "1080p" = {
+          name = "1080p 120 fps";
+          exec = "game-capture 1080";
+        };
+        menu = {
+          name = "Choose mode (yad)";
+          exec = "game-capture menu";
+        };
+        audio = {
+          name = "Toggle capture sound";
+          exec = "capture-audio";
+        };
+      };
       categories = [
         "AudioVideo"
         "Video"

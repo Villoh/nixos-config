@@ -26,7 +26,69 @@ Column {
         })
     property var cfg: defaults
 
+    // Modes the ezcap401 offers per pixel format (v4l2-ctl --list-formats-ext on USB 3.2 Gen 2,
+    // without the 59.94, 29.97 and 25 fps variants), so the lists never offer a mode the card
+    // lacks. shortcut: this card only, redo the table if the model changes.
+    readonly property var resOrder: ["3840x2160", "3440x1440", "2560x1440", "2560x1080", "1920x1080", "1280x720"]
+    readonly property var modes: ({
+            NV12: {
+                "3840x2160": [60, 50, 30],
+                "3440x1440": [60, 50, 30],
+                "2560x1440": [144, 120, 60, 50, 30],
+                "2560x1080": [144, 120, 60, 50, 30],
+                "1920x1080": [240, 144, 120, 60, 50, 30],
+                "1280x720": [240, 144, 120, 60, 50, 30]
+            },
+            YUYV: {
+                "3840x2160": [50, 30],
+                "3440x1440": [60, 50, 30],
+                "2560x1440": [60, 50, 30],
+                "2560x1080": [120, 60, 50, 30],
+                "1920x1080": [120, 60, 50, 30],
+                "1280x720": [120, 60, 50, 30]
+            },
+            MJPG: {
+                "3840x2160": [144, 120, 60, 50, 30],
+                "3440x1440": [144, 120, 60, 50, 30],
+                "2560x1440": [144, 120, 60, 50, 30],
+                "2560x1080": [144, 120, 60, 50, 30],
+                "1920x1080": [240, 144, 120, 60, 50, 30],
+                "1280x720": [240, 144, 120, 60, 50, 30]
+            },
+            BGR3: {
+                "3840x2160": [30],
+                "2560x1440": [60, 50, 30],
+                "2560x1080": [120, 60, 50, 30],
+                "1920x1080": [120, 60, 50, 30]
+            }
+        })
+
     spacing: Theme.spacingM
+
+    function resList(fmt) {
+        const m = modes[fmt] || modes.NV12;
+        return resOrder.filter(r => m[r]);
+    }
+
+    function fpsList(fmt, res) {
+        const m = (modes[fmt] || modes.NV12)[res] || [];
+        return m.map(f => String(f));
+    }
+
+    // Keeps the resolution and the frame rate inside what the pixel format offers: the same
+    // resolution when it exists, and the highest rate not above the one asked for.
+    function fit(c) {
+        const next = Object.assign({}, c);
+        const ress = resList(next.fmt);
+        if (ress.indexOf(next.res) < 0)
+            next.res = ress[0];
+        const fpss = fpsList(next.fmt, next.res);
+        if (fpss.indexOf(next.fps) < 0) {
+            const want = Number(next.fps);
+            next.fps = fpss.find(f => Number(f) <= want) || fpss[fpss.length - 1];
+        }
+        return next;
+    }
 
     onPluginIdChanged: restore()
     onPluginServiceChanged: restore()
@@ -38,12 +100,13 @@ Column {
     function restore() {
         if (!pluginService || !pluginId)
             return;
-        cfg = Object.assign({}, defaults, pluginService.loadPluginState(pluginId, "cfg", {}));
+        cfg = fit(Object.assign({}, defaults, pluginService.loadPluginState(pluginId, "cfg", {})));
     }
 
     function set(key, value) {
-        const next = Object.assign({}, cfg);
-        next[key] = value;
+        const draft = Object.assign({}, cfg);
+        draft[key] = value;
+        const next = fit(draft);
         cfg = next;
         pluginService?.savePluginState(pluginId, "cfg", next);
     }
@@ -59,7 +122,7 @@ Column {
         transientSurfaceTracker: root.transientSurfaceTracker
         text: "Resolution"
         currentValue: root.cfg.res
-        options: ["3840x2160", "2560x1440", "2560x1080", "1920x1080", "1280x720"]
+        options: root.resList(root.cfg.fmt)
         onValueChanged: value => root.set("res", value)
     }
 
@@ -69,7 +132,7 @@ Column {
         transientSurfaceTracker: root.transientSurfaceTracker
         text: "Frame rate"
         currentValue: root.cfg.fps
-        options: ["30", "60", "120", "144", "240"]
+        options: root.fpsList(root.cfg.fmt, root.cfg.res)
         onValueChanged: value => root.set("fps", value)
     }
 

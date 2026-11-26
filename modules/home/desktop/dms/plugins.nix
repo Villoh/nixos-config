@@ -61,7 +61,7 @@
         enable = true;
         src = ./game-capture;
       };
-      # Not in the registry. Installed only: dms-glass (./glass.nix) turns it on for the
+      # Not in the registry. Installed only: dms-glass (./profiles.nix) turns it on for the
       # liquid-* profiles and off for the rest.
       liquidGlassBar = {
         enable = true;

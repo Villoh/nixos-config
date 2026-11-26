@@ -12,7 +12,7 @@
 #   liquid-*  -> standard bar as a liquidGlassBar capsule (plugin, ./plugins.nix), hyprglass
 #                Liquid Glass on the other DMS surfaces, plain hyprglass blur behind apps
 #   frosted-* -> connected frame with Hyprland's blur, plain hyprglass blur behind apps
-#   others    -> opaque apps, no hyprglass
+#   others    -> opaque apps, no hyprglass (the seeded `dynamic` base profile included)
 # In both glass modes apps get a light, uniform translucency. Their blur comes from
 # hyprglass, not Hyprland: GTK4 apps (Ghostty, Strata) announce an empty blur region
 # through ext-background-effect-v1, and Hyprland then never blurs behind them.
@@ -28,9 +28,10 @@
 # (a fixed palette also recolors terminals and GTK apps).
 let
   profilesDir = "${config.xdg.configHome}/dms/profiles";
-  # Own wallpaper folder for both glass profiles: the picker opens here and the Wallhaven
-  # carousel downloads here, instead of into the folder of whatever wallpaper was on before.
-  wallpaperFolder = "${config.home.homeDirectory}/Pictures/Wallpapers/glass";
+  # Own wallpaper folder for the dynamic-color profiles (glass and base): the picker opens here
+  # and the Wallhaven carousel downloads here, instead of into the folder of whatever wallpaper
+  # was on before.
+  wallpaperFolder = "${config.home.homeDirectory}/Pictures/Wallpapers/dynamic";
 
   glass = {
     blurEnabled = true;
@@ -103,6 +104,14 @@ let
       }
     );
   seeds = {
+    # Base look: dynamic colors, opaque, no blur. dms-glass maps it to mode off.
+    dynamic = seed "Dynamic" (
+      dynamic
+      // {
+        blurEnabled = false;
+        popupTransparency = 1;
+      }
+    ) frameBar;
     frosted-glass = seed "Frosted Glass" (frosted // dynamic) frameBar;
     liquid-glass = seed "Liquid Glass" (liquid // dynamic) liquidBar;
     liquid-glass-frame = seed "Liquid Glass Frame" (liquid // dynamic) frameBar;
@@ -186,7 +195,7 @@ lib.mkIf osConfig.programs.dux-shell.enable {
   wayland.windowManager.hyprland = {
     plugins = [ pkgs.hyprglass ];
     extraConfig = lib.mkAfter ''
-      -- Glass mode of the active DMS profile, written by dms-glass (modules/home/desktop/dms/glass.nix).
+      -- Glass mode of the active DMS profile, written by dms-glass (modules/home/desktop/dms/profiles.nix).
       do
         local f = io.open((os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state")) .. "/dms-glass/mode")
         local mode = f and f:read("l") or "off"

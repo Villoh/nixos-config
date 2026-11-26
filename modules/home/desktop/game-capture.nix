@@ -138,6 +138,8 @@ in
   home.packages = [
     game-capture
     capture-audio
+    # v4l2-ctl: list the modes of the capture card and measure its real frame rate.
+    pkgs.v4l-utils
     (pkgs.makeDesktopItem {
       name = "capture-audio";
       desktopName = "Capture audio: toggle";

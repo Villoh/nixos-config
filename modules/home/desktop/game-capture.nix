@@ -23,6 +23,12 @@ let
       pkgs.yad
     ];
     text = ''
+      # Errors go to a DMS toast; notify-send when DMS is not the shell.
+      toast_error() {
+        dms ipc call toast error "$1" > /dev/null 2>&1 \
+          || notify-send -a "Game capture" -u critical "Game capture" "$1"
+      }
+
       res=3840x2160 fps=60 fmt=NV12 lat=Ultra audio=Loopback fs=FALSE range=Auto
       case "''${1:-4k}" in
         4k) ;;
@@ -61,7 +67,7 @@ let
       esac
 
       if [ ! -e ${device} ]; then
-        notify-send -a "Game capture" -u critical "Game capture" "ezcap401 not found; check the USB cable"
+        toast_error "Game capture: ezcap401 not found; check the USB cable"
         exit 1
       fi
 
@@ -108,7 +114,7 @@ let
       mpv av://v4l2:${device} \
         --demuxer-lavf-o=input_format="$fmt",video_size="$res",framerate="$fps" "''${opts[@]}" || rc=$?
       if [ "$rc" -eq 1 ] || [ "$rc" -eq 2 ]; then
-        notify-send -a "Game capture" -u critical "Game capture" "Could not open $res $fps fps $fmt; try another mode"
+        toast_error "Game capture: could not open $res $fps fps $fmt; try another mode"
       fi
     '';
   };

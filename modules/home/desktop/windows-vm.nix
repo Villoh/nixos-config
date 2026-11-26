@@ -5,6 +5,10 @@
 # Windows (10-30 min, progress at http://127.0.0.1:8006); the disk lives in ~/.windows and
 # ~/Windows is shared into the VM. Closing the RDP window shuts the VM down, unless it was
 # started with `windows-vm launch --keep-alive`.
+# `windows-vm launcher` opens the DMS form (./dms/windows-vm), or `windows-vm menu` (a yad dialog)
+# when the plugin is not running; `snapshot`, `restore`, `snapshots` and `delete` manage checkpoints: cold copies of ~/.windows in ~/.local/share/windows-vm/snapshots.
+# shortcut: a checkpoint is a full copy (about the used disk size each), move to qcow2 or libvirt
+# snapshots if that gets too big or too slow.
 # Needs modules/nixos/services/docker.nix, the docker group and /dev/kvm.
 let
   # `username` and `disk` are only applied when Windows is installed: changing them later
@@ -37,6 +41,7 @@ let
       pkgs.libnotify
       pkgs.util-linux
       pkgs.openssl
+      pkgs.yad
     ];
     text = ''
       name=windows
@@ -50,7 +55,141 @@ let
         dms ipc call toast info "$1" > /dev/null 2>&1 || notify-send -a "Windows VM" "Windows VM" "$1"
       }
 
+      snapdir="''${XDG_DATA_HOME:-$HOME/.local/share}/windows-vm/snapshots"
+      disk="$HOME/.windows"
+
+      fail() {
+        echo "windows-vm: $1" >&2
+        notify-send -a "Windows VM" -u critical "Windows VM" "$1"
+        exit 1
+      }
+
+      # A question in a terminal, a yad dialog when there is no tty (desktop action, DMS).
+      confirm() {
+        if [ -t 0 ]; then
+          read -r -p "$1 [y/N] " answer
+          [ "$answer" = y ]
+        else
+          yad --center --title="Windows VM" --image=dialog-question --text="$1" --button="Cancel:1" --button="Confirm:0"
+        fi
+      }
+
+      valid_name() { [[ "$1" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; }
+
+      # Checkpoint operations stop the VM first and start it again if it was running.
+      stopped=false
+      stop_vm() {
+        if running; then
+          toast "Windows VM: shutting down"
+          docker stop -t 120 "$name" > /dev/null
+          stopped=true
+        fi
+      }
+      resume_vm() {
+        if [ "$stopped" = true ]; then docker start "$name" > /dev/null; fi
+      }
+
+      # One checkpoint operation at a time (a double click in the DMS form would stop the VM twice).
+      lock_checkpoints() {
+        mkdir -p "$cfg" "$snapdir"
+        exec 8> "$cfg/snapshot.lock"
+        flock -n 8 || fail "another checkpoint operation is running"
+      }
+
+      # Everything in the disk folder but leftover ISOs (dockur deletes those itself).
+      copy_files() {
+        find "$1" -mindepth 1 -maxdepth 1 ! -name '*.iso' -exec cp -a --sparse=always {} "$2"/ \;
+      }
+
+      list_snapshots() {
+        if [ -d "$snapdir" ]; then
+          find "$snapdir" -mindepth 1 -maxdepth 1 -type d ! -name '*.tmp' -printf '%f\n' | sort
+        fi
+      }
+
       case "''${1:-launch}" in
+        snapshots)
+          list_snapshots
+          exit
+          ;;
+        snapshot)
+          snap=''${2:-$(date +%Y%m%d-%H%M%S)}
+          valid_name "$snap" || fail "invalid checkpoint name '$snap' (letters, digits, . _ -)"
+          lock_checkpoints
+          [ ! -e "$snapdir/$snap" ] || fail "checkpoint '$snap' already exists"
+          used=$(du -sk --exclude='*.iso' "$disk" | cut -f1)
+          avail=$(df -k --output=avail "$snapdir" | tail -n 1)
+          [ "$avail" -gt $((used + 5000000)) ] || fail "not enough free space for a checkpoint"
+          toast "Windows VM: taking checkpoint '$snap' (about 30 s)"
+          stop_vm
+          # A leftover .tmp is an interrupted copy.
+          rm -rf "''${snapdir:?}/$snap.tmp"
+          mkdir "$snapdir/$snap.tmp"
+          copy_files "$disk" "$snapdir/$snap.tmp" || {
+            resume_vm
+            fail "copy failed; nothing was saved"
+          }
+          mv "$snapdir/$snap.tmp" "$snapdir/$snap"
+          resume_vm
+          toast "Windows VM: checkpoint '$snap' saved"
+          exit
+          ;;
+        restore)
+          snap=''${2:?usage: windows-vm restore NAME [--yes]}
+          valid_name "$snap" || fail "invalid checkpoint name '$snap'"
+          [ -d "$snapdir/$snap" ] || fail "no checkpoint named '$snap'"
+          if [ "''${3:-}" != --yes ] && [ "''${3:-}" != -y ]; then
+            confirm "Replace the current Windows disk with checkpoint '$snap'? Changes since then are lost." || exit 1
+          fi
+          lock_checkpoints
+          toast "Windows VM: restoring checkpoint '$snap' (about 30 s)"
+          stop_vm
+          copy_files "$snapdir/$snap" "$disk" || {
+            resume_vm
+            fail "restore failed; the disk may be inconsistent, restore again"
+          }
+          resume_vm
+          toast "Windows VM: restored checkpoint '$snap'"
+          exit
+          ;;
+        delete)
+          snap=''${2:?usage: windows-vm delete NAME [--yes]}
+          valid_name "$snap" || fail "invalid checkpoint name '$snap'"
+          [ -d "$snapdir/$snap" ] || fail "no checkpoint named '$snap'"
+          if [ "''${3:-}" != --yes ] && [ "''${3:-}" != -y ]; then
+            confirm "Delete checkpoint '$snap'?" || exit 1
+          fi
+          lock_checkpoints
+          rm -rf "''${snapdir:?}/$snap"
+          toast "Windows VM: checkpoint '$snap' deleted"
+          exit
+          ;;
+        menu)
+          # The yad fallback of the DMS form: pick an action and a checkpoint, then it runs the
+          # matching subcommand. The first checkpoint listed is the default one.
+          ckpts=$(list_snapshots | paste -sd '!')
+          choice=$(yad --form --center --title="Windows VM" --button="Run:0" --button="Cancel:1" \
+            --text="State: $(docker inspect -f '{{.State.Status}}' "$name" 2> /dev/null || echo 'not created')\nCheckpoints are full copies of the Windows disk; the VM is shut down while one is taken or restored." \
+            --field="Action:CB" "^Start!Start and keep running!Checkpoint now!Restore!Delete!Stop" \
+            --field="Checkpoint (restore, delete):CB" "''${ckpts:--}" \
+            --field="New checkpoint name (empty: date and time)") || exit 0
+          IFS='|' read -r act ckpt snap_name _ <<< "$choice"
+          case "$act" in
+            Start) exec "$0" launch ;;
+            "Start and keep running") exec "$0" launch --keep-alive ;;
+            "Checkpoint now") exec "$0" snapshot ''${snap_name:+"$snap_name"} ;;
+            Restore) exec "$0" restore "$ckpt" ;;
+            Delete) exec "$0" delete "$ckpt" ;;
+            *) exec "$0" stop ;;
+          esac
+          ;;
+        launcher)
+          # `dms ipc call` exits 0 even for a missing target ("Target not found."), so check what
+          # it printed. A new plugin file needs `dms ipc call plugins enable windowsVm` and a
+          # `dms restart` before the target exists.
+          [ "$(dms ipc call windowsVm show 2> /dev/null)" = WINDOWS_VM_SHOWN ] || exec "$0" menu
+          exit
+          ;;
         stop)
           docker stop -t 120 "$name" > /dev/null
           echo "windows-vm: stopped"
@@ -77,7 +216,7 @@ let
           ;;
         launch | -k | --keep-alive) ;;
         *)
-          echo "usage: windows-vm [launch [--keep-alive]|stop|status|remove|reset]" >&2
+          echo "usage: windows-vm [launch [--keep-alive]|launcher|menu|stop|status|remove|reset|snapshots|snapshot [NAME]|restore NAME [--yes]|delete NAME [--yes]]" >&2
           exit 1
           ;;
       esac
@@ -217,8 +356,30 @@ in
       name = "windows-vm";
       desktopName = "Windows";
       comment = "Windows 11 VM over RDP (stops when the window closes)";
-      exec = "windows-vm";
+      exec = "windows-vm launcher";
       icon = "windows-vm";
+      actions = {
+        start = {
+          name = "Start now";
+          exec = "windows-vm launch";
+        };
+        keep-alive = {
+          name = "Start and keep running";
+          exec = "windows-vm launch --keep-alive";
+        };
+        checkpoint = {
+          name = "Checkpoint now";
+          exec = "windows-vm snapshot";
+        };
+        restore-base = {
+          name = "Restore checkpoint base";
+          exec = "windows-vm restore base";
+        };
+        stop = {
+          name = "Stop";
+          exec = "windows-vm stop";
+        };
+      };
       categories = [
         "System"
         "Emulator"

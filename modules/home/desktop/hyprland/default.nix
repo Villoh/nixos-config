@@ -234,8 +234,10 @@ let
     # V for vault; Omarchy's SUPER+SHIFT+/ stays the DMS cheatsheet.
     (exec "SUPER + SHIFT + V" "Password manager (Bitwarden)" (launch "bitwarden"))
     (exec "SUPER + SHIFT + D" "Discord" discord.launch)
-    # W for Windows: the on-demand VM (modules/home/desktop/windows-vm.nix); closing its window shuts it down.
-    (exec "SUPER + SHIFT + W" "Windows VM" "windows-vm")
+    # W for Windows: the form of the on-demand VM (modules/home/desktop/windows-vm.nix); with ALT it
+    # starts the VM directly, and closing its window shuts it down.
+    (exec "SUPER + SHIFT + W" "Windows VM" "windows-vm launcher")
+    (exec "SUPER + SHIFT + ALT + W" "Windows VM: start" "windows-vm launch")
     # P for PlayStation: the form of the low-latency ezcap401 view (modules/home/desktop/game-capture.nix).
     (exec "SUPER + SHIFT + P" "Game capture" "game-capture launcher")
     (exec "SUPER + SHIFT + ALT + P" "Capture audio: toggle" "capture-audio")

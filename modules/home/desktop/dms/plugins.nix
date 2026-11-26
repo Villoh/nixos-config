@@ -61,6 +61,11 @@
         enable = true;
         src = ./game-capture;
       };
+      # Local: menu (overlay, window or dash tab) for `windows-vm` (../windows-vm.nix).
+      windowsVm = {
+        enable = true;
+        src = ./windows-vm;
+      };
       # Not in the registry. Installed only: dms-glass (./profiles.nix) turns it on for the
       # liquid-* profiles and off for the rest.
       liquidGlassBar = {

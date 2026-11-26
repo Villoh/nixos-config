@@ -1,0 +1,21 @@
+{
+    "id": "windowsVm",
+    "name": "Windows VM",
+    "description": "Start the Windows VM, keep it running, and take, restore or delete checkpoints of its disk",
+    "version": "1.0.0",
+    "author": "mikel",
+    "type": "composite",
+    "capabilities": ["dash-tab", "daemon", "ipc"],
+    "components": {
+        "dash": "./WindowsVmTab.qml",
+        "daemon": "./WindowsVmDaemon.qml"
+    },
+    "settings": "./WindowsVmSettings.qml",
+    "icon": "desktop_windows",
+    "dash": {
+        "title": "Windows VM"
+    },
+    "requires": ["windows-vm"],
+    "requires_dms": ">=1.7.0",
+    "permissions": ["settings_read", "settings_write"]
+}

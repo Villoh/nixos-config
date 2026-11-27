@@ -6,7 +6,7 @@
     "flakes"
   ];
 
-  # Upstream CI caches for sonora, kopuz, handy and llm-agents (t3code, claude-desktop). A flake
+  # Upstream CI caches for sonora, kopuz, handy, llm-agents (t3code, claude-desktop) and affinity-nix. A flake
   # input's nixConfig is ignored, so they are trusted here; without them these compile from source.
   nix.settings = {
     extra-substituters = [
@@ -14,12 +14,14 @@
       "https://kopuz.cachix.org"
       "https://handy-computer.cachix.org"
       "https://cache.numtide.com"
+      "https://cache.forall.systems"
     ];
     extra-trusted-public-keys = [
       "sonora.cachix.org-1:qbPeDsvZPbwUWHpQS5Oe0bjz5oHAVscHem+MCzwrc9Q="
       "kopuz.cachix.org-1:J2X3AnAYhKTJW5S3aCLoA1ckonQXVNZMQvhZA0YAufw="
       "handy-computer.cachix.org-1:Sihzctn6DC0CJM5QeL+9nBEL3CL8c33m777C+eIv748="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      "cache.forall.systems:5PmD7QO4MSF8YgyRZtkSGXRDo96H3bybIf2SsQh8ScI="
     ];
   };
 

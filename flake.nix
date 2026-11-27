@@ -130,6 +130,13 @@
       url = "github:Kopuz-org/kopuz";
     };
 
+    # Affinity v3 on Wine. No nixpkgs follows on purpose: cache.forall.systems (see
+    # modules/nixos/core/nix.nix) only holds the build against its own pinned nixpkgs. The Serif
+    # installer is fetched from archive.org at build time (hash-pinned), never cached.
+    affinity-nix = {
+      url = "github:mrshmllow/affinity-nix";
+    };
+
     # Dictation. Same rule: the handy-computer.cachix.org cache matches its own nixpkgs.
     handy = {
       url = "github:cjpais/Handy/v0.10.1";

@@ -145,7 +145,9 @@ in
     game-capture
     capture-audio
     # v4l2-ctl: list the modes of the capture card and measure its real frame rate.
-    pkgs.v4l-utils
+    # No GUI: the launcher entries qvidcap/qv4l2 open /dev/video0 with no args and qvidcap's
+    # RAM grows ~15 MB/s until killed.
+    (pkgs.v4l-utils.override { withGUI = false; })
     (pkgs.makeDesktopItem {
       name = "capture-audio";
       desktopName = "Capture audio: toggle";

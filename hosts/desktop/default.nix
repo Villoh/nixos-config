@@ -75,6 +75,10 @@
       # Avalonia is X11-only; with force_zero_scaling it needs per-output scale.
       home.sessionVariables.AVALONIA_SCREEN_SCALE_FACTORS = "DP-1=1.5;HDMI-A-1=1.5";
 
+      # Same for the ArtCraft apps (PhotoCraft, GridCraft...): winit opens them on XWayland and
+      # finds no scale there. One value for all outputs; both monitors run at 1.5.
+      home.sessionVariables.WINIT_X11_SCALE_FACTOR = "1.5";
+
       wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
         -- Workspaces 1-5 on DP-1, 6-10 on HDMI-A-1 (an unpinned workspace opens on
         -- the focused monitor).

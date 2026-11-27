@@ -38,6 +38,11 @@
   # matching, so update the names (`hyprctl monitors`).
   home-manager.users.mikel.home.sessionVariables.AVALONIA_SCREEN_SCALE_FACTORS = "eDP-1=2;HDMI-A-2=1.5;DP-3=1.5";
 
+  # ArtCraft apps (PhotoCraft, GridCraft...): winit opens them on XWayland and finds no scale
+  # there. shortcut: one value for all outputs, 1.5 fits the external monitors; on eDP-1 (scale 2)
+  # they look 25 % small, so use a per-app wrapper if that bothers.
+  home-manager.users.mikel.home.sessionVariables.WINIT_X11_SCALE_FACTOR = "1.5";
+
   networking.hostName = "nixos-zenbook";
   system.stateVersion = "26.05";
 

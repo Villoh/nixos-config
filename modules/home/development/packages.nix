@@ -40,6 +40,10 @@ in
     mysql84.client
     usql
 
+    # API testing (collections are plain files; MCP: npx -y @usebruno/mcp)
+    bruno
+    bruno-cli # bru
+
     # AI agents
     # claude-code
     # codex

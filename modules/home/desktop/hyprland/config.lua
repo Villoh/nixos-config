@@ -36,6 +36,19 @@ hl.unbind("SUPER + CTRL + H")
 hl.unbind("SUPER + CTRL + J")
 hl.unbind("SUPER + CTRL + K")
 
+-- Passthrough for the Windows VM (windows-vm) or any remote desktop: SUPER+F12 turns every other
+-- Hyprland bind off, so SUPER combos reach the focused window; press it again to get them back.
+local function vm_keys(submap, message)
+  return function()
+    hl.dispatch(hl.dsp.submap(submap))
+    hl.dispatch(hl.dsp.exec_cmd("dms ipc call toast info '" .. message .. "'"))
+  end
+end
+hl.bind("SUPER + F12", vm_keys("vm", "Keys go to the window: SUPER+F12 to leave"))
+hl.define_submap("vm", function()
+  hl.bind("SUPER + F12", vm_keys("reset", "Keys back to Hyprland"))
+end)
+
 -- Cycle through the windows of the workspace and raise the focused one.
 local function cycle(forward)
   return function()

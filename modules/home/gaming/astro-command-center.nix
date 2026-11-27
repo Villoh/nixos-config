@@ -35,6 +35,10 @@ let
     text = ''
       export WINEPREFIX="''${XDG_DATA_HOME:-$HOME/.local/share}/wineprefixes/astro-command-center"
       export WINEDEBUG=-all
+
+      # XWayland is not scaled here (force_zero_scaling) and the monitors run at 1.5, so Wine's
+      # default 96 DPI draws a tiny UI. 144 = 150 %. Idempotent; wineboot creates the prefix.
+      wine reg add 'HKCU\Control Panel\Desktop' /v LogPixels /t REG_DWORD /d 144 /f > /dev/null
       exe="$WINEPREFIX/drive_c/Program Files (x86)/Astro Gaming/ASTRO Command Center/ASTRO Command Center.exe"
 
       # First run: the silent install also starts the app.

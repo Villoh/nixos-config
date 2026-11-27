@@ -63,8 +63,20 @@ let
         args = "cz.viceverse.serein:toggle-deafen";
       };
     };
-    # Yapfast has no CLI nor mute/deafen keys (only push-to-talk): no binds.
-    yapfast.launch = "yapfast";
+    # Yapfast registers one portal shortcut per keybind created in Settings > Keybinds,
+    # named `keybind-<id>` (see `hyprctl globalshortcuts`). Do not delete and recreate the
+    # rows: the ids would change.
+    yapfast = {
+      launch = "yapfast";
+      mute = {
+        dsp = "global";
+        args = "io.github.yapfast.Yapfast:keybind-1";
+      };
+      deafen = {
+        dsp = "global";
+        args = "io.github.yapfast.Yapfast:keybind-2";
+      };
+    };
     equibop = {
       launch = "equibop";
       mute = cli "equibop --toggle-mic";

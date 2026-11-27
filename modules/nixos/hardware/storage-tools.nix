@@ -35,5 +35,8 @@ in
     nvme-cli # nvme smart-log, NVMe wear/temps
     kdiskmark # GUI benchmark (closest to CrystalDiskMark)
     fio # CLI benchmark engine
+    woeusb-ng # Windows ISO -> bootable USB (switches to NTFS + UEFI:NTFS when install.wim > 4 GB)
+    caligula # CLI/TUI image burner with verification (etcher-cli is deprecated and not in nixpkgs)
+    impression # GUI ISO writer for Linux images (Etcher-like); gnome-disks also does this
   ];
 }

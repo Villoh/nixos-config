@@ -22,6 +22,13 @@ let
   # while the VM runs, so do not list audio devices you are listening through.
   usb = [ ];
 
+  # dockur's answer file installs Windows with UAC off (EnableLUA false), and Atlas Manager
+  # refuses to install on a PC without it (its User account check). dockur runs `COMMAND` once,
+  # at the end of the first install, so a new VM starts with UAC on from its next boot (the VM
+  # shuts down when the RDP window closes). It does not touch a VM that is already installed:
+  # there, `Set-ItemProperty` the same key by hand and restart.
+  uacOn = ''reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 1 /f'';
+
   usbArgs = builtins.concatStringsSep " " (
     map (
       id:
@@ -255,6 +262,7 @@ let
           --cap-add NET_ADMIN \
           -e VERSION=11 -e RAM_SIZE=${ram} -e CPU_CORES=${cores} -e DISK_SIZE=${disk} \
           -e USERNAME="$user" -e PASSWORD="$pass" \
+          -e COMMAND='${uacOn}' \
           -e TZ="$(timedatectl show -p Timezone --value 2> /dev/null || echo UTC)" \
           -e ARGUMENTS="-rtc base=localtime,clock=host,driftfix=slew ${usbArgs}" \
           -p 127.0.0.1:8006:8006 -p 127.0.0.1:3389:3389/tcp -p 127.0.0.1:3389:3389/udp \

@@ -17,6 +17,15 @@ in
     inputs.kopuz.packages.${pkgs.stdenv.hostPlatform.system}.kopuz
     # Affinity on Wine; needs the Serif installer from archive.org, fetched at build time.
     affinity
+    # Native Rust image editor (PSD/PSB); photocraft-cli also serves MCP (photocraft-cli mcp).
+    pkgs.photocraft
+    # Rest of the ArtCraft "Crafting Apps" suite (early alpha, native Rust).
+    pkgs.pdfcraft
+    pkgs.gridcraft
+    pkgs.deckcraft
+    pkgs.wordcraft
+    pkgs.filmcraft
+    pkgs.soundcraft
     pkgs.meiro
     pkgs.imv
     pkgs.mpv

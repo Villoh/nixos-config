@@ -12,7 +12,6 @@ pkgs: {
   serein-bin = pkgs.callPackage ./serein/package.nix { };
   sheprd-bin = pkgs.callPackage ./sheprd/package.nix { };
   strata-bin = pkgs.callPackage ./strata/package.nix { };
-  wealthfolio-bin = pkgs.callPackage ./wealthfolio/package.nix { };
   workmux-bin = pkgs.callPackage ./workmux/package.nix { };
   yapfast-bin = pkgs.callPackage ./yapfast/package.nix { };
 }

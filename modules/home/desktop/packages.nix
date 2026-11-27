@@ -13,10 +13,7 @@ in
     strata
     # Registers org.freedesktop.FileManager1 (what the previous in-tree package did).
     strata.fileManagerService
-    # PENDING: cache. Source build (packages/wealthfolio, nixpkgs runs behind upstream),
-    # swapped for the prebuilt release meanwhile.
-    # pkgs.wealthfolio
-    pkgs.wealthfolio-bin
+    pkgs.wealthfolio
     # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
     # inputs.arca.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.arca-bin

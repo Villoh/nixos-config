@@ -93,8 +93,8 @@ those flags, so `nixup update <name>` follows the same rules:
 
 - `--url https://github.com/<owner>/<repo>`: versions come from that repository's tags
   (herdr-app, herdr-core and the prebuilt releases hosted outside GitHub).
-- `--use-github-releases`: published releases instead of tags (google-sans-flex, kopuz-bin).
-- `--version=unstable`: prereleases count (flectar-mail, kopuz-bin, serein-bin).
+- `--use-github-releases`: published releases instead of tags (google-sans-flex).
+- `--version=unstable`: prereleases count (flectar-mail, serein-bin).
 - `--version-regex`: one tag series out of several (meiro's `desktop-v*`).
 - `passthru.nixup.versionUrl`: a URL that serves the latest version, for a project whose
   GitHub tags mix release channels (none here now; brave-origin used it while it was out
@@ -120,14 +120,14 @@ libraries (nixpkgs 44cddf9, 2026-10-12).
 
 ## Prebuilt releases (`packages/prebuilt/`, temporary)
 
-`arca`, `aube`, `hex`, `serein`, `sheprd`, `strata`, `wealthfolio`, `workmux` and `yapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
+`arca`, `aube`, `hex`, `serein`, `sheprd`, `strata`, `workmux` and `yapfast` are upstream's prebuilt Linux releases, named `<name>-bin`, because their source builds
 compile locally (no binary cache yet). They are bumped like the packages above, with
 `nixup update workmux-bin`.
 
 Each module line that uses one carries a `PENDING: cache` comment next to the original
 source-built line, and the matching flake input is commented out in `flake.nix` with the same
-note, so it is not in `flake.lock`. To go back to a source build, uncomment both. `aube` and `wealthfolio` also have a source package (`packages/aube`,
-`packages/wealthfolio`, copied from nixpkgs, which runs behind upstream), commented out in
+note, so it is not in `flake.lock`. To go back to a source build, uncomment both. `aube` also has a source package (`packages/aube`,
+copied from nixpkgs, which runs behind upstream), commented out in
 `packages/default.nix` until then. `hex` is swapped in the overlay, so `pkgs.hex`
 keeps working; the modules use the other `-bin` packages by their own name.
 Once a binary cache serves the source builds, revert those lines and delete
@@ -141,10 +141,10 @@ switches that stay on. Reverting to the source build means restoring the `callPa
 `modules/home/desktop/packages.nix` and `modules/nixos/desktop/portals.nix` and removing the
 helpers.
 
-`kopuz` and `handy` left this folder: their upstream flakes now have a Cachix cache
+`kopuz` and `handy` are not in this folder: their upstream flakes now have a Cachix cache
 (`kopuz.cachix.org`, `handy-computer.cachix.org`, trusted in `modules/nixos/core/nix.nix`), so
 they are flake inputs again, without `nixpkgs.follows` (the cache only matches the nixpkgs their
-own `flake.lock` pins). `packages/prebuilt/{kopuz,handy}` are unused and can be deleted. Kopuz is
+own `flake.lock` pins). Kopuz is
 the GPUI app, following `master` (its tags are no use: nixup would offer the stray `v2.0`). Its
 binaries are `kopuz`/`kopuzd` (the old `.deb` nightly used `*-nightly` names and
 `kopuzd-nightly.sock`). The cache only holds some commits: before `nixup update kopuz`, check the
@@ -183,7 +183,7 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | sheprd | yes (1,177 crates) | yes (tar.gz) | no | Binary |
 | hex | yes (767 crates) | yes (.deb) | no | Binary |
 | handy | yes (own flake, handy-computer.cachix.org) | yes (.deb) | no | Flake (cached) |
-| wealthfolio | nixpkgs, and `packages/wealthfolio` | yes (.deb) | no | Binary |
+| wealthfolio | nixpkgs (cached, one patch behind upstream) | yes (.deb) | no | nixpkgs |
 | aube | nixpkgs (1.32, behind), and `packages/aube` (2.10, builds with 4 sandbox tests skipped) | yes (static musl tar.gz) | no | Binary |
 | kopuz | yes (about 2,200 derivations) | nightly only (GPUI, same commit as the lock); the stable release is the legacy WebKit app | Flathub 0.67.1 is the legacy Dioxus app (`dx build`), not GPUI | Flake (cached, master) |
 | sonora | yes (`sonora-src`) | yes, `sonora-bin` in the same flake | yes (official repo) | Flake, binary output |

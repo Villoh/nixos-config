@@ -31,24 +31,16 @@ let
 
   # Per-client launch command and mute/deafen actions.
   # Pick the client with DISCORD in modules/home/core/defaults.nix.
-  # Clients with a CLI act on the running instance, even hidden in the tray.
-  # Concord and Vesktop have no CLI, so they get the keybind forwarded to
-  # their window (Vesktop only works while its window is mapped, not in tray).
+  # Concord has no CLI, so it gets the keybind forwarded to its window.
   shortcut = mods: key: window: {
     dsp = "send_shortcut";
     args = { inherit mods key window; };
   };
-  cli = cmd: { exec = cmd; };
   discordClients = {
     concord = {
       launch = "ghostty -e concord";
       mute = shortcut "ALT" "m" "title:^(concord)$";
       deafen = shortcut "ALT" "d" "title:^(concord)$";
-    };
-    vesktop = {
-      launch = "vesktop";
-      mute = shortcut "CTRL_SHIFT" "m" "class:^(vesktop)$";
-      deafen = shortcut "CTRL_SHIFT" "d" "class:^(vesktop)$";
     };
     # Serein registers its global shortcuts with the portal under a stable id per action
     # (see `hyprctl globalshortcuts`); the Nix build needs ViceVerse-cz/Serein#906 for that.
@@ -76,16 +68,6 @@ let
         dsp = "global";
         args = "io.github.yapfast.Yapfast:keybind-2";
       };
-    };
-    equibop = {
-      launch = "equibop";
-      mute = cli "equibop --toggle-mic";
-      deafen = cli "equibop --toggle-deafen";
-    };
-    legcord = {
-      launch = "legcord";
-      mute = cli "legcord --mute";
-      deafen = cli "legcord --deafen";
     };
   };
   discord = discordClients.${config.home.sessionVariables.DISCORD};

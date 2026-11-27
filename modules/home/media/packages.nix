@@ -11,6 +11,7 @@
     pkgs.mpv
     pkgs.wf-recorder
     pkgs.ffmpeg
+    pkgs.frame-media-converter
     pkgs.yt-dlp
     pkgs.imagemagick
     pkgs.img2pdf

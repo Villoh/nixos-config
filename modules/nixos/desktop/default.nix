@@ -13,6 +13,10 @@
   # pkexec, fails, and falls back to wf-recorder. Also installs gpu-screen-recorder.
   programs.gpu-screen-recorder.enable = true;
 
+  # ShadowPlay-style overlay (gsr-ui): Left Alt+Z toggles it, instant replay and clip hotkeys
+  # work over games. Adds the gsr-global-hotkeys setcap wrapper. Start it with `gsr-ui`.
+  programs.gpu-screen-recorder.ui.enable = true;
+
   # Installs OBS and v4l2loopback so "OBS Virtual Camera" shows up as a webcam in other apps.
   programs.obs-studio = {
     enable = true;

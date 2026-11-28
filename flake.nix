@@ -68,6 +68,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Vice (instant-replay game clipper, NixOS module services.vice) on trial next to gsr-ui, see
+    # modules/nixos/desktop/default.nix. Third party: review the diff before `nix flake update vice`.
+    vice = {
+      url = "github:splitshotz/Vice/v2.19.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # CLI that turns Omarchy themes into dmsProfiles looks.
     omarchy-dms = {
       url = "github:Villoh/omarchy-dms/v0.4.2";

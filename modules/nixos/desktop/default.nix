@@ -1,4 +1,9 @@
-{ lib, pkgs, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   # UWSM imports these defaults; each user's environment may override them.
@@ -14,8 +19,18 @@
   programs.gpu-screen-recorder.enable = true;
 
   # ShadowPlay-style overlay (gsr-ui): Left Alt+Z toggles it, instant replay and clip hotkeys
-  # work over games. Adds the gsr-global-hotkeys setcap wrapper. Start it with `gsr-ui`.
+  # work over games. Adds the gsr-global-hotkeys setcap wrapper. Not autostarted: launch it from the
+  # app menu ("GPU Screen Recorder") or run `gsr-ui launch-daemon`.
   programs.gpu-screen-recorder.ui.enable = true;
+
+  # Vice on trial next to gsr-ui. autoStart off: it only records while its window is open, so the
+  # two do not both record and fight over the keyboard. Both read hotkeys: if F9 does nothing,
+  # set gsr-ui hotkeys to "don't grab devices" in its settings. Share links go public through a
+  # Cloudflare tunnel by default; turn that off in ~/.config/vice/config.toml.
+  services.vice = {
+    enable = true;
+    autoStart = false;
+  };
 
   # Installs OBS and v4l2loopback so "OBS Virtual Camera" shows up as a webcam in other apps.
   programs.obs-studio = {
@@ -35,6 +50,7 @@
   };
 
   imports = [
+    inputs.vice.nixosModules.default
     ./packages.nix
     ./dms
     ./noctalia

@@ -1186,6 +1186,7 @@
         "omarchy-dms": "omarchy-dms",
         "sonora": "sonora",
         "strata": "strata",
+        "vice": "vice",
         "waydroid-nvidia-nix": "waydroid-nvidia-nix",
         "ytm-player": "ytm-player",
         "zen-browser": "zen-browser"
@@ -1431,6 +1432,27 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "vice": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794919665,
+        "narHash": "sha256-4ORg2vApKKBYe0q2wdcxXky6ylSpS8iEHZ2Si7TIXS0=",
+        "owner": "splitshotz",
+        "repo": "Vice",
+        "rev": "febbaa015ce78f0eb02e91a1bef5c853bcf5605f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "splitshotz",
+        "ref": "v2.19.0",
+        "repo": "Vice",
         "type": "github"
       }
     },

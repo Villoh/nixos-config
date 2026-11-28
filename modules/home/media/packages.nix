@@ -26,6 +26,8 @@ in
     pkgs.wordcraft
     pkgs.filmcraft
     pkgs.soundcraft
+    # Keyboard sound simulator (packages/mechvibes); needs the `input` group (users/mikel).
+    pkgs.mechvibes
     pkgs.meiro
     pkgs.imv
     pkgs.mpv

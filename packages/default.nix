@@ -21,6 +21,8 @@ rec {
   # aube = pkgs.callPackage ./aube/package.nix { };
   # Music player under evaluation: prebuilt release, upstream ships no flake.
   meiro = pkgs.callPackage ./meiro/package.nix { };
+  # Keyboard sound simulator: not in nixpkgs, prebuilt .deb (needs the `input` group).
+  mechvibes = pkgs.callPackage ./mechvibes/package.nix { };
   # Gamepad polling/latency testers: not in nixpkgs. The fork needs freesimpleguiqt for its GUI.
   gamepadla = pkgs.callPackage ./gamepadla/package.nix { };
   gamepadla-plus = pkgs.callPackage ./gamepadla/plus.nix { };

@@ -43,6 +43,20 @@
   # they look 25 % small, so use a per-app wrapper if that bothers.
   home-manager.users.mikel.home.sessionVariables.WINIT_X11_SCALE_FACTOR = "1.5";
 
+  # Vice's window is Qt (QtWebEngine). Whenever the NVIDIA driver is loaded it forces
+  # QT_QPA_PLATFORM=xcb (Chromium's GBM path on NVIDIA gave a black window), so it runs on
+  # XWayland and, with force_zero_scaling, draws a tiny UI. Here the desktop renders on the Arc
+  # iGPU, and native Wayland works (tested 2026-11-28, Hyprland 0.57, driver 595): crisp, scaled
+  # per output. Its own override, for vice-app only. If the window ever comes up black, drop this.
+  services.vice.package = pkgs.symlinkJoin {
+    inherit (pkgs.vice-clipper) pname version meta;
+    paths = [ pkgs.vice-clipper ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/vice-app --set VICE_WEBVIEW_PLATFORM wayland
+    '';
+  };
+
   networking.hostName = "nixos-zenbook";
   system.stateVersion = "26.05";
 

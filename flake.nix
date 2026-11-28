@@ -61,6 +61,13 @@
       flake = false;
     };
 
+    # Fluxer (Discord alternative): community flake that wraps the official .deb (Electron), so
+    # nothing compiles. Third party: review the diff before `nix flake update fluxer`.
+    fluxer = {
+      url = "github:Hy4ri/fluxer-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # CLI that turns Omarchy themes into dmsProfiles looks.
     omarchy-dms = {
       url = "github:Villoh/omarchy-dms/v0.4.2";

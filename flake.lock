@@ -472,6 +472,26 @@
         "type": "github"
       }
     },
+    "fluxer": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795825256,
+        "narHash": "sha256-Fh55EaNE8L2VbCWG+auHCEMFgeUKzlKyBSkW/oMQWIM=",
+        "owner": "Hy4ri",
+        "repo": "fluxer-flake",
+        "rev": "1a25e7b8558af4a191b9efd8bfa6f9334f04cfaa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Hy4ri",
+        "repo": "fluxer-flake",
+        "type": "github"
+      }
+    },
     "git-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -1144,6 +1164,7 @@
         "dms": "dms",
         "dms-plugin-registry": "dms-plugin-registry",
         "dms-profiles": "dms-profiles",
+        "fluxer": "fluxer",
         "goopdl": "goopdl",
         "handy": "handy",
         "helium-browser": "helium-browser",

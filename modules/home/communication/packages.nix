@@ -49,6 +49,8 @@
     # PENDING: cache. Source build, swapped for the prebuilt release meanwhile.
     # inputs.yapfast.packages.${pkgs.stdenv.hostPlatform.system}.yapfast
     yapfast-bin
+    # Fluxer client (official .deb via a community flake, see flake.nix).
+    inputs.fluxer.packages.${pkgs.stdenv.hostPlatform.system}.fluxer
     # Native .deb, not the Flatpak (no clipboard on Wayland, see packages/flectar-mail). Stays
     # until upstream ships a flake.
     flectar-mail

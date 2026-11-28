@@ -83,18 +83,6 @@ in
       StartupNotify=false
       Terminal=false
     '';
-    # Needs to run in the background for its Alt+Z and replay hotkeys to work. Use the system
-    # binary: programs.gpu-screen-recorder.ui (../../nixos/desktop) wraps it with the setcap helpers.
-    "autostart/gpu-screen-recorder-ui.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Version=1.0
-      Name=GPU Screen Recorder
-      Comment=Start the GPU Screen Recorder overlay at login (Alt+Z)
-      Exec=/run/current-system/sw/bin/gsr-ui launch-daemon
-      StartupNotify=false
-      Terminal=false
-    '';
     "autostart/filen-desktop.desktop".text = ''
       [Desktop Entry]
       Type=Application

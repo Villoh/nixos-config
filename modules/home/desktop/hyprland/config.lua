@@ -277,3 +277,13 @@ hl.window_rule({
   size = { 480, 420 },
   move = { "monitor_w * 0.5 - 240", "monitor_h * 0.5 - 210" },
 })
+
+-- Mechvibes is laid out as a narrow, phone-like window; tiled it fills the screen with a
+-- stretched column or leaves a hole beside it. shortcut: 520x900 is a guess at a comfortable
+-- size, adjust after the first run.
+hl.window_rule({
+  match = { class = "^mechvibes$" },
+  float = true,
+  size = { 520, 900 },
+  move = { "monitor_w * 0.5 - 260", "monitor_h * 0.5 - 450" },
+})

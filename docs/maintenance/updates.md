@@ -193,7 +193,6 @@ configuration installs today. Release availability was checked on 2026-11-08.
 | himalaya-tui | yes (482 crates) | no | no | Flake |
 | nixup | yes (own flake) | no | no | Flake |
 | serein | yes (764 derivations; needs a rev with ViceVerse-cz/Serein#906 for global shortcuts) | nightly only (all releases are pre-releases; Arch `pkg.tar.zst`) | yes (own repo), but its PID namespace breaks the tray hide: Serein sends Hyprland its sandbox PID | Binary (nightly) |
-| hylki | no official flake; community `clementpoiret/hylki-flake` builds it from source (186 derivations) | yes (`.deb` 12 MiB, `.rpm`, AppImage; native Rust and GTK4 app), tested and working | yes (own `.flatpakref`, GNOME 50 runtime) | Flatpak: no problems so far; the flake is the goal once a private cache exists, the binary adds nothing over the Flatpak |
 | flectar-mail | no (no flake found, not in nixpkgs) | yes (`.deb` 33 MiB with a native binary and `libpdfium`, AppImage, `.rpm`), `packages/flectar-mail` | yes (release bundle), but alpha.7's has no clipboard on Wayland (flectar/mail#108, fixed on main, not released) | Binary (`.deb`), until upstream ships a flake |
 | rustdesk | nixpkgs `rustdesk` is the legacy Sciter UI; `rustdesk-flutter` is the current UI | yes (`.deb`, AppImage) | yes (Flathub) | nixpkgs `rustdesk-flutter` |
 | cherry-studio | nixpkgs, 1.9.11 on EOL Electron | ? | yes (Flathub) | Flatpak: Flathub tracks 2.x |

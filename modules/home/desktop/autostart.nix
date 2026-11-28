@@ -27,7 +27,6 @@ let
         "zapfast"
         "serein"
         "filen\\x2ddesktop"
-        "hylki"
         "tunnelagent"
         "org.kde.kdeconnect.daemon"
       ]
@@ -92,16 +91,6 @@ in
       # The home profile one: it is built with Electron 43 (../cloud/packages.nix); the
       # default pkgs.filen-desktop crashes on load with Electron 45.
       Exec=${config.home.path}/bin/filen-desktop
-      StartupNotify=false
-      Terminal=false
-    '';
-    "autostart/hylki.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Version=1.0
-      Name=Hylki
-      Comment=Start Hylki hidden at login
-      Exec=flatpak run co.hyprlab.Hylki --hidden
       StartupNotify=false
       Terminal=false
     '';

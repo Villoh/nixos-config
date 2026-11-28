@@ -10,6 +10,7 @@ let
 in
 rec {
   flectar-mail = pkgs.callPackage ./flectar-mail/package.nix { };
+  mailcraft = pkgs.callPackage ./mailcraft/package.nix { };
   tunnel-agent = pkgs.callPackage ./tunnel-agent/package.nix { };
   google-sans-flex = pkgs.callPackage ./google-sans-flex/package.nix { };
   # Herdr App under evaluation: a prebuilt release, so nothing is compiled.
